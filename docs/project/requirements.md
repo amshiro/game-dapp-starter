@@ -35,6 +35,7 @@
 | C-83 | W2 保留 Figma 的单行 ORE balance visual slot；无已确认数据 owner 时显示 unavailable，不使用示例 48.60，不替换 BNB/ORI/起源或增加多资产 | User Confirmed | 真实数据 owner、资产定义与来源仍 OPEN |
 | C-84 | W2 保留 Export UI/位置样式，明确不可用；行为 OPEN，不导出密钥/助记词，不解释成复制地址或历史导出 | User Confirmed；Figma `2003:2528/2529` | external EVM wallet-only，embedded off |
 | C-85 | W2 不实现 Receive、QR、Privy fundWallet 或旧版 mining fund；Header identity 打开 Sheet，地址复制/断开沿用 SDK 身份 owner | User Confirmed | Receive 后续是否需要/具体语义须重新明确授权 |
+| C-86 | A1 UI 子集：最多一项展开，打开另一项关闭上一项；无初始默认项证据则全部 collapsed，展开稿仅证明状态视觉 | User Confirmed；Figma 2003:2235 / 2359 无 prototype 起点 | 本轮不预开 Intro；正文/外链/Q-41/Q-30 继续 OPEN |
 
 ### Responsive
 
@@ -93,9 +94,9 @@
 | ID | Requirement | Source | Notes |
 | --- | --- | --- | --- |
 | C-60 | Explore 展示挖矿、母矿、回购三类记录，分页 | Figma；Live | Live 字段：回合 / 玩家 / 交易量 / 总分配；回购：时间 / 已花费 BNB / 已销毁 |
-| C-61 | About 的产品规则、代币经济与链接以线上 About 为准 | Live About | Figma About 文案为占位 |
-| C-62 | 产品链接：`https://ori.supply`、X `https://x.com/refinORI`、Telegram `https://t.me/refinORI`、白皮书 `https://whitepaper.ori.supply` | Live About | |
-| C-63 | ORI 最大供应 4,200,000；无预挖、无团队分配 | Live About | |
+| C-61 | About 正式正文、规则与链接必须另经产品审定；本轮只批准 Accordion UI/Interaction 子集 | User Confirmed：A1 Human Gate | 当前 Figma 文案是视觉占位；不复制旧 ORI copy，不替换正式 /about |
+| C-62 | 历史产品链接：`https://ori.supply`、X `https://x.com/refinORI`、Telegram `https://t.me/refinORI`、白皮书 `https://whitepaper.ori.supply` | Live About | 仅历史证据，新版外部链接保持 OPEN，不自动继承 |
+| C-63 | 历史 About 文案称 ORI 最大供应 4,200,000；无预挖、无团队分配 | Live About | 非新版 approved copy；本轮不填入 Accordion |
 
 ### 多语言
 
@@ -119,7 +120,6 @@
 | I-25 | 部署前需结算上一轮（可能自动处理） | `MustCheckpointPreviousRound`；`batchCheckpoint` 由 bot 调用 | 前端是否需要显式处理见 Q-43 |
 | I-30 | Rewards 卡在有可领取奖励时显示 | Figma "有奖金" 稿 | |
 | I-31 | Explore 表格在 H5 横向滚动 | Figma 列溢出 | |
-| I-32 | About 手风琴同时只展开一项、默认展开第一项 | Figma | |
 | I-40 | 轮次开始与开奖由实时频道推送 | Live（`round.new_round`、`round.reset`） | 见 api.md |
 
 ## Unknown

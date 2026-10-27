@@ -22,7 +22,7 @@ Figma 中没有 Component，以下候选全部从重复视觉中识别。
 | Pagination（‹ ›） | `2003:2883` 等 | 首页只有下一页 | Explore（Points 未画分页） | 圆形 28px 按钮 |
 | Sheet / Dialog primitive | `2003:2490` | H5/PC 同一底部 Sheet，max-500 对齐，viewport 内 backdrop | 目前只有 Wallet | Wallet-local 原生 dialog 提供 top layer、ESC、焦点隔离/恢复；本轮不新增 shared primitive/dependency，无拖拽关闭 |
 | InfoHint（ⓘ） | `2003:1988` 等 | — | Stake Summary、Rewards | 说明内容与交互（tooltip / popover）未设计，暂时只渲染图标或等待确认 |
-| Accordion primitive | About 行 `2003:2245` 等 | 展开 / 收起 | 目前只有 About | 可用 Radix Accordion 提供行为，视觉保留在 About 页面局部 |
+| AboutAccordion | About 行 `2003:2245` 等 | 默认全收起、单项展开/再点可收起 | `features/about/components` | 局部 React state + 原生 button/ARIA，调用方注入标题/内容，无新 dependency 或 Shared abstraction |
 
 ## Project App Shell
 
@@ -66,7 +66,7 @@ Figma 中没有 Component，以下候选全部从重复视觉中识别。
 | `features/points` | PointsBalanceCard（金色六边形图标）、PointsRecordsTable | `2003:2113`、`2003:2123` 等 |
 | `features/stake` | StakeForm（Deposit / Withdraw）、StakeSummary | `2003:1961`、`2003:2078` |
 | `features/explore` | ExploreStats、MiningTable、MotherlodesTable、BuybacksTable | `2003:2534` |
-| About（页面局部） | AboutAccordion 内容 | `2003:2235`、`2003:2359`；内容以线上 About 为准（C-61） |
+| About（页面局部） | AboutAccordion 内容 | `2003:2235`、`2003:2359`；仅 Accordion UI 子集，正文与外链 OPEN（C-61/C-86），测试 fixture 不接正式路由 |
 
 ## 需要统一行为的元素
 

@@ -88,3 +88,7 @@ Replace with real project asset during implementation.
 ### W2 Wallet Sheet exports
 
 `public/ori/wallet/close.svg`（`2003:2499`，24×24）、`address-wallet.svg`（`2003:2520`，16×16）、`copy.svg`（`2003:2512`，14×14）、`disconnect.svg`（`2003:2507`，20×20）直接下载自本轮 Figma design context，保留 SVG 原始尺寸/geometry。Export 为文字控件，无独立 icon。透明返回图层 `2003:2495`、页面截图、系统 Home Indicator、Receive 和代币资产不导入。
+
+### A1 Accordion UI asset
+
+`public/ori/about/chevron-right.svg` 为当前 About 的原始 16×16 矢量（`2003:2257`，design context 下载）。展开稿 `2003:2249` 使用相同 SVG 与 -90° 旋转；两份导出文件 hash 相同，因此只保留一份资产，按 Figma 旋转显示。分隔线是 CSS 1px / dash 4 / gap 4；不导入 Figma 正文、页脚、系统 UI 或外链资产。

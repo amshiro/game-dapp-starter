@@ -24,7 +24,7 @@
 | --- | --- | --- | --- |
 | R0 | 只读数据与合约证据核对（支撑票据） | READY | 限定静态审计已完成，见 R0 报告；Q-10/Q-11 未关闭，链上与新服务验证尚未执行 |
 | W1 | Development 钱包连接与 identity | READY | 已完成限定行为、QA、人工审核及 commit/push；不包含余额、Sheet 或交易 |
-| A1 | About accordion 与正式内容 | PARTIALLY BLOCKED | 可做本地视觉/交互子集；Q-41 正文审定前不能完成正式内容 |
+| A1 | About accordion 与正式内容 | PARTIALLY BLOCKED | 已批准并实现隔离 Accordion UI/Interaction 子集，待审核；完整 A1 仍受正式正文/链接、Q-41/Q-30 阻塞，正式 /about 未替换 |
 | W2 | Wallet Sheet Core：身份、复制/断开、ORE visual slot、Export UI | READY | Human Gate 已锁定；本轮实现后待人工审核。无真实余额、Receive 或 Export 行为 |
 | W3 | Wallet export / receive | BLOCKED | W2、Q-22；不能把外部钱包解释成可导出私钥 |
 | H1 | Header ORI price | PARTIALLY BLOCKED | 已有 transport/mapper；旧 ORI/getPrice 来源已确认，97 数据集/价格单位与 Q-11 字段语义待确认 |
@@ -118,15 +118,15 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 
 | Field | Ticket |
 | --- | --- |
-| Goal | 用现有 App Shell 验证长正文和 accordion；正式内容来自 ORI 而非 Figma 的 Solana 占位文案 |
-| Route | `/about` |
+| Goal | 本轮仅 About Accordion UI/Interaction；用明确标注的 fixture 验证长内容。正式正文、规则及外部链接另行 Human Gate |
+| Route | 最终目标 `/about`；本子集不接正式路由，受控视觉验证的临时路由完成后删除 |
 | Owner / Dependencies | About 页面局部组件与内容资源；依赖 F8/F9，无需等待 Wallet |
-| Source of Truth | C-61/C-62/C-63、ui-behavior About；线上 About 的 en/zh 原文需在实现时读取核对并经产品审定，当前仓库不是完整 approved copy |
+| Source of Truth | 用户 A1 Human Gate → 当前 ORI-AI测试 → Repository docs；旧 ORI About UI/copy 不是新版需求。调用方拥有 approved content/locale，本轮无正式 copy |
 | API dependencies | 无；不为静态内容创建 API |
 | Web3 dependencies | 无运行时调用；涉及费率/回购比例必须经 Q-41 文案核定 |
 | Realtime dependencies | 无 |
-| UI/Figma dependencies | `2003:2235`、`2003:2359`，行 `2003:2245` 等；真实箭头资产、14px 正文/20px 标题；单项展开/默认首项是 I-32 推断，验收时由 G-V 确认 |
-| Open Questions / Blockers | PARTIALLY BLOCKED：可先做隔离的本地 accordion 视觉/键盘子集；正式正文受 Q-41、en/zh copy 与 Q-30 发布语言策略阻塞。不得为了先上线而自行删掉争议段落或改费率 |
+| UI/Figma dependencies | `2003:2235`、`2003:2359`，行 `2003:2245` 等；原始 16px 箭头、14px 正文/20px 标题；单项展开由用户确认，无默认项证据则全收起（C-86），expanded frame 不作为初始状态事实 |
+| Open Questions / Blockers | 完整票据 PARTIALLY BLOCKED：正式正文、外部链接、Q-41 和 Q-30 继续 OPEN。已批准的 UI 子集只注入 fixture，不读取旧 copy、不编写产品说明，不删争议段落冒充正式内容完成 |
 | Acceptance Criteria | 产品签收 en/zh 内容与链接，映射正确 sections；可键盘展开、aria-expanded/controls 正确，长正文不被底栏遮挡；G-P/G-V 通过后才替换正式路由占位。隔离 fixture 不留 debug route，不以视觉子集宣称整票完成 |
 | QA | 通用 QA；accordion 行为/焦点、长文/链接、375/500 截图；审阅文案与 source 对照表 |
 | Non-goals | 根据旧 About 复刻视觉、链上费率仪表盘、CMS、全站语言切换、虚构正式文案 |
@@ -455,7 +455,7 @@ R0 当时的限定交付见 [R0 Evidence Audit](./r0-evidence-audit.md)：仅比
 
 **F10 首票选择依据：W1 — Development Wallet connection / identity（已完成 Acceptance / QA、人工审核及 commit/push）。** F5/F9 已具备 Provider、capability 和真实 Header 入口，开发链/App 已确认；本票据不依赖资金、价格、Sheet 未决动作或 Mine API 缺口，且能验证最小 Client boundary 与 Shell 的组合。只读身份状态是 W1 的明确交付边界，不宣称完整 Wallet 已完成；G-W 未过不进入资金流程。
 
-1. W1 与 R0 已完成。W2 Human Gate 已确认，限定交付见上表；本轮实现 W2，完成后停止并等待人工审核，不自动开始下一票据。ORE 真实数据与 Export 行为仍 OPEN，Receive 不进入 W2。
+1. W1、W2 与 R0 已完成并审核。A1 本轮只交付已批准的 Accordion UI/Interaction 子集，完成后停止并等待审核；完整 A1 的正文/链接/Q-41/Q-30 不因此解锁。
 2. Q-41/copy 审定后完成 A1，作为无资金长页面的视觉 Gate；W2 按已确认的限定 UI Scope 验收。若这些 Gate 先解除，可以调整顺序，但不自动改为 READY。
 3. 经对应 G-D/G-P 解锁的 E1、H1、S1；M1 → M2 与 M7。M7 不等 WS 恢复，M5 可在数据契约/身份稳定后独立推进。Points P1 只在 Q-20 与接口修复后进入队列，不能为了补齐导航提前实现。
 4. 先评审 S2 的 approve/deposit/withdraw，再按独立 Gate 评审 M3、M6；M4 因预付公式与执行器依赖更强，后置。S3 先决定是否保留；所有真实交易仍逐类授权。
