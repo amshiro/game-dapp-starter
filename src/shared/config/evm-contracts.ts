@@ -3,13 +3,14 @@ import { oreProtocolAbi } from "./abi/ore-protocol";
 import { oreProtocolViewAbi } from "./abi/ore-protocol-view";
 import { oriSwapRouterV2Abi } from "./abi/ori-swap-router-v2";
 import { oriTokenAbi } from "./abi/ori-token";
+import { isAddress, zeroAddress, type Address } from "viem";
 import { isSupportedEvmChainId, type SupportedEvmChainId } from "./evm-chains";
 
 /**
  * ORI contract deployments per chain (source: ori-website master config/chains.ts).
  * Chain identity lives in evm-chains.ts; this module owns ORI deployments only.
  */
-export type EvmAddress = `0x${string}`;
+export type EvmAddress = Address;
 
 const ABIS = {
   oreProtocol: oreProtocolAbi,
@@ -47,7 +48,8 @@ const DEPLOYMENTS: Readonly<Record<SupportedEvmChainId, DeploymentSet>> = {
     },
     assets: {
       originToken: "0xe75B8CF742Bb13342688d740C271368412664444",
-      wbnb: "0xBB4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+      // Source config has an invalid EIP-55 casing; same address, canonical checksum.
+      wbnb: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
     },
   },
   97: {
@@ -63,9 +65,11 @@ const DEPLOYMENTS: Readonly<Record<SupportedEvmChainId, DeploymentSet>> = {
   },
 };
 
-/** Syntax check only: 0x + 40 hex, non-zero. Checksum validation arrives with Viem (F5). */
+/** Viem address check (EIP-55 checksum when mixed-case), and never the zero address. */
 export function isValidEvmAddress(value: string): value is EvmAddress {
-  return /^0x[0-9a-fA-F]{40}$/.test(value) && !/^0x0{40}$/.test(value);
+  return (
+    isAddress(value, { strict: true }) && value.toLowerCase() !== zeroAddress
+  );
 }
 
 function deepFreeze<T>(value: T): T {

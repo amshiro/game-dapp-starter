@@ -91,7 +91,7 @@ describe("ORI contract registry: chain separation", () => {
 
   test("assets are identifiers only and gaps fail closed", () => {
     expect(getAssetAddress(56, "wbnb")).toBe(
-      "0xBB4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+      "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
     );
     expect(getAssetAddress(97, "originToken")).toBe(
       "0x7048FaCAee7Dd8198AC4F7A390d3333741D8aA19",
@@ -110,8 +110,16 @@ describe("address validation", () => {
     expect(isValidEvmAddress(value)).toBe(true);
   });
 
+  test("lowercase form of a checksummed address is accepted", () => {
+    expect(
+      isValidEvmAddress("0xa1634f0b4417c753944239ea1a6ba5a97ce0156f"),
+    ).toBe(true);
+  });
+
   test.each([
     "0x0000000000000000000000000000000000000000",
+    // Valid hex, wrong EIP-55 checksum (one letter's case flipped).
+    "0xa1634f0B4417c753944239ea1a6bA5A97Ce0156f",
     "0x1234",
     "A1634f0B4417c753944239ea1a6bA5A97Ce0156f",
     "0xZZ34f0B4417c753944239ea1a6bA5A97Ce0156f",

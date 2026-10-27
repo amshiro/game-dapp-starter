@@ -13,7 +13,7 @@
 | Q-01 | 新版是否下线 "起源" 导航与起源交易挖矿，由 Points 取代？ | 决定导航、路由与是否需要起源 swap / 采矿基金 | Figma 导航为 Mine · Points · …；线上为 挖矿 · 起源 · …；线上 i18n 已有 Points | 导航、路由 |
 | Q-02 | 新版 Mine 是否去掉 "ORI 游戏"（交易挖矿）标签？ | `oriSwap` 与 6 个 `ori_game` 接口是否还需要 | Figma 只有方块游戏 | Mine 结构 |
 | Q-03 | Logo：确认使用线上金色 "轨道圆" 标志 + ORI 字标？品牌页 `确认` 中的像素 O 币是否专用于起源代币？ | Header 与代币图标 | 线上 Logo = 金色圆 + 深色轨道；线上起源代币图标 = 像素 O 币；Figma Header 为白色同形标志 | Header、代币图标 |
-| Q-04 | Production Privy App：是否沿用线上 App（`cmi70qts3005hl90c27u5uc75`）？新项目登录方式是否保持仅钱包（Binance / OKX / MetaMask）？Dev / Production App 的 Allowed Origins | 生产 Provider 配置与登录体验 | 开发 App 已确认（C-08）；线上配置已从源码恢复 | 生产 Wallet / Provider |
+| Q-04 | Production Privy App：是否沿用线上 App（`cmi70qts3005hl90c27u5uc75`）？新项目登录方式是否保持仅钱包（Binance / OKX / MetaMask）？Dev / Production App 的 Allowed Origins | 生产 Provider 配置与登录体验 | 开发 App 已确认（C-08）；线上配置已从源码恢复。Dev App 本地 Allowed Origins 已为 `http://localhost:3000`、`http://localhost:5199`（F5.1 验证通过）；Dev App 中仍有旧 `origin-website` Vercel 预览域，是否保留待确认 | 生产 Wallet / Provider |
 | Q-05 | HarmonyOS Sans SC 的 Web 使用授权？可否直接使用线上同一字体文件？ | 字体加载 | 线上 `_next/static/media` 自带 TTF | 字体 |
 
 ## P1

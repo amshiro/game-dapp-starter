@@ -26,7 +26,7 @@ Figma 中的 SOL 图标、SOL 文案与 Solana 叙述是**设计占位**，不�
 | 当前环境声明的 chainId | `NEXT_PUBLIC_DEFAULT_EVM_CHAIN_ID`，须与 Registry 映射一致 |
 | Runtime RPC | `NEXT_PUBLIC_EVM_RPC_URL`（Registry 不保存 RPC） |
 | 合约地址 / ABI | Contract Registry（F4），不属于 Chain Registry |
-| Wallet 当前链 | 未来 Wallet / Provider（F5），不得建立全局 currentChain store |
+| Wallet 当前链 | Privy / Wagmi（F5），不得建立全局 currentChain store |
 
 ## Environment Matrix
 
@@ -53,7 +53,7 @@ Figma 中的 SOL 图标、SOL 文案与 Solana 叙述是**设计占位**，不�
 | `origin` — **起源 token** | 起源代币（与 Origin.fun 相同合约）；ORI 运行时**只用作价格查询的地址标识**（匹配后端 `chain_asset_config` 的 `aux_contract_addr`），无链上调用 | `0xe75B8CF742Bb13342688d740C271368412664444` | `0x7048FaCAee7Dd8198AC4F7A390d3333741D8aA19` | 无（不需要 ABI） | 高 |
 | `claimContract` — **AssetManager**（存取 / 埋藏） | `depositETH`、`deposit(…, "claim" \| "claim_bnb", …)`、`withdraw2`、`withdrawETH`、`bury`、`oriPointToken`；UUPS 代理 | `0x641fD5502c4bE2c4Bd7aA7aCaca0548cbAB319eA` | `0xb1D5F44E94Ab9428E6217c3517355c173F3544D0` | `ori-website/constant/AssetManager.json`（`src/AssetManager.sol`） | 高（`claim` / `claim_bnb` 语义见 Q-10） |
 | `oriSwap` | ORI 游戏交易挖矿：`buyOri`（payable）、`sellOri`、`amountOut`、`TradeVolume` 事件 | `0x6050c41Fa3395494feb87798CEaBB8840a8D0b67` | `0x7623c9d6385bae0c8bc24da6862e202bfdddec72` | `ori-website/constant/OriSwapRouterV2.json`（`src/OriSwapRouterV2.sol`） | 高；**新版 Figma 不含该功能** |
-| `bnb` | WBNB；ORI 运行时**只用作 BNB 价格查询的地址标识**，无链上调用 | `0xBB4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c` | **缺失**（源码为空字符串） | 无（不需要 ABI） | 高 |
+| `bnb` | WBNB；ORI 运行时**只用作 BNB 价格查询的地址标识**，无链上调用 | `0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c`（源码大小写不符合 EIP-55，已改为标准 checksum，地址相同） | **缺失**（源码为空字符串） | 无（不需要 ABI） | 高 |
 
 ### Contract Registry（F4）
 
@@ -62,7 +62,7 @@ Figma 中的 SOL 图标、SOL 文案与 Solana 叙述是**设计占位**，不�
 - **Contracts**（带 ABI）：`oreProtocol`、`oreProtocolView`、`oriToken`、`assetManager`、`oriSwap`。ABI 从 `ori-website/constant/*.json`（master）**原样复制**（仅 `abi` 数组，不含 bytecode），记录来源与 sha256，测试校验内容未被修改；不提供精简或共享的 ERC20 ABI，ORI token 使用完整 `OreToken` ABI。
 - **Assets**（仅地址标识，无 ABI）：`originToken`、`wbnb`。
 - 合约地址不属于环境变量；`APP_ENV → Chain Registry → Contract Registry` 决定部署。
-- 地址只做语法校验（0x + 40 hex、非零、跨链不复用）；checksum 校验在 F5 引入 Viem 后补充。地址均为 UUPS 代理，代理当前实现版本见 Q-10。
+- 地址校验使用 Viem `isAddress(…, { strict: true })`（混合大小写时校验 EIP-55 checksum）、非零、跨链不复用（F5.1）。地址均为 UUPS 代理，代理当前实现版本见 Q-10。
 - **已知缺口**：BSC 97 无 WBNB 地址（仅影响测试网 BNB 价格查询，不影响合约交互）。
 
 ## Mine（方块游戏）协议事实
@@ -111,7 +111,20 @@ Figma 中的 SOL 图标、SOL 文案与 Solana 叙述是**设计占位**，不�
 | 签名者 | Privy `useWallets()` 中的外部钱包 → EIP-1193 provider | Confirmed（线上） |
 | 后端身份 | 无后端登录会话；钱包地址作为请求参数 | Confirmed（线上） |
 
-新项目沿用该钱包模型（EVM 外部钱包、仅钱包登录、嵌入式钱包关闭）；具体 Privy / Wagmi / Viem 集成方式在 Implementation Foundation（F5）中确定。
+新项目沿用该钱包模型（EVM 外部钱包、仅钱包登录、嵌入式钱包关闭）。
+
+### EVM Runtime Foundation（F5）
+
+- 链路：`APP_ENV` + `NEXT_PUBLIC_DEFAULT_EVM_CHAIN_ID` → EVM capability（Chain Registry 校验：受支持且与环境一致）→ Viem chain（由 Registry 派生，RPC = `NEXT_PUBLIC_EVM_RPC_URL`）→ Privy config + Wagmi config。
+- Provider：`app/providers.tsx` 中 `PrivyProvider → QueryClientProvider（既有 QueryClient owner）→ WagmiProvider`；`createConfig` 与 `WagmiProvider` 来自 `@privy-io/wagmi`。EVM capability 不可用时只挂 `QueryClientProvider`（Web3 关闭，fail closed）。
+- 当前运行时只有一条链（Business Target Chain）；Privy `supportedChains` / `defaultChain` 与 Wagmi `chains` 均只含该链。
+- Wallet connection 唯一 owner 为 Privy：`@privy-io/wagmi` 的 `createConfig` 移除非 mock connector 并关闭 injected provider discovery；不配置 Wagmi connectors。
+- Privy config：`loginMethods: ["wallet"]`、`walletChainType: "ethereum-only"`、`walletList: ["binance", "okx_wallet", "metamask"]`、`showWalletLoginFirst`、Ethereum / Solana embedded wallet `createOnLogin: "off"`；不配置主题与弹窗样式。
+- 以下事实分别由 Privy / Wagmi 提供，不合成全局 `isWeb3Ready`，不复制进 Zustand：Privy `ready`、`authenticated`、wallet connected、wallet address、wallet current chain；Business Target Chain 来自 Chain Registry。
+- Wagmi config 按 Provider tree 创建（Server 每次请求独立、浏览器稳定），不在模块顶层创建。
+- Dev 兼容（F5.1）：vinext 1.3.1 把 Next 的 server-external 默认列表也加入 client `optimizeDeps.exclude`，导致 Privy → `@walletconnect/logger` 的 `import "pino"` 在 `pnpm dev` 中无法解析；`vite.config.ts` 只把 `pino` 从 client exclude 中移除（与 production build 一致，打包 pino 的 browser 版本）。vinext 修复后可删除。
+- 本地 Privy Allowed Origins：`http://localhost:3000`、`http://localhost:5199`。
+- 尚未实现：登录 UI、Wallet Sheet、合约读写、交易。
 
 新项目按 Starter 规范：Privy 负责认证与钱包事实，Wagmi / Viem 负责 EVM 交互；不得复制线上 Zustand 地址副本、ethers 封装或 `estimateGas × 1.2` 约定。
 

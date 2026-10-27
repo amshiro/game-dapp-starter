@@ -1,3 +1,8 @@
+import {
+  resolveEnvironmentChain,
+  type EvmChain,
+  type SupportedEvmChainId,
+} from "./evm-chains";
 import type {
   AppEnvironment,
   PublicConfig,
@@ -16,7 +21,7 @@ export type EvmCapability =
       status: "configured";
       appEnvironment: AppEnvironment;
       privyAppId: string;
-      chainId: number;
+      chain: EvmChain;
       rpcUrl: string;
     }>
   | Readonly<{
@@ -28,11 +33,19 @@ export type EvmCapability =
       status: "unavailable";
       reason: "invalid";
       message: string;
+    }>
+  | Readonly<{
+      status: "unavailable";
+      reason: "unsupported-chain" | "environment-mismatch";
+      configuredChainId: number;
+      expectedChainId: SupportedEvmChainId;
     }>;
 
 /**
  * Privy + EVM integration is all-or-nothing: no default chain, no fallback RPC.
- * Says nothing about wallet, connector, Contract, or Feature readiness.
+ * The configured chain must be in the chain registry and be the environment's
+ * business target chain. Says nothing about wallet, connector, Contract, or
+ * Feature readiness.
  */
 export function resolveEvmCapability(
   readConfig: () => PublicConfig,
@@ -69,11 +82,21 @@ export function resolveEvmCapability(
     });
   }
 
+  const resolution = resolveEnvironmentChain(appEnvironment, defaultEvmChainId);
+  if (!resolution.ok) {
+    return Object.freeze({
+      status: "unavailable",
+      reason: resolution.reason,
+      configuredChainId: defaultEvmChainId,
+      expectedChainId: resolution.expected.id,
+    });
+  }
+
   return Object.freeze({
     status: "configured",
     appEnvironment,
     privyAppId,
-    chainId: defaultEvmChainId,
+    chain: resolution.chain,
     rpcUrl: evmRpcUrl,
   });
 }
