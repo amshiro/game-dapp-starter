@@ -9,12 +9,12 @@
 | Real Project Intake | COMPLETE |
 | Product & Runtime Reconstruction | COMPLETE |
 | Environment Contract V1（[environment.md](./environment.md)） | COMPLETE |
-| Project Knowledge Lock | CURRENT |
-| Implementation Foundation | NEXT |
+| Project Knowledge Lock | COMPLETE（对应 Feature Unknown 继续保留） |
+| Implementation Foundation | F1–F9 COMPLETE；F10 规划完成，待审核 |
 
 ## Implementation Foundation task graph
 
-下一阶段不是大规模页面实现，而是按依赖拆分、可单独验证的基础任务：
+基础任务状态如下；后续可执行票据、依赖、状态与人工 Gate 统一见 [Feature Task Graph](./feature-task-graph.md)。旧 Stage 0–13 保留为范围索引，不再作为自动顺序执行指令；具体依赖与阻塞以 Feature Task Graph 和当前 Project facts 为准。
 
 | # | Task | Depends on | Verifiable outcome |
 | --- | --- | --- | --- |
@@ -26,8 +26,8 @@
 | F6 | API Transport（含 F6.1 Contract Reconciliation、F6.1a App ID audit、F6.2 Security Cleanup）— **COMPLETE** | F1；Q-11 | `Browser → ORI API transport → Backend`；ORI 无后端登录 / 签名 / Secret；正式 Contract 对照与差异；Token 价格 DTO；Development 测试后端验证 |
 | F7 | Realtime Foundation — **COMPLETE** | F1、F6；Q-47 | Pusher 协议客户端（`pusher-js`，懒加载）；`NEXT_PUBLIC_WS_URL` + `NEXT_PUBLIC_PUSHER_APP_KEY`；按需连接、引用计数订阅、去重、重连后 `resync`、空闲释放、payload 边界；realtime 只触发 Query invalidation，polling 保留（[api.md](./api.md#realtime)）；Development 实时服务 502，真实事件未观察到 |
 | F8 | Design Foundation — **COMPLETE** | Q-05 remains open; authorized system font fallback | Semantic tokens、font fallback/weight mapping、global styles、ORI viewport primitive；HarmonyOS Sans SC licensed asset remains TBD |
-| F9 | App Shell — **COMPLETE（待审核）** | F8 | ORI viewport、sticky Header、fixed Bottom Navigation、safe-area、pathname active state；五个标题占位页，用户确认 URL 映射与根路径跳转见 routes.md；Wallet / Header price data 待后续接入 |
-| F10 | Feature Task Graph | F1–F9 | 按 Feature 拆分 Mine / Stake / Points / Explore / About / Wallet 的实现任务 |
+| F9 | App Shell — **COMPLETE** | F8 | ORI viewport、sticky Header、fixed Bottom Navigation、safe-area、pathname active state；五个标题占位页，用户确认 URL 映射与根路径跳转见 routes.md；Wallet / Header price data 待后续接入 |
+| F10 | Feature Task Graph — **COMPLETE（待审核）** | F1–F9 | [逐票据 Scope、READY / PARTIALLY BLOCKED / BLOCKED、依赖与 Human Gates](./feature-task-graph.md)；下一张建议 W1 Development Wallet connection / identity，不在本轮实施 |
 
 每个任务单独实现、单独 QA，不跨任务顺手实现。
 

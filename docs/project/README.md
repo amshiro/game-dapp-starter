@@ -73,7 +73,8 @@ docs/*.md       → Starter 全局工程规范（如何实现）
 | [environment.md](./environment.md) | Environment Contract V1：变量分类、Dev / Prod 矩阵、Secret 边界 |
 | [decisions/](./decisions/) | 架构决策记录（ADR），例如 [ADR-001 Runtime Environments](./decisions/ADR-001-runtime-environments.md) |
 | [open-questions.md](./open-questions.md) | 未确认问题：看到 Unknown 时停止猜测 |
-| [implementation-plan.md](./implementation-plan.md) | 实现顺序与每阶段阻塞项 |
+| [implementation-plan.md](./implementation-plan.md) | Foundation 阶段状态与范围索引 |
+| [feature-task-graph.md](./feature-task-graph.md) | F10 Feature Tickets、依赖、Ready/Blocked、人工 Gate 与下一张任务 |
 
 ## Agent 推荐阅读顺序
 
@@ -90,7 +91,8 @@ AGENTS.md
 → docs/project/ui-behavior.md
 → 当前 Feature 对应的项目文档（routes / components / assets / figma-inventory / decisions）
 → docs/project/open-questions.md（确认要做的事没有被 Unknown 阻塞）
-→ docs/project/implementation-plan.md（确认当前阶段与依赖）
+→ docs/project/implementation-plan.md（确认 Foundation 状态）
+→ docs/project/feature-task-graph.md（选择当前 Feature Ticket，确认依赖、Scope、QA 与人工 Gate）
 → 对应的全局 docs/*.md
 ```
 
