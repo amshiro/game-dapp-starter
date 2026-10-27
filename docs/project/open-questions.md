@@ -47,7 +47,7 @@
 | Q-30 | 新版默认语言（线上默认中文；Figma 英文） | i18n locale 策略 | Live | locale |
 | Q-31 | 母矿卡显示 `ORI + 起源` 双资产还是只显示 ORI？ | 数据卡 | Live 显示双资产；Figma 单值 | 数据卡 |
 | Q-32 | 页脚是否显示 | Frame 外文本 | Figma | App Shell |
-| Q-33 | 路由路径：Mine 为 `/` 还是保持线上 `/mine`？旧链接是否需要重定向？ | URL 与外部链接 | 线上 `/` = 起源，`/mine` = 挖矿 | 路由 |
+| Q-33（Resolved） | 用户确认 Mine 使用 `/mine`，`/` 跳转到 `/mine`；其余为 `/points`、`/stake`、`/explore`、`/about` | F9 shell URL | User Confirmed；起源后续入口仍见 Q-01 | — |
 | Q-34 | Production domain（是否仍为 `ori.supply`）与各环境 | 部署、Privy Origins | Live | 部署 |
 | Q-35 | 地区限制（旧项目限制 CN）是否保留？在 Cloudflare 上如何实现？ | 合规 | Legacy middleware | 部署 |
 | Q-36 | 结果动画是否支持 `prefers-reduced-motion` 简化 | 可访问性 | — | 动画 |

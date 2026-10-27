@@ -1,6 +1,6 @@
 # Routes / Views / States
 
-Figma Frame 不等于 Next.js Route。本文件把 Frame 分类，并给出建议的 route ownership。**所有 URL 均为 TBD**：设计和需求都没有给出路径，最终路径需要产品确认。
+Figma Frame 不等于 Next.js Route。本文件把 Frame 分类，并给出建议的 route ownership。F9 shell URL 已由用户确认：Mine 使用 `/mine`，`/` 跳转到 `/mine`；其余导航为 `/points`、`/stake`、`/explore`、`/about`。
 
 ## 分类
 
@@ -21,19 +21,17 @@ Figma Frame 不等于 Next.js Route。本文件把 Frame 分类，并给出建�
 | 11-About-展开 | `2003:2359` | Expanded state | About 手风琴状态，**不是路由** |
 | 12-My Wallet | `2003:2487` | Sheet | 全局钱包 Sheet，从 Header 打开；**不是路由** |
 
-## 建议的路由（TBD）
+## F9 路由（User Confirmed）
 
-| 视图 | 建议 | 状态 |
-| --- | --- | --- |
-| 视图 | 建议 | 线上现状 | 状态 |
+| 视图 | F9 路径 | 线上现状 | 状态 |
 | --- | --- | --- | --- |
-| Mine | `/` 或沿用 `/mine` | `/mine`（"ORI 挖矿" 标签）；线上 `/` 为起源交易挖矿 | TBD（Q-33） |
-| Points | `/points` | 404（未上线） | TBD |
-| Stake | `/stake` | `/stake` | 与线上一致 |
-| Explore | `/explore` | `/explore` | 与线上一致 |
-| About | `/about` | `/about` | 与线上一致 |
+| Mine | `/mine` | `/mine`（"ORI 挖矿" 标签）；线上 `/` 为起源交易挖矿 | User Confirmed（Q-33） |
+| Points | `/points` | 404（未上线） | User Confirmed |
+| Stake | `/stake` | `/stake` | User Confirmed |
+| Explore | `/explore` | `/explore` | User Confirmed |
+| About | `/about` | `/about` | User Confirmed |
 
-若 Mine 改为 `/`，需要决定线上 `/mine` 与旧 `/`（起源）链接的去向（Q-01、Q-33）。
+用户已确认 `/` 使用 App Router redirect 跳转至 `/mine`。这只锁定 F9 shell 路由，不决定起源业务的后续入口（Q-01）。
 
 这五个都在底部导航中，适合作为独立 App Router 路由，底部导航用 `next/link` 切换。Withdraw、About 展开项、数据卡模式、Wallet Sheet 都不创建路由。
 
@@ -46,7 +44,8 @@ i18n 当前没有 locale 路由（Starter 现状，见 `docs/i18n.md`）。线�
 ```text
 app/layout.tsx           → 根布局（Server Component）
 app/<shell>              → Header + Bottom Navigation 的项目壳层（位置待实现时决定）
-app/page.tsx             → 组合 features/mining
+app/page.tsx             → redirect /mine
+app/mine/page.tsx        → 后续组合 features/mining
 app/points/page.tsx      → 组合 features/points
 app/stake/page.tsx       → 组合 features/stake
 app/explore/page.tsx     → 组合 features/explore
@@ -54,3 +53,7 @@ app/about/page.tsx       → About 页面局部内容
 ```
 
 以上是建议结构，不是已确认事实；在开始实现对应 Feature 时创建，不预建空目录。
+
+## F9 shell placeholder mapping
+
+F9 uses the user-confirmed `/mine`, `/points`, `/stake`, `/explore`, `/about` mapping. `/` redirects to the Mine destination from the same registry. The single code owner is `app/_shell/routes.ts`; destination pages contain only headings. Q-33 is resolved for this shell; Q-01 remains open. No Wallet route or locale route is created.

@@ -83,3 +83,9 @@ Figma 中没有 Component，以下候选全部从重复视觉中识别。
 | `visualViewport` 软键盘处理 | Mine / Stake 的输入框都在页面内而不在 Sheet 中，暂不需要 |
 | H5 底部 Sheet 下拉关闭 | **ORI 设计无证据，不实现** |
 | PC 居中 Dialog | PC 呈现未确认（Q-21） |
+
+## F9 shell implementation
+
+`app/_shell/` owns the project shell: sticky Header, semantic Main, fixed BottomNavigation limited to the ORI viewport. Bottom content padding reserves 52px plus the actual device bottom safe area; Header adds the actual top safe area outside its 56px row. `usePathname` drives `aria-current` directly, without a route store.
+
+The current Figma Header artwork is replaceable pending Q-03. Header price data remains absent pending Q-23; no sample price is rendered. Connect is a disabled native button reserved for later Wallet wiring; no login, wallet identity or Sheet is implemented in F9. Navigation labels use the current Figma English names under the existing en-only locale policy; Q-30 remains open.

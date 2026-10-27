@@ -1,0 +1,100 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+}
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--ori-color-background);
+  padding-top: env(safe-area-inset-top, 0px);
+  box-shadow: inset 0 -0.5px var(--ori-color-border);
+}
+.headerRow {
+  height: var(--ori-layout-header-height);
+  padding-inline: var(--ori-layout-page-inset);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 2px;
+}
+.connect {
+  width: 75px;
+  height: var(--ori-layout-header-control-height);
+  border-radius: var(--ori-radius-pill);
+  background: var(--ori-color-text-primary);
+  color: var(--ori-color-surface);
+  font-size: 13px;
+  font-weight: 500;
+}
+.main {
+  flex: 1;
+  min-width: 0;
+  padding: 24px var(--ori-layout-page-inset)
+    calc(
+      var(--ori-layout-bottom-nav-height) + env(safe-area-inset-bottom, 0px) +
+        24px
+    );
+  overflow-wrap: anywhere;
+}
+.nav {
+  position: fixed;
+  z-index: 10;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--ori-layout-max-width);
+  background: var(--ori-color-surface);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  box-shadow: inset 0 1px var(--ori-color-border);
+}
+.navItems {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  height: var(--ori-layout-bottom-nav-height);
+}
+.navLink {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding-top: 8px;
+  font-size: 12px;
+  line-height: 14px;
+  color: #606164;
+  text-decoration: none;
+}
+.navLink[aria-current="page"] {
+  color: var(--ori-color-text-primary);
+}
+.icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+  background: currentColor;
+  mask: var(--icon-url) center / contain no-repeat;
+}
+.brand:focus-visible,
+.navLink:focus-visible {
+  outline: 2px solid var(--ori-color-accent);
+  outline-offset: -2px;
+}
+.skip {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -100%);
+  z-index: 20;
+  padding: 8px;
+  background: var(--ori-color-text-primary);
+  color: var(--ori-color-background);
+}
+.skip:focus {
+  transform: translate(-50%, 0);
+}

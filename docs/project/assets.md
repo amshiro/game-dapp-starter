@@ -76,3 +76,7 @@ Replace with real project asset during implementation.
 - 单色图标（导航、复制、关闭等）优先导出为可用 `currentColor` 的 SVG。
 - 运行时不得 fetch SVG 再注入 HTML（旧项目反模式）。
 - 设计稿中的 iOS 状态栏、Home Indicator 是系统 UI 模拟，不导出、不实现。
+
+## F9 shell exports
+
+`public/ori/shell/` contains only current Figma shell SVGs: `mark.svg` (`2003:3112`), `wordmark.svg` (`2003:3110`), `mine.svg` (`2003:589`), `points.svg` (`2003:600`), `stake.svg` (`2003:606`), `explore.svg` (`2003:616`), `about.svg` (`2003:622`). Navigation SVGs are CSS masks using currentColor; original geometry is retained. Header artwork is the current Figma monochrome version, replaceable pending Q-03. No token or SOL placeholder asset is included.
