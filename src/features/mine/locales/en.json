@@ -1,0 +1,27 @@
+{
+  "title": "Mine",
+  "storedRound": "Stored round",
+  "round": "Round",
+  "board": "Read-only board",
+  "motherlode": "Motherlode",
+  "remaining": "Time remaining",
+  "total": "Total deployed",
+  "personal": "You deployed",
+  "miners": "Miners",
+  "count": "Participation count",
+  "amount": "Deployed amount",
+  "ownAmount": "Your deployed amount",
+  "loading": "Loading…",
+  "error": "Could not load data",
+  "unavailable": "Data unavailable",
+  "wrongChain": "Wrong network",
+  "waiting": "Waiting",
+  "refresh": "Refresh",
+  "readOnly": "Read-only",
+  "states": {
+    "default": "Read-only",
+    "selected": "Selected",
+    "deployed": "Deployed",
+    "combined": "Selected and deployed"
+  }
+}

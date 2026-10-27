@@ -89,3 +89,7 @@ Figma 中没有 Component，以下候选全部从重复视觉中识别。
 `app/_shell/` owns the project shell: full-width sticky Header (PC horizontal padding 120px), semantic Main capped at 500px centered, fixed BottomNavigation capped at 500px centered. Bottom content padding reserves 52px plus the actual device bottom safe area; Header adds the actual top safe area outside its 56px row. `usePathname` drives `aria-current` directly, without a route store.
 
 The current Figma Header artwork is replaceable pending Q-03. Header price data remains absent pending Q-23; no sample price is rendered. F9 originally reserved a disabled Connect button; W1 now composes `features/wallet/WalletHeader` for SDK login and read-only identity, including readiness, cancellation, failure and chain mismatch. The connected capsule follows `2003:999` (110×32, 14×14 icon); W2 adds the Sheet trigger and product disconnect UI; no balance data or export behavior is inferred. Navigation labels use the current Figma English names under the existing en-only locale policy; Q-30 remains open.
+
+## M2 Read-only Board ownership
+
+`features/mine` 持有 MinePage、MineCell、metrics/Miners composition、typed display 与单区块 public Query。25 格 amount/count 不属于 Shared GameBoard/Card/Table；本轮不新增 Shared UI。MineCell 的 default/selected/deployed/combined 是 Figma presentation capability，正式路由仅使用 default，个人部署不读、不推导。唯一新增资产为 Figma 原始 8×8 participation icon；BNB 使用明确文本单位，未确认的 Motherlode/奖励与 SOL 占位图标不导入。

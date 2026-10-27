@@ -6,7 +6,7 @@ Figma Frame 不等于 Next.js Route。本文件把 Frame 分类，并给出建�
 
 | Figma Frame | Node | 分类 | 建议归属 |
 | --- | --- | --- | --- |
-| 1-Mine | `2003:182` | Route（主视图） | Mine route，`features/mining` 组合 |
+| 1-Mine | `2003:182` | Route（主视图） | Mine route，`features/mine` 组合 |
 | 2-Mine2-有我的投注 | `2003:629` | View state（已连接 + 有部署） | 同 Mine route，由钱包与数据状态驱动 |
 | 3-Mine2-数据状态2 | `2003:1009` | Component state（数据卡显示模式） | Mine 数据卡的本地 UI 状态 |
 | 4-区块状态 | `2003:1038` | Component state（区块状态集合 + 结果动画） | 区块组件状态，不是页面 |
@@ -45,7 +45,7 @@ i18n 当前没有 locale 路由（Starter 现状，见 `docs/i18n.md`）。线�
 app/layout.tsx           → 根布局（Server Component）
 app/<shell>              → Header + Bottom Navigation 的项目壳层（位置待实现时决定）
 app/page.tsx             → redirect /mine
-app/mine/page.tsx        → 后续组合 features/mining
+app/mine/page.tsx        → 组合 features/mine（限定只读棋盘）
 app/points/page.tsx      → 组合 features/points
 app/stake/page.tsx       → 组合 features/stake
 app/explore/page.tsx     → 组合 features/explore
@@ -57,3 +57,7 @@ app/about/page.tsx       → About 页面局部内容
 ## F9 shell placeholder mapping
 
 F9 uses the user-confirmed `/mine`, `/points`, `/stake`, `/explore`, `/about` mapping. `/` redirects to the Mine destination from the same registry. The single code owner is `app/_shell/routes.ts`; destination pages contain only headings. Q-33 is resolved for this shell; Q-01 remains open. No Wallet route or locale route is created.
+
+## M2 Mine Read-only Board
+
+`/mine` 已正式替换 F9 标题占位，由 `app/mine/mine-runtime.tsx` 组合 W1 错链事实与 `features/mine` 的公共只读 Query/page。仅 Development 97 读取存储轮和每格 amount/count；无 selection interaction、交易或 Miners 数据。F9 的标题占位描述为历史交付范围，不再代表当前 Mine。

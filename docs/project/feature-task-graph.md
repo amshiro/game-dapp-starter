@@ -33,8 +33,8 @@
 | S1 | Stake read/UI | PARTIALLY BLOCKED | 低风险 Core UI 子集已接入 /stake：Deposit/Withdraw 只切展示，金额只读、percent/action 禁用、Summary —；Development 97 principal read 已完成并通过最终人工验收；Info / rewards / production / 资金流程仍 gated |
 | S2 | Stake deposit / withdraw | BLOCKED | S1/W1；Q-10、Q-12、金额/allowance/完成契约与安全 Gate |
 | S3 | Stake yield / claim-and-deposit | BLOCKED | S1/W1；先确认 Q-26，再决定是否存在该票据的正式 Scope |
-| M1 | Mine read models / owner Queries | PARTIALLY BLOCKED | 可做数据契约核对；Q-10、Q-11、参与者数据源/单位/身份缺口未消除 |
-| M2 | Mine read-only UI / selection | PARTIALLY BLOCKED | M1；Q-02、Q-18、Q-19、Q-31 与异常状态待确认 |
+| M1 | Mine read models / owner Queries | PARTIALLY BLOCKED | Read/Data Gate 证据审计已完成并通过人工审核；97 原始读子集供 M2 使用，完整状态/Miners/单位契约仍未解锁 |
+| M2 | Mine read-only UI / selection | PARTIALLY BLOCKED | Mine Read-only Board 子集已完成并通过人工审核；完整 selection、Miners、timing 与未确认资产仍 gated |
 | M3 | Mine Manual transaction | BLOCKED | W1/M1/M2/M7；Q-12、Q-16、Q-17、Q-43 |
 | M4 | Mine Auto mining start / stop | BLOCKED | W1/M1/M2/M7；Q-15、Q-12、Q-17、Q-43 与执行器联调 |
 | M5 | Mine Rewards read/UI | PARTIALLY BLOCKED | W1/M1；Q-10、Q-25、Q-42 与资产/状态待确认 |
@@ -275,11 +275,11 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 | Route | `/mine` 的数据边界；本票据不改交易入口 |
 | Owner / Dependencies | Mining read owner；F6、Registry/F5、R0；账户读接 W1。是否成立 `domains/round` 按真正复用决定，不按票据预创建 |
 | Source of Truth | C-30/C-43/C-45/C-49、api.md、web3.md View methods、正式 API Contract |
-| API dependencies | latest/events、reset_event/round、两个名称疑似互换的 round endpoints；旧 `round` 不在 Contract。参与人数/列表/排序/分页及 identity 尚需补齐；不能宣称 View squareAmounts 就包含人数/名单 |
-| Web3 dependencies | 已核对 ABI 声明的 View getCurrentRoundInfo/getCurrentRoundSquareStats/getCurrentRoundSquares/getMinerSquares；部署兼容性未验证，必要时 board/getTreasuryState；确定 roundId、block 时间与 chain head 语义 |
+| API dependencies | latest/events、reset_event/round、两个 round endpoints；M1 新 runtime 已确认 flat latest、started 对象与 winners list envelope，正式 Contract 仍冲突；旧 `round` 未登记。Miners 语义/排序/金额与 lossless ID 仍需 G-D |
+| Web3 dependencies | M1 已在 97 验证 board/current/gameState/roundData/squareStats/treasury 与空账户读；getRoundData 包含 minersPerSquare[25]，getSquareParticipants 两格样本与统计一致。原始 read 兼容性不等于当前/下一轮和 enum 产品状态已确认；56 未验证 |
 | Realtime dependencies | 无；Query 不依赖 WS 才可工作 |
 | UI/Figma dependencies | `2003:485` 等 Metrics、`2003:508` Miners 的字段需求；不把 Figma 示例数字做默认数据 |
-| Open Questions / Blockers | PARTIALLY BLOCKED：可先完成逐字段来源表与 mapper 测试；Q-10、Q-11 当前 round API 缺口/latest max 层级/Rank 参数与响应冲突、单位/大整数 ID、参与者数据不足必须过 G-D。采用链上替代须核对覆盖字段并经评审，不能默认为等价 |
+| Open Questions / Blockers | PARTIALLY BLOCKED：[M1 Read/Data Gate](./mine-read-data-gate.md) 证据审计已完成并通过人工审核，完整 Gate 仍 BLOCKED；已批准原始读由 M2 public snapshot Query 持有，其他 M1 read models/mapper 未实现。97 原始字段有可用来源；已 fulfilled 的存储轮仍 canDeploy、下一轮未初始化，其呈现语义/状态映射未签收；Miners 投注者/获奖者与金额/排序、Q-18/Q-19/Q-31、API DTO/unsafe ID 仍需人工 Gate |
 | Acceptance Criteria | 每个字段有 canonical 来源、单位、identity 和冲突/缺失处理；public/account Queries 分离、round 切换原子隔离旧结果；缺失字段不补零；G-D 签收后才宣布 read model 完成 |
 | QA | 通用 QA；DTO/精度/地址大小写/25 项长度、旧 round 响应迟到、账户/链切换、API/链上差异用例 |
 | Non-goals | 投注/领奖、巨型 roundStore、把全部旧接口搬进 Shared、擅自选择后端替代 endpoint |
@@ -288,16 +288,16 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 
 | Field | Ticket |
 | --- | --- |
-| Goal | 实现 Metrics、5×5 BlockGrid、Miners 与只读状态；选择是局部 UI，资金动作留给后续票据 |
+| Goal | 当前用户授权 M2 Mine Read-only Board 子集：正式 /mine 展示 97 存储轮、总部署、25 格 amount/count、Miners unavailable 容器；不实现 selection interaction、资金动作或未签收状态 |
 | Route | `/mine` |
-| Owner / Dependencies | Mining UI；M1、F8/F9；我的部署需 W1 |
+| Owner / Dependencies | `features/mine` 持有页面、cells、display 和 public Query；app/mine 组合 W1 的错链事实；F8/F9、Registry、M1 已确认的 97 read 子集 |
 | Source of Truth | C-43/C-45/C-49、ui-behavior Mine；金额显示仅消费 M1 model |
-| API dependencies | 仅 M1 Queries，无重复请求层 |
-| Web3 dependencies | 仅 M1 reads；不启动 simulation/write |
+| API dependencies | 本子集无 API 请求；不接 /ori/round、winners/participants list；后续字段仍等 G-D |
+| Web3 dependencies | Registry/Viem：board、getCurrentRoundInfo、getRoundData 固定同一 latest blockTag，验证 identity/total/25 项，保留 bigint；仅 Development 97，不启动 simulation/write |
 | Realtime dependencies | 初期不直接订阅；M7 负责新鲜度，M8 后续接入 |
 | UI/Figma dependencies | `2003:182`、`2003:629`、`2003:1009`、`2003:1038`；状态/图标精确重读，真实 BNB/ORI/起源资产 |
-| Open Questions / Blockers | PARTIALLY BLOCKED：可隔离核对无争议格子/布局；完整页等 M1、Q-02 ORI 游戏范围、Q-18 部署颜色、Q-19 全选/可选择时机、Q-31 母矿双资产和 loading/error/empty 视觉；Q-01 未解决不能删掉起源业务概念 |
-| Acceptance Criteria | G-P/G-D/G-V；25 格状态与数据一致，选择不写链、不跨新 round 遗留，选中与部署状态可区分；等候/错误不是零余额，长 Miners 列表局部/页面滚动正确 |
+| Open Questions / Blockers | PARTIALLY BLOCKED：用户已批准限定 Read-only Board，已实现并通过人工审核。stored round 不推导 +1；已结束/fulfilled 仅 Waiting · Read-only；不显示 winning visual。Q-18/Q-19 仅有 isolated presentation 测试，不开放 runtime 选择；Miners、精确 countdown、Motherlode、个人部署、USD/reward/起源继续 unavailable；完整 M2 与 M1 Gate 未解锁 |
+| Acceptance Criteria | 当前子集：公共 Query key 仅 chain/deployments，无 account；错链隐藏缓存，错误不冒充零，refresh/invalidation 可恢复；25 格 index→#1–#25、BNB18 与 bigint count 正确；正式 route 无 cell/button selection 或资金入口。完整 M2 的交互与 Miners 另过 G-P/G-D/G-V；旧清空描述不是产品事实 |
 | QA | 通用 QA；mask/选择规则测试、所有已确认状态 fixture、账户/round 切换、375/500 对照 |
 | Non-goals | Manual/Auto 表单资金动作、完整动画、设计外 trade-to-mine 标签或起源 swap |
 

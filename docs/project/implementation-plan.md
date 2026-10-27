@@ -35,6 +35,8 @@ S1 Core UI 已审核并 push。当前限定 Development 97 Read Integration 接�
 
 用户本轮 UI 修正：external Wallet 隐藏 Export / Receive；当前 UI 接入 en / zh-CN Header 切换，request-cookie / SSR / Client 使用同一 locale。embedded 钱包未启用，正式 About / 费率 / Production 默认语言仍需审定。
 
+M1 Read/Data Gate 证据审计已完成并通过人工审核，完整数据 Gate 结论仍为 **BLOCKED**：97 原始 round/25 格部署与人数等读路径有 runtime evidence；当前/下一轮与状态语义、Miners 列表和 selection 规则尚未签收，API Contract 与新 runtime 仍冲突。详见 [Mine Read/Data Gate](./mine-read-data-gate.md)。完整 M1 Gate 仍未通过。用户随后已批准限定 M2 Read-only Board：正式 /mine 与独立 public snapshot Query 已实现并通过人工审核；不代表完整 M1/M2 完成，polling/realtime、selection interaction 与交易均未开始。
+
 每个任务单独实现、单独 QA，不跨任务顺手实现。
 
 原则：

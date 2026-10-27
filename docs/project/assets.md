@@ -108,3 +108,7 @@ Replace with real project asset during implementation.
 ## Stake Core UI assets
 
 `public/ori/stake/info.svg` 来自当前 `2003:1988` 的 12×12 原始矢量，同一来源用于 Summary 三项，仅装饰用途，不定义 Q-24 提示内容。SOL token 占位不导入；资产文字按已锁定的 ORI，20px 图标槽保持空白，不把其他 Feature 的 16px 图标放大或擅定 Q-03 最终品牌。
+
+## M2 本轮资产
+
+`public/ori/mine/participants.svg`：当前 ORI-AI测试 `2003:1078 / 2003:1084` 导出的原始 8×8 人数图标，MineCell 以原始尺寸复用。它表示每格 participation count，不表示全轮 unique miners。未引入 SOL 占位、未确认 Motherlode 或额外奖励资产。

@@ -164,3 +164,9 @@ realtime 只在**轮次边界**（开始 / 开奖）推送，并且不可补偿�
 - 浏览器可见的 `NEXT_PUBLIC_APP_SECRET` 签名方案。
 - 401 / 403 / 404 一律"去登录"的错误处理。
 - 模块级全局 Echo 单例、`stopListening(event)` 一次移除全部监听、`NEXT_PUBLIC_REFERRAL_CODE` 作为 Pusher key。
+
+## M1 Mine Read/Data Gate：新增只读 runtime evidence
+
+本轮四个登记的 Mine API 均 HTTP 200，但并不代表 Contract 一致：latest/events 返回 flat started 数据；round_started/round 返回 started 对象；round_winners/round 返回带空 list 的 envelope；多个 log_unique_id 已超过 JSON safe integer。样本 round 1654 的 started block hash 与链 97 匹配；不推广为全部接口/Production 链契约。非空 winners 行/金额单位仍未验证，不能继承旧 Rank 的 8 decimals。
+
+字段对照、链上读证据、失败 RPC 与 Mine 数据映射统一见 [M1 Read/Data Gate](./mine-read-data-gate.md)。R0 的历史静态结论保留；当前新增样本不自动批准 adapter、API endpoint 替换或 realtime payload。M1 Gate 仍 BLOCKED；本轮没有 API 业务接入。

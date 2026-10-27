@@ -1,0 +1,27 @@
+{
+  "title": "挖矿",
+  "storedRound": "已存储轮次",
+  "round": "轮次",
+  "board": "只读棋盘",
+  "motherlode": "母矿",
+  "remaining": "剩余时间",
+  "total": "总部署",
+  "personal": "我的部署",
+  "miners": "矿工",
+  "count": "参与计数",
+  "amount": "部署金额",
+  "ownAmount": "我的部署金额",
+  "loading": "加载中…",
+  "error": "无法加载数据",
+  "unavailable": "数据暂不可用",
+  "wrongChain": "网络不匹配",
+  "waiting": "等待",
+  "refresh": "刷新",
+  "readOnly": "只读",
+  "states": {
+    "default": "只读",
+    "selected": "已选中",
+    "deployed": "已部署",
+    "combined": "已选中且已部署"
+  }
+}
