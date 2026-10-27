@@ -1,24 +1,37 @@
-export type AppEnvironment = "development" | "staging" | "production";
+export type AppEnvironment = "development" | "production";
 
-export type PublicConfigInput = Readonly<{
-  NEXT_PUBLIC_APP_ENV?: string;
-  NEXT_PUBLIC_API_BASE_URL?: string;
-  NEXT_PUBLIC_PRIVY_APP_ID?: string;
-  NEXT_PUBLIC_DEFAULT_EVM_CHAIN_ID?: string;
-  NEXT_PUBLIC_EVM_RPC_URL?: string;
-  NEXT_PUBLIC_EVM_CONTRACT_ADDRESS?: string;
-  NEXT_PUBLIC_SOLANA_RPC_URL?: string;
-  NEXT_PUBLIC_ENABLE_VCONSOLE?: string;
-}>;
+/** Browser-visible runtime variables of the Environment Contract (docs/project/environment.md). */
+export const PUBLIC_CONFIG_KEYS = [
+  "NEXT_PUBLIC_APP_ENV",
+  "NEXT_PUBLIC_SITE_URL",
+  "NEXT_PUBLIC_API_BASE_URL",
+  "NEXT_PUBLIC_BACKEND_APP_ID",
+  "NEXT_PUBLIC_PRIVY_APP_ID",
+  "NEXT_PUBLIC_WS_URL",
+  "NEXT_PUBLIC_REFERRAL_CODE",
+  "NEXT_PUBLIC_IPFS_GATEWAY_URL",
+  "NEXT_PUBLIC_DEFAULT_EVM_CHAIN_ID",
+  "NEXT_PUBLIC_EVM_RPC_URL",
+  "NEXT_PUBLIC_ENABLE_VCONSOLE",
+] as const;
+
+export type PublicConfigKey = (typeof PUBLIC_CONFIG_KEYS)[number];
+
+export type PublicConfigInput = Readonly<
+  Partial<Record<PublicConfigKey, string | undefined>>
+>;
 
 export type PublicConfig = Readonly<{
   appEnvironment: AppEnvironment;
+  siteUrl: string | undefined;
   apiBaseUrl: string | undefined;
+  backendAppId: string | undefined;
   privyAppId: string | undefined;
+  wsUrl: string | undefined;
+  referralCode: string | undefined;
+  ipfsGatewayUrl: string | undefined;
   defaultEvmChainId: number | undefined;
   evmRpcUrl: string | undefined;
-  evmContractAddress: string | undefined;
-  solanaRpcUrl: string | undefined;
   enableVConsole: boolean;
 }>;
 
@@ -26,7 +39,7 @@ function optionalText(value: string | undefined): string | undefined {
   return value?.trim() || undefined;
 }
 
-function invalid(name: keyof PublicConfigInput, expectation: string): never {
+function invalid(name: PublicConfigKey, expectation: string): never {
   // Never include raw values: a misconfigured public URL may contain credentials.
   throw new Error(`${name}: ${expectation}`);
 }
@@ -36,15 +49,8 @@ function parseAppEnvironment(value: string | undefined): AppEnvironment {
   if (!normalized) {
     return invalid("NEXT_PUBLIC_APP_ENV", "is required");
   }
-  if (
-    normalized !== "development" &&
-    normalized !== "staging" &&
-    normalized !== "production"
-  ) {
-    return invalid(
-      "NEXT_PUBLIC_APP_ENV",
-      "must be development, staging, or production",
-    );
+  if (normalized !== "development" && normalized !== "production") {
+    return invalid("NEXT_PUBLIC_APP_ENV", "must be development or production");
   }
   return normalized;
 }
@@ -73,66 +79,118 @@ function parseChainId(value: string | undefined): number | undefined {
   return parsed;
 }
 
-function parseHttpUrl(
-  name: keyof PublicConfigInput,
+function parseUrl(
+  name: PublicConfigKey,
   value: string | undefined,
-): string | undefined {
+  protocols: readonly string[],
+): URL | undefined {
   const normalized = optionalText(value);
   if (normalized === undefined) return undefined;
+  const expectation = `must be an absolute ${protocols.map((p) => p.slice(0, -1)).join("/")} URL`;
   let url: URL;
   try {
     url = new URL(normalized);
   } catch {
-    return invalid(name, "must be an absolute HTTP(S) URL");
+    return invalid(name, expectation);
   }
   if (
-    !/^https?:\/\//i.test(normalized) ||
-    (url.protocol !== "http:" && url.protocol !== "https:") ||
+    !/^[a-z][a-z0-9+.-]*:\/\//i.test(normalized) ||
+    !protocols.includes(url.protocol) ||
     /[\s\\]/.test(normalized)
   ) {
-    return invalid(name, "must be an absolute HTTP(S) URL");
+    return invalid(name, expectation);
   }
   if (url.username || url.password) {
     return invalid(name, "must not contain URL credentials");
   }
-  // Preserve namespace, path, query, and trailing slash exactly as configured.
-  return normalized;
+  return url;
 }
 
-function parseContractAddress(value: string | undefined): string | undefined {
-  const normalized = optionalText(value);
-  if (normalized === undefined) return undefined;
-  if (!/^0x[0-9a-fA-F]{40}$/.test(normalized) || /^0x0{40}$/.test(normalized)) {
+const HTTP = ["http:", "https:"] as const;
+
+/** Preserve namespace, path, query, and trailing slash exactly as configured. */
+function parseHttpUrl(name: PublicConfigKey, value: string | undefined) {
+  return parseUrl(name, value, HTTP) && optionalText(value);
+}
+
+/** Origin only (scheme, host, optional port); a single trailing slash is dropped. */
+function parseSiteUrl(value: string | undefined): string | undefined {
+  const url = parseUrl("NEXT_PUBLIC_SITE_URL", value, HTTP);
+  if (url === undefined) return undefined;
+  if (url.pathname !== "/" || url.search || url.hash) {
     return invalid(
-      "NEXT_PUBLIC_EVM_CONTRACT_ADDRESS",
-      "must be a nonzero 0x-prefixed 20-byte hex address",
+      "NEXT_PUBLIC_SITE_URL",
+      "must be an origin without path, query, or fragment",
     );
   }
-  // Syntax only: checksum, chain, deployment, and ABI belong to the future owner.
-  return normalized;
+  return url.origin;
+}
+
+function parseWsUrl(value: string | undefined): string | undefined {
+  return (
+    parseUrl("NEXT_PUBLIC_WS_URL", value, ["ws:", "wss:"]) &&
+    optionalText(value)
+  );
 }
 
 /** Parse only public config facts; this does not establish Feature readiness. */
 export function parsePublicConfig(input: PublicConfigInput): PublicConfig {
   return Object.freeze({
     appEnvironment: parseAppEnvironment(input.NEXT_PUBLIC_APP_ENV),
+    siteUrl: parseSiteUrl(input.NEXT_PUBLIC_SITE_URL),
     apiBaseUrl: parseHttpUrl(
       "NEXT_PUBLIC_API_BASE_URL",
       input.NEXT_PUBLIC_API_BASE_URL,
     ),
+    backendAppId: optionalText(input.NEXT_PUBLIC_BACKEND_APP_ID),
     privyAppId: optionalText(input.NEXT_PUBLIC_PRIVY_APP_ID),
+    wsUrl: parseWsUrl(input.NEXT_PUBLIC_WS_URL),
+    referralCode: optionalText(input.NEXT_PUBLIC_REFERRAL_CODE),
+    ipfsGatewayUrl: parseHttpUrl(
+      "NEXT_PUBLIC_IPFS_GATEWAY_URL",
+      input.NEXT_PUBLIC_IPFS_GATEWAY_URL,
+    ),
     defaultEvmChainId: parseChainId(input.NEXT_PUBLIC_DEFAULT_EVM_CHAIN_ID),
     evmRpcUrl: parseHttpUrl(
       "NEXT_PUBLIC_EVM_RPC_URL",
       input.NEXT_PUBLIC_EVM_RPC_URL,
     ),
-    evmContractAddress: parseContractAddress(
-      input.NEXT_PUBLIC_EVM_CONTRACT_ADDRESS,
-    ),
-    solanaRpcUrl: parseHttpUrl(
-      "NEXT_PUBLIC_SOLANA_RPC_URL",
-      input.NEXT_PUBLIC_SOLANA_RPC_URL,
-    ),
     enableVConsole: parseDebugFlag(input.NEXT_PUBLIC_ENABLE_VCONSOLE),
   });
+}
+
+const FIELD_VALIDATORS: Readonly<
+  Record<PublicConfigKey, (value: string | undefined) => unknown>
+> = {
+  NEXT_PUBLIC_APP_ENV: parseAppEnvironment,
+  NEXT_PUBLIC_SITE_URL: parseSiteUrl,
+  NEXT_PUBLIC_API_BASE_URL: (v) => parseHttpUrl("NEXT_PUBLIC_API_BASE_URL", v),
+  NEXT_PUBLIC_BACKEND_APP_ID: optionalText,
+  NEXT_PUBLIC_PRIVY_APP_ID: optionalText,
+  NEXT_PUBLIC_WS_URL: parseWsUrl,
+  NEXT_PUBLIC_REFERRAL_CODE: optionalText,
+  NEXT_PUBLIC_IPFS_GATEWAY_URL: (v) =>
+    parseHttpUrl("NEXT_PUBLIC_IPFS_GATEWAY_URL", v),
+  NEXT_PUBLIC_DEFAULT_EVM_CHAIN_ID: parseChainId,
+  NEXT_PUBLIC_EVM_RPC_URL: (v) => parseHttpUrl("NEXT_PUBLIC_EVM_RPC_URL", v),
+  NEXT_PUBLIC_ENABLE_VCONSOLE: parseDebugFlag,
+};
+
+/**
+ * Validate one public variable in isolation; returns a value-free problem
+ * description, or undefined when the value is acceptable (including absent).
+ */
+export function checkPublicConfigField(
+  key: PublicConfigKey,
+  value: string | undefined,
+): string | undefined {
+  try {
+    FIELD_VALIDATORS[key](value);
+    return undefined;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "";
+    return message.startsWith(`${key}: `)
+      ? message.slice(key.length + 2)
+      : "invalid";
+  }
 }

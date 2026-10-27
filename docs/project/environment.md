@@ -115,10 +115,30 @@ Production  = Prod Site + Privy Production + Prod Backend + Prod WS + BSC 56 + P
 
 禁止任何跨环境混用（requirements C-80）。
 
-## Follow-ups（Runtime Foundation）
+## Validation
+
+Public config parser（`src/shared/config/parse-public-config.ts`）只解析上表 11 个 Public 变量，不读取 Server / Secret / Deploy 变量。
+
+```text
+pnpm env:check              # 检查 development（.env < .env.local < .env.development < .env.development.local < process.env）
+pnpm env:check:production   # 检查 production
+```
+
+`env:check` 只输出变量名与 `PASS` / `FAIL` / `SKIP`，**永不输出值**；存在 `FAIL` 时退出码为 1。当前阶段规则：
+
+| 规则 | 说明 |
+| --- | --- |
+| 必填 | `NEXT_PUBLIC_APP_ENV`、`NEXT_PUBLIC_PRIVY_APP_ID`、`NEXT_PUBLIC_DEFAULT_EVM_CHAIN_ID`、`NEXT_PUBLIC_EVM_RPC_URL`；其余 Public 变量缺失为 `SKIP` |
+| 格式 | 与 parser 相同：`APP_ENV` 仅 development / production；URL 为 HTTP(S)（`SITE_URL` 仅 origin；`WS_URL` 仅 ws / wss）；chainId 为正安全整数；布尔严格 true / false；`RESTRICTED_COUNTRIES` 为 ISO alpha-2 列表 |
+| 一致性 | `APP_ENV` 必须等于所检查的 mode；development ⇒ 97，production ⇒ 56（映射来自 Chain Registry）；production 的 RPC 主机不得是测试网 |
+| 命名 | 旧名称（含 `NEXT_PUBLIC_APP_SECRET`、`NEXT_PUBLIC_JWT_KEY`）、带 Secret 类别的 `NEXT_PUBLIC_*`、契约外的 `NEXT_PUBLIC_*` 一律 `FAIL` |
+| Secret | `BACKEND_APP_SECRET`、`IPFS_JWT`、`CLOUDFLARE_*` 只报告是否设置 |
+
+必填项会随 Foundation 推进（例如后端、实时接入时）在 `src/shared/config/check-environment.ts` 中更新。
+
+## Follow-ups
 
 | Task | Note |
 | --- | --- |
-| Public config parser 对齐契约 | 当前 `parse-public-config.ts` 仍读取契约外的 `NEXT_PUBLIC_EVM_CONTRACT_ADDRESS`、`NEXT_PUBLIC_SOLANA_RPC_URL`，未解析 `SITE_URL`、`BACKEND_APP_ID`、`WS_URL`、`REFERRAL_CODE`、`IPFS_GATEWAY_URL`；`APP_ENV` 仍接受 `staging`。README 中 "matching `.env.example`" 描述需同步 |
-| Server config reader | 为 `RESTRICTED_COUNTRIES`、`BACKEND_APP_SECRET`、`IPFS_JWT` 建立 Server-only 读取边界 |
-| `pnpm env:check` | 校验必填项、URL、chainId、Dev / Prod 一致性（Production 不得用测试网，Development 不得用主网合约）、Secret 不带 `NEXT_PUBLIC_`、Public 变量不含已知 Secret 类别；只输出变量名 + PASS / FAIL，永不输出值 |
+| Server config reader | 为 `RESTRICTED_COUNTRIES`、`BACKEND_APP_SECRET`、`IPFS_JWT` 建立 Server-only 读取边界（F6） |
+| Contract coherence | Development 不得使用主网合约：合约来自部署注册表（F4），由注册表按 chainId 保证，届时补充校验 |

@@ -16,6 +16,9 @@ This project was created with create-vinext-app.
 - `pnpm format` formats source and configuration files with Prettier.
 - `pnpm format:check` checks formatting without writing files.
 - `pnpm test` runs Vitest once; `pnpm test vitest.smoke.test.ts` targets a test file.
+- `pnpm env:check` / `pnpm env:check:production` check the local environment against the
+  Environment Contract (`docs/project/environment.md`) and print only variable names with
+  PASS / FAIL / SKIP, never values.
 
 Run these checks and `pnpm build` before considering an implementation validated.
 Generated artifacts and the pnpm lockfile are excluded from formatting. Existing
@@ -45,18 +48,20 @@ read deployment credentials, Worker bindings, or server secrets. Public values
 are build-time inputs: supply them before building and rebuild when they change.
 
 `NEXT_PUBLIC_APP_ENV` is required when the reader is called and accepts only
-`development`, `staging`, or `production`, matching `.env.example`. There is no
+`development` or `production`, matching `.env.example`. There is no
 import-time validation or implicit environment fallback. The scaffold does not
 yet consume this reader. Optional integration values normalize blank strings to
 `undefined`; consumers must require their own necessary values before enabling
-API, auth, or Web3 operations. No default chain, RPC, contract, or Privy ID is chosen.
+API, auth, or Web3 operations. No default chain, RPC, or Privy ID is chosen.
 
 Boolean input accepts only `true`/`false` after trimming, with debug disabled when
 absent. Chain IDs must be positive safe decimal integers. URLs must be absolute
 HTTP(S) without user/password credentials; paths, queries, and trailing slashes
-are preserved. This is syntax validation, not secret detection: never put private
-credentials in public URLs. Contract parsing checks nonzero 20-byte hex syntax
-only; checksum, chain, ABI, and deployment validation belong to the future owner.
+are preserved. `NEXT_PUBLIC_SITE_URL` must be an origin (a single trailing slash is
+dropped) and `NEXT_PUBLIC_WS_URL` must use `ws:` or `wss:`. This is syntax
+validation, not secret detection: never put private credentials in public URLs.
+Contract addresses are not environment variables; they belong to the deployment
+registry keyed by chain ID.
 The debug flag does not activate vConsole or authorize production debug output.
 
 Run `pnpm test src/shared/config/parse-public-config.test.ts` for parser tests.

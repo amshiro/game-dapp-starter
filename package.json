@@ -48,6 +48,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "env:check": "node scripts/env-check.ts",
+    "env:check:production": "node scripts/env-check.ts --mode production"
   }
 }

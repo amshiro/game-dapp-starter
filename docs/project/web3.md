@@ -17,6 +17,17 @@
 
 Figma 中的 SOL 图标、SOL 文案与 Solana 叙述是**设计占位**，不得驱动任何运行时实现。
 
+### Chain ownership
+
+| Fact | Owner |
+| --- | --- |
+| 支持的链（仅 56 / 97）、名称、原生币、区块浏览器、testnet 标记 | Chain Registry（`shared/config`） |
+| Environment → Business Target Chain（development → 97，production → 56，无默认链，未知环境 fail closed） | Chain Registry |
+| 当前环境声明的 chainId | `NEXT_PUBLIC_DEFAULT_EVM_CHAIN_ID`，须与 Registry 映射一致 |
+| Runtime RPC | `NEXT_PUBLIC_EVM_RPC_URL`（Registry 不保存 RPC） |
+| 合约地址 / ABI | Contract Registry（F4），不属于 Chain Registry |
+| Wallet 当前链 | 未来 Wallet / Provider（F5），不得建立全局 currentChain store |
+
 ## Environment Matrix
 
 | Environment | Chain | Chain ID | Privy App | RPC | Contracts | Backend |
