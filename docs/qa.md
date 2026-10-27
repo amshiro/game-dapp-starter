@@ -347,8 +347,12 @@ i18n.md → locale / localization semantics
 ## TBD
 以下内容在 starter 实施阶段依据实际技术组合另行决定：
 ```text
-ESLint vs Biome / Prettier / Vitest vs Jest / Testing Library
+Testing Library / DOM test environment
 Playwright vs Cypress / visual diff tool / axe integration / Lighthouse
 CI provider / Workers integration strategy / coverage threshold / device matrix
 ```
 在这些决策完成前，不得将候选工具写成既成项目事实。
+
+Phase 1 已选择 ESLint flat config（Next.js / TypeScript presets）、Prettier 与
+Node 环境 Vitest。实际命令、范围及上游兼容性限制见根目录 `README.md` 和工具配置；
+这些检查不等于 React、Workers Runtime 或业务集成已经验证。

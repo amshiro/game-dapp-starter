@@ -14,14 +14,17 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "types": [
-        "node",
-        "vinext/types"
-    ],
+    "types": ["node", "vinext/types"],
     "paths": {
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".cloudflare/types"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".cloudflare/types"
+  ],
   "exclude": ["node_modules"]
 }

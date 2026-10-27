@@ -1,36 +1,53 @@
 {
-	"name": "game-dapp-starter",
-	"version": "0.1.0",
-	"private": true,
-	"packageManager": "pnpm@10.34.9",
-	"dependencies": {
-		"@vinext/cloudflare": "latest",
-		"next": "^16.4.3",
-		"react": "latest",
-		"react-dom": "latest",
-		"react-server-dom-webpack": "latest",
-		"vinext": "latest"
-	},
-	"devDependencies": {
-		"@cloudflare/vite-plugin": "beta",
-		"@tailwindcss/postcss": "latest",
-		"@types/node": "latest",
-		"@types/react": "latest",
-		"@types/react-dom": "latest",
-		"@vitejs/plugin-react": "latest",
-		"@vitejs/plugin-rsc": "latest",
-		"cf": "latest",
-		"tailwindcss": "latest",
-		"typescript": "latest",
-		"vite": "8.3.0"
-	},
-	"type": "module",
-	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build",
-		"start": "vite preview",
-		"deploy": "vinext-cloudflare deploy",
-		"preview": "pnpm run build && pnpm run start",
-		"cf-typegen": "cf workers types"
-	}
+  "name": "game-dapp-starter",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.34.9",
+  "dependencies": {
+    "@tanstack/react-query": "5.105.0",
+    "@vinext/cloudflare": "latest",
+    "i18next": "26.5.11",
+    "next": "^16.4.3",
+    "next-i18next": "16.4.3",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-i18next": "17.1.9",
+    "react-server-dom-webpack": "latest",
+    "vinext": "latest",
+    "zustand": "5.0.16"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "beta",
+    "@tailwindcss/postcss": "latest",
+    "@tanstack/eslint-plugin-query": "5.105.0",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "@typescript/native": "npm:typescript@7.0.2",
+    "@vitejs/plugin-react": "latest",
+    "@vitejs/plugin-rsc": "latest",
+    "cf": "latest",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.4.3",
+    "eslint-config-prettier": "10.1.8",
+    "prettier": "3.9.10",
+    "tailwindcss": "latest",
+    "typescript": "npm:@typescript/typescript6@6.0.2",
+    "vite": "8.3.0",
+    "vitest": "5.0.5"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "start": "vite preview",
+    "deploy": "vinext-cloudflare deploy",
+    "preview": "pnpm run build && pnpm run start",
+    "cf-typegen": "cf workers types",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run"
+  }
 }

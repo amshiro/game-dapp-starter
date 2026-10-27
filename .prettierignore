@@ -1,0 +1,15 @@
+node_modules/
+.next/
+dist/
+.vinext/
+.cloudflare/
+.wrangler/
+.vitest/
+coverage/
+next-env.d.ts
+*.tsbuildinfo
+pnpm-lock.yaml
+
+# Existing engineering specifications are outside the Phase 1 formatting scope.
+AGENTS.md
+docs/

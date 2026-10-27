@@ -1,0 +1,19 @@
+{
+  "headline": "Build Next.js-style apps with Vite and deploy them to the edge.",
+  "summary": "This App Router project is wired for vinext, Tailwind CSS, and Cloudflare Workers.",
+  "steps": {
+    "develop": {
+      "title": "Develop",
+      "description": "Run the vinext dev server locally."
+    },
+    "build": {
+      "title": "Build",
+      "description": "Create Worker-ready production output."
+    },
+    "deploy": {
+      "title": "Deploy",
+      "description": "Ship the generated Worker with cf."
+    }
+  },
+  "apiRouteLink": "API route"
+}
