@@ -114,8 +114,10 @@ Step3  获胜方块保持点亮 10s
 - **Confirmed**：质押资产 ORI；Deposit / Withdraw；25 / 50 / 100%；Summary（C-50–C-52）。
 - **Confirmed**：Deposit 需要先对 OreProtocol `approve` ORI（web3.md）。
 - **Confirmed（本轮用户低风险 UI 授权）**：正式 `/stake` 交付当前 Figma `2003:1949/1961/2078` 的 Core UI。Deposit 初始选中（当前主稿），Withdraw 只切换本地展示与按钮标签；原生 button/tablist/tab/tabpanel 支持鼠标、Enter/Space、方向键与 Home/End，不触发业务操作。
-- **Implementation decision**：当前金额只读为空、placeholder `—`，Bal 与 Summary 为 unknown `—`；25/50/100% 和主按钮 native disabled，并提示 Actions unavailable / Data unavailable。不建立金额草稿或百分比公式，不接 API、钱包或合约。营销副标题本轮不加入，SOL 图标不使用，资产名遵循已确认 ORI；保持图标槽等待 Q-03。
-- **Unknown**：Account / Yield / Claim 是否进入新版（Q-26）；Info 说明内容（Q-24）。Info 仅当前原始装饰图标，无可点击控件/自编 tooltip。真实余额、total deposit、APR、TVL 的来源/单位/环境及加载契约仍需 Data Gate，未确认值不补零。
+- **Implementation decision**：当前金额只读为空、placeholder `—`，Bal 与 Summary 只填已确认数据，其余 `—`；25/50/100% 和主按钮 native disabled，并提示 Actions unavailable / Data unavailable。不建立金额草稿或百分比公式。后续已授权的 97 principal read 见下一项；无 API 或 write。营销副标题本轮不加入，SOL 图标不使用，资产名遵循已确认 ORI；保持图标槽等待 Q-03。
+- **Unknown**：Account / Yield / Claim 是否进入新版（Q-26）；Info 说明内容（Q-24）。Info 仅当前原始装饰图标，无可点击控件/自编 tooltip。APR、TVL、rewards 的来源/单位/语义仍需 Data Gate，未确认值不补零。
+
+- **Confirmed（S1 Development 97 Read 授权）**：Deposit Bal = ORI balanceOf，Withdraw Bal = View stakedAmount，Summary Total deposit = View totalStaked；均按已验证 ORI 18 decimals 展示。未连接不读个人值，错误/未知链隐藏全部 read 值；loading/error 不补零，提供仅 refetch 的 Refresh。金额输入和所有资金按钮继续禁用，奖励/APR/TVL 不推导。
 
 ## Points
 

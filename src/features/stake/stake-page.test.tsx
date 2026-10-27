@@ -26,7 +26,8 @@ describe("Stake Core UI safety boundary", () => {
       /0\.42|2\.3056|1,560,253|12\.56|560,253\.29|SOL|Claim|Account|claimAndDeposit/,
     );
     expect(html).toContain("ORI");
-    expect(html).toContain("Bal: — ORI");
+    expect(html).toContain("Available ORI balance: Data unavailable");
+    expect(html).toContain(">—</span> ORI");
     expect(html.match(/<dd /g)).toHaveLength(3);
     expect(html).not.toMatch(/<a\b|<dialog\b/);
   });
@@ -63,6 +64,30 @@ describe("Stake Core UI safety boundary", () => {
     );
     expect(html).toContain("900719925474099312345.000001");
     expect(html).toContain("&lt;TEST&gt;");
+  });
+});
+
+describe("Stake populated display", () => {
+  it("keeps exact principal accessible while all funds controls and reward fields stay unavailable", () => {
+    const value = {
+      status: "populated",
+      text: "123.456789",
+      exact: "123.456789123456789123",
+      raw: BigInt("123456789123456789123"),
+    } as const;
+    const html = renderToStaticMarkup(
+      <StakePage
+        available={value}
+        staked={{ status: "loading" }}
+        summary={{ ...unavailableStakeSummary, totalDeposit: value }}
+        onRefresh={() => {}}
+      />,
+    );
+    expect(html).toContain('title="123.456789123456789123 ORI"');
+    expect(html).toContain("Available ORI balance: 123.456789123456789123 ORI");
+    expect(html).toContain("Refresh");
+    expect(html.match(/disabled=""/g)).toHaveLength(4);
+    expect(html.match(/>—<\/dd>/g)).toHaveLength(2);
   });
 });
 

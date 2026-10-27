@@ -30,7 +30,7 @@
 | H1 | Header ORI price | PARTIALLY BLOCKED | 已有 transport/mapper；旧 ORI/getPrice 来源已确认，97 数据集/价格单位与 Q-11 字段语义待确认 |
 | E1 | Explore read/UI | PARTIALLY BLOCKED | 用户已批准 E1 Core UI 正式接入 /explore；四卡/三表、受控分页与中性读取状态已完成并通过人工审核；真实数据仍受 Q-27/Q-11 阻塞 |
 | P1 | Points read/UI | BLOCKED | Q-01、Q-20、Q-11 `points/user` 500；不能先写积分公式 |
-| S1 | Stake read/UI | PARTIALLY BLOCKED | 低风险 Core UI 子集已接入 /stake：Deposit/Withdraw 只切展示，金额只读、percent/action 禁用、Summary —；真实 read、Info 文案、资金流程仍未解锁 |
+| S1 | Stake read/UI | PARTIALLY BLOCKED | 低风险 Core UI 子集已接入 /stake：Deposit/Withdraw 只切展示，金额只读、percent/action 禁用、Summary —；Development 97 principal read 已完成并通过最终人工验收；Info / rewards / production / 资金流程仍 gated |
 | S2 | Stake deposit / withdraw | BLOCKED | S1/W1；Q-10、Q-12、金额/allowance/完成契约与安全 Gate |
 | S3 | Stake yield / claim-and-deposit | BLOCKED | S1/W1；先确认 Q-26，再决定是否存在该票据的正式 Scope |
 | M1 | Mine read models / owner Queries | PARTIALLY BLOCKED | 可做数据契约核对；Q-10、Q-11、参与者数据源/单位/身份缺口未消除 |
@@ -220,15 +220,15 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 
 | Field | Ticket |
 | --- | --- |
-| Goal | Core UI 子集交付当前 Figma Deposit/Withdraw 展示与 Summary，正式接入 /stake；本轮不接账户/公共 read，资金入口不可执行。完整 S1 后续按 Data Gate 接入 |
+| Goal | Core UI 子集交付当前 Figma Deposit/Withdraw 展示与 Summary，正式接入 /stake；当前增量只接已验证的 Development 97 ORI available / user staked / total staked；资金入口不可执行，其他数据按 Gate 接入 |
 | Route | `/stake`；Withdraw 是页内状态，无新 Route |
 | Owner / Dependencies | `features/stake`；W1/F9；R0 的 ABI/单位/端点证据；公共 Summary 可先于账户读取 |
 | Source of Truth | C-50–C-53、web3.md Stake、api-reference summary、Q-26 |
 | API dependencies | `summary` → staking_annual_yield；TVL/total deposit 的来源、价格与显示单位必须逐项核对，不能从 APR 推造其它字段 |
-| Web3 dependencies | Registry OreProtocol `getStakeInfo` / `getTreasuryState`、ORI `decimals`/balance；不 approve、不 deposit/withdraw |
-| Realtime dependencies | 无必需订阅；账户/链变化与基础 polling 由 Stake Query owner 负责 |
+| Web3 dependencies | Registry OreProtocolView `getStakeInfo` / `getTreasuryState`、ORI `balanceOf`；97 的 decimals=18 已 runtime 确认，56 未验证；不 approve、不 deposit/withdraw |
+| Realtime dependencies | 无订阅或 interval polling；账户/链 key 与 Query invalidation/手动 Refresh 由 Stake read owner 负责 |
 | UI/Figma dependencies | `2003:1949`、`2003:1961`、`2003:2078`；AmountInput/percentage 的共享只在真实需求出现时评估 |
-| Open Questions / Blockers | PARTIALLY BLOCKED：用户连续页面开发授权下已实现 Figma 明确的 Core UI，并通过人工审核；无 API/contract/wallet wiring，不推导余额/APR/TVL，金额只读、百分比与 action 禁用。Q-10、Q-26、Q-24、Q-16、Q-03 继续 OPEN；不能以 Core UI 完成宣布真实 read 或资金能力可用 |
+| Open Questions / Blockers | PARTIALLY BLOCKED：用户连续页面开发授权下已实现 Figma 明确的 Core UI，并通过人工审核；97 三条 principal read 已接入并通过最终人工验收（账户/错链往返/断开/刷新恢复，无旧账户缓存残留）；无 API，不推导 APR/TVL/rewards，金额只读、百分比与 action 禁用。Q-10、Q-26、Q-24、Q-16、Q-03 继续 OPEN；不能以 97 principal read 扩大至 56、收益或资金能力 |
 | Acceptance Criteria | G-D/G-P/G-V；显示真实 ORI/decimals，百分比 bigint 安全；未知收益字段不补零；表单不产生写调用；账户/链切换不串数据 |
 | QA | 通用 QA；余额/单位/精度、Summary DTO、Tab 键盘语义、断网/身份切换、长数值 |
 | Non-goals | 质押资金操作、yield 领取、收益率估算算法或跨 Feature Query deep import |

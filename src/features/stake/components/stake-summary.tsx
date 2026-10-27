@@ -24,11 +24,22 @@ export function StakeSummary({
                 <img src="/ori/stake/info.svg" width={12} height={12} alt="" />
               </dt>
               <dd
+                title={
+                  value.status === "populated" && value.exact
+                    ? `${value.exact} ORI`
+                    : undefined
+                }
                 aria-label={
-                  value.status === "populated" ? undefined : copy[value.status]
+                  value.status === "populated"
+                    ? value.exact
+                      ? `${value.exact} ORI`
+                      : undefined
+                    : copy[value.status]
                 }
               >
-                {value.status === "populated" ? value.text : "—"}
+                {value.status === "populated"
+                  ? `${value.text}${value.exact ? " ORI" : ""}`
+                  : "—"}
               </dd>
             </div>
           );

@@ -1,12 +1,28 @@
 "use client";
 
 import { useId, useRef, useState } from "react";
-import { modeForKey, stakeModes, type StakeMode } from "../model/stake-display";
+import {
+  modeForKey,
+  stakeModes,
+  type StakeMode,
+  type StakeReadValue,
+} from "../model/stake-display";
 import { stakeCopy as copy } from "../copy";
 import styles from "./stake.module.css";
 
-export function StakePanel() {
+export function StakePanel({
+  available,
+  staked,
+  onRefresh,
+  refreshing,
+}: Readonly<{
+  available: StakeReadValue;
+  staked: StakeReadValue;
+  onRefresh?: () => void;
+  refreshing: boolean;
+}>) {
   const [mode, setMode] = useState<StakeMode>("deposit");
+  const balance = mode === "deposit" ? available : staked;
   const id = useId();
   const tabs = useRef<Record<StakeMode, HTMLButtonElement | null>>({
     deposit: null,
@@ -63,9 +79,22 @@ export function StakePanel() {
             />
           </div>
           <div className={styles.balanceRow}>
-            <p>{copy.balance} — ORI</p>
+            <p aria-busy={balance.status === "loading" || undefined}>
+              {copy.balance}{" "}
+              <span
+                aria-label={`${mode === "deposit" ? copy.availableBalance : copy.stakedBalance}: ${balance.status === "populated" ? `${balance.exact ?? balance.text} ORI` : copy[balance.status]}`}
+                title={
+                  balance.status === "populated"
+                    ? `${balance.exact ?? balance.text} ORI`
+                    : undefined
+                }
+              >
+                {balance.status === "populated" ? balance.text : "—"}
+              </span>{" "}
+              ORI
+            </p>
             <div className={styles.presets}>
-              {/* Q-16/17 and data ownership are unresolved: no percentage math or editable amount draft yet. */}
+              {/* Q-16/17 transaction rules remain gated: no percentage math or editable amount draft yet. */}
               {[25, 50, 100].map((percent) => (
                 <button
                   key={percent}
@@ -78,7 +107,7 @@ export function StakePanel() {
               ))}
             </div>
           </div>
-          {/* This is a UI-only slice. There is deliberately no submit/sign/approve callback. */}
+          {/* Principal reads do not authorize funds actions. There is deliberately no submit/sign/approve callback. */}
           <button
             className={styles.action}
             type="button"
@@ -89,9 +118,17 @@ export function StakePanel() {
           </button>
         </div>
       </div>
-      <p id={`${id}-unavailable`} className={styles.state} role="status">
-        {copy.actionsUnavailable} · {copy.unavailable}
-      </p>
+      <div className={styles.state}>
+        <p id={`${id}-unavailable`} role="status">
+          {copy.actionsUnavailable}
+          {balance.status !== "populated" ? ` · ${copy[balance.status]}` : ""}
+        </p>
+        {onRefresh && (
+          <button type="button" onClick={onRefresh} disabled={refreshing}>
+            {copy.refresh}
+          </button>
+        )}
+      </div>
     </section>
   );
 }

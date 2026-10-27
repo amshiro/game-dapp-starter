@@ -31,7 +31,7 @@
 
 Typography Foundation 已完成、审核并 push：Starter 单一 HarmonyOS Sans SC Variable WOFF2，完整 wght 40–900，许可文件保留。E1 Core UI 只交付正式 /explore 的展示结构，真实数据接入仍为 PARTIALLY BLOCKED（Q-27/Q-11）。
 
-S1 Core UI 子集已接入正式 `/stake`，包含页内 Deposit/Withdraw 切换及 unavailable Summary。金额只读，percentage/action 禁用，无 API/contract/signature/transaction；完整 S1 保持 PARTIALLY BLOCKED，S2/S3 未开始。
+S1 Core UI 已审核并 push。当前限定 Development 97 Read Integration 接入 ORI balanceOf、View stakedAmount / totalStaked，已通过最终人工验收；详见 web3.md 的 S1 read evidence。金额输入只读，percentage/action 禁用；无 API、signature 或 transaction。APR/TVL/reward semantics 与 Production 56 仍 gated，完整 S1 保持 PARTIALLY BLOCKED，S2/S3 未开始。
 
 每个任务单独实现、单独 QA，不跨任务顺手实现。
 

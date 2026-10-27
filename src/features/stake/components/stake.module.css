@@ -79,11 +79,14 @@
   gap: 8px;
 }
 .balanceRow p {
+  min-width: 0;
+  overflow-wrap: anywhere;
   font-size: 12px;
   line-height: 14px;
   color: var(--ori-color-text-secondary);
 }
 .presets {
+  flex-shrink: 0;
   display: flex;
   gap: 8px;
 }
@@ -112,10 +115,24 @@
   opacity: 0.45;
 }
 .state {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
   margin-top: 8px;
   color: var(--ori-color-text-secondary);
   font-size: 12px;
   line-height: 16px;
+}
+.state button {
+  color: var(--ori-color-text-secondary);
+  text-decoration: underline;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.state button:disabled {
+  cursor: wait;
+  opacity: 0.5;
 }
 .summary {
   margin-top: 32px;
@@ -151,6 +168,7 @@
   text-align: right;
   overflow-wrap: anywhere;
 }
+.state button:focus-visible,
 .tabs button:focus-visible,
 .amount:focus-visible,
 .content:focus-visible {

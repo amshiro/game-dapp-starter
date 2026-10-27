@@ -13,10 +13,23 @@ export function modeForKey(
   return undefined;
 }
 
-// Display text only; decimals, APR semantics and canonical sources belong to the future Data Slice.
+// Principal reads retain exact source values; unapproved APR/reward semantics remain unavailable.
 export type StakeReadValue =
-  | Readonly<{ status: "unavailable" | "loading" | "error" | "empty" }>
-  | Readonly<{ status: "populated"; text: string }>;
+  | Readonly<{
+      status:
+        | "unavailable"
+        | "loading"
+        | "error"
+        | "empty"
+        | "disconnected"
+        | "wrongChain";
+    }>
+  | Readonly<{
+      status: "populated";
+      text: string;
+      exact?: string;
+      raw?: bigint;
+    }>;
 export type StakeSummaryDisplay = Readonly<
   Record<"totalDeposit" | "apr" | "tvl", StakeReadValue>
 >;

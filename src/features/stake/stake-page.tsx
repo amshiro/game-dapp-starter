@@ -3,17 +3,33 @@ import { StakeSummary } from "./components/stake-summary";
 import {
   unavailableStakeSummary,
   type StakeSummaryDisplay,
+  type StakeReadValue,
 } from "./model/stake-display";
 import { stakeCopy as copy } from "./copy";
 import styles from "./components/stake.module.css";
 
 export function StakePage({
   summary = unavailableStakeSummary,
-}: Readonly<{ summary?: StakeSummaryDisplay }>) {
+  available = { status: "unavailable" },
+  staked = { status: "unavailable" },
+  onRefresh,
+  refreshing = false,
+}: Readonly<{
+  summary?: StakeSummaryDisplay;
+  available?: StakeReadValue;
+  staked?: StakeReadValue;
+  onRefresh?: () => void;
+  refreshing?: boolean;
+}>) {
   return (
     <div className={styles.page}>
       <h1 className="text-page-title font-bold">{copy.title}</h1>
-      <StakePanel />
+      <StakePanel
+        available={available}
+        staked={staked}
+        onRefresh={onRefresh}
+        refreshing={refreshing}
+      />
       <StakeSummary values={summary} />
     </div>
   );

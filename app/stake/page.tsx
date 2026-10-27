@@ -1,5 +1,5 @@
-import { StakePage } from "../../src/features/stake/stake-page";
+import { StakeRuntime } from "./stake-runtime";
 
 export default function Page() {
-  return <StakePage />;
+  return <StakeRuntime />;
 }
