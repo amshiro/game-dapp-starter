@@ -67,7 +67,8 @@ docs/*.md       → Starter 全局工程规范（如何实现）
 | [ui-behavior.md](./ui-behavior.md) | 交互与状态行为 |
 | [assets.md](./assets.md) | Logo、Token、图标等真实资产 |
 | [web3.md](./web3.md) | BSC、合约地址与 ABI 事实、钱包模型、交易概念 |
-| [api.md](./api.md) | 后端 host、端点、实时频道 |
+| [api.md](./api.md) | 后端 API 的前端结论：envelope、端点对照、差异、地址与数值策略、实时频道 |
+| [api-reference/](./api-reference/README.md) | **后端正式 API Contract**（`user-api.md`、`activity-api.md`），后端原文 |
 | [legacy-runtime-audit.md](./legacy-runtime-audit.md) | 线上与旧代码的历史证据（不是实现规范） |
 | [environment.md](./environment.md) | Environment Contract V1：变量分类、Dev / Prod 矩阵、Secret 边界 |
 | [decisions/](./decisions/) | 架构决策记录（ADR），例如 [ADR-001 Runtime Environments](./decisions/ADR-001-runtime-environments.md) |
@@ -85,6 +86,7 @@ AGENTS.md
 → docs/project/design-system.md
 → docs/project/web3.md
 → docs/project/api.md
+→ docs/project/api-reference/（实现具体端点时读取对应接口原文）
 → docs/project/ui-behavior.md
 → 当前 Feature 对应的项目文档（routes / components / assets / figma-inventory / decisions）
 → docs/project/open-questions.md（确认要做的事没有被 Unknown 阻塞）

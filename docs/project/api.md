@@ -1,40 +1,107 @@
 # ORI Backend API Facts
 
-线上 ORI 前端使用的后端接口与实时通道事实。传输层、错误语义与 owner 规则见全局 `docs/api.md`；本文件只记录 ORI 事实。
+ORI 后端接口的前端结论。后端正式 Contract 原文见 [api-reference/](./api-reference/README.md)（`user-api.md`、`activity-api.md`）；传输层、错误语义与 owner 规则见全局 `docs/api.md`。
 
-来源：ori.supply 源码 `ori-website/service/api.js`（26 个端点定义）与线上网络请求（23 个实际调用）。**请求 / 响应 DTO 未完整恢复**，实现每个端点前需要后端提供 Contract。
+证据优先级：后端正式 Contract → Development 测试环境实际返回 → `ori-website` 源码 → 旧线上行为。正式 Contract 与运行时不一致处标记 **CONTRACT / RUNTIME MISMATCH**，不自行判定哪方正确。
 
-## Host
+## Service
 
-| 项 | 值 | Status |
+| 项 | 事实 | Status |
 | --- | --- | --- |
-| API base | `https://gate.game.com/v1`（公开配置）；新项目变量 `NEXT_PUBLIC_API_BASE_URL` | 线上生产值；新项目是否沿用待确认（Q-11） |
-| 方法 | 全部 `POST` | Confirmed（线上） |
-| 鉴权 | **无登录会话**；用户相关请求以钱包地址作为参数；源码中签名 `_post` 调用 0 次 | Confirmed（源码 + 线上）；是否安全、是否需要新鉴权待确认（Q-13） |
-| 实时 | Pusher 协议 WebSocket：`wss://gate.game.com/app/<public app key>`（key 为公开客户端 key，不记录）；新项目变量 `NEXT_PUBLIC_WS_URL` | Confirmed（线上） |
-| 后端 Secret | `BACKEND_APP_SECRET` 仅在 Server / Worker 使用（见 [environment.md](./environment.md#secret-boundary)） | User Confirmed |
+| API base | `NEXT_PUBLIC_API_BASE_URL` = 后端 origin（不含 `/v1`）；`/v1/ori` namespace 由 `shared/api/ori-backend.ts` 拼接 | Contract + Runtime（F6.1） |
+| 环境 | Development 测试后端可用（F6.1）；Production host 待定（Q-11）。旧 `gate.game.com` 自 2026-10-27 对所有路径返回 404 | Runtime |
+| 方法 | 全部 `POST` | Contract |
+| 请求编码 | Contract 未声明（示例为 JSON 样式 body）。Development 同时接受 `application/x-www-form-urlencoded` 与 `application/json`；前端使用 form（与 `ori-website` 一致），参数值为字符串 | Runtime |
+| 鉴权 | Contract 中无任何鉴权、签名、`app_id` 或 Secret；用户相关接口以钱包地址为参数 | Contract；是否需要新鉴权见 Q-13 |
+| 成功 envelope | `{ data, common: { timestamp, app_name, chain_asset_config? } }`；无 `error_code` | Contract + Runtime |
+| 失败 envelope | **HTTP 200** + `{ error_code: number, message: string, errors: { <field>: string[] } }`，无 `data`。观察到 `10400`（参数校验）、`500`（`points/user`） | Runtime only；**Contract 未记录** |
+| 业务 code | 无 code 表；不建立 enum，只保留数字 | Unknown |
+| 未知路径 | HTTP 404 + 后端调试信息（`exception`、`file`、`line`、`trace`）；前端只报告 `HttpError`，不读取 body | Runtime（后端调试模式开启，需后端关闭） |
+| 分页 | 请求 `page` / `page_size`；`data = { list, total }` | Contract + Runtime |
 
-同一后端还服务 Origin.fun 的 `/v1/originfun/*`（Legacy only）。
+## Endpoint inventory（Contract）
 
-## Endpoints（`/v1/ori/*`）
+全部为 `POST /v1/ori/*`，无鉴权。Request 列出 Contract 中的参数。
 
-| Feature | Endpoint | 线上调用名 | 用途（由调用位置推断） |
-| --- | --- | --- | --- |
-| 全局 | `/ori/query/chain_asset_config` | `getPrice` 类 | 链资产配置 / 价格（每页都会调用） |
-| 全局 | `/ori/activity/origin_info` | — | 起源信息（Header 价格等） |
-| Mine | `/ori/round` | `getRoundInfo` | 当前轮次 |
-| Mine | `/ori/round_winners/round` | `getRoundWinInfo` | 某轮中奖者 |
-| Mine | `/ori/latest/events` | `getEventInfo` | 最新事件 |
-| Mine | `/ori/automation/user` | `getAutomation` | 用户自动挖矿状态 |
-| Mine（ORI 游戏，Figma 无） | `/ori/ori_game/info`、`/ori/ori_game/trade_records`、`/ori/ori_game/record_list`、`/ori/ori_game/stats` | — | 交易挖矿信息与记录 |
-| 起源（Figma 无） | `/ori/mining_game/info`、`/ori/mining_game/swap_record`、`/ori/mining_game/record_list` | `getMiningGameInfo`、`getMiningGameRecords` | 起源交易挖矿 |
-| 起源（Figma 无） | `/ori/swap/price`、`/ori/swap/quote`、`/ori/swap/nonce`、`/ori/swap/submit` | `getSwapPrice`、`getSwapNonce`、`submitSwap` | 后端代执行的签名 swap（EIP-712 typed data，含 `bytes32 nonce`） |
-| Stake | `/ori/summary` | `getSummary` | 质押概要 |
-| Explore | `/ori/explore` | `getExploreInfo` | 统计 |
-| Explore | `/ori/activity/bury_point_events`、`/ori/bury_event/list`、`/ori/reset_event/list` | `getResetEventList` 等 | 回购埋藏、开奖事件列表 |
-| Wallet / 资产 | `/ori/activity/user_asset_events` | `userAssetEvents` | 用户资产事件 |
+| Domain | Endpoint | Request | Response `data` | Status vs F6 |
+| --- | --- | --- | --- | --- |
+| Asset | `query/chain_asset_config` | `symbol?`（不传返回全部） | 资产数组 | 参数 `symbol` 为新信息 |
+| Points | `points/list` | `page`、`page_size`、`miner` | `{ list, total, user_points }` | 旧源码有定义但从未调用 |
+| Points | `points/user` | `miner` | `{ miner, total_points }` | 同上；Development 当前返回 `error_code 500` |
+| Round | `reset_event/round` | `round_id` | 单轮开奖事件 | **新增** |
+| Round | `reset_event/list` | `motherlode?`、`page`、`page_size` | `{ list, total }` | Explore 已调用 |
+| Round | `round_winners/round` | `round_id` | 轮次开始事件 | 名称与内容不符，见 Differences |
+| Round | `round_started/round` | `round_id`、`page`、`page_size` | 中奖者列表 | **新增**；名称与内容不符 |
+| Round | `latest/events` | — | `{ round_started, reset_event, max }` | 已调用 |
+| Explore | `explore` | — | 统计卡 `{ value, label }` | 已调用 |
+| Explore | `bury_event/list` | `page`、`page_size`、`type`（0 旧版 / 1 game 挖矿 / 2 ori 游戏） | `{ list, total }` | 已调用 |
+| Explore | `activity/bury_point_events` | `page`、`page_size`、`type` | `{ list, total }` | 已调用 |
+| Stake | `summary` | — | `{ staking_annual_yield }` | 已调用 |
+| Automation | `automation/user` | `user` | 自动挖矿状态 | 已调用；参数名为 `user` |
+| 起源 | `activity/origin_info` | `user_addr` | `{ ori_config, chain_asset_config, global, user, my_wallet }` | 已调用 |
+| 起源 | `activity/user_asset_events` | `user_addr`、`event_type`（310001 中奖 / 310002 母矿中奖） | 数组（Contract 无分页） | 旧调用传 `page` / `page_size` 并读 `{ list, total }`，见 Differences |
+| 起源 | `activity/wd/info` | `addr` | `{ limit_amount, chain_asset_config }` | **新增** |
+| 起源 | `activity/wd/query_signature` | `signature` | 提现记录 | **新增**；示例为 Solana 数据 |
+| 起源（挖矿游戏） | `mining_game/info`、`mining_game/record_list`、`mining_game/swap_record`、`mining_game/deposit_records` | 见 Contract | — | `deposit_records` **新增**；`record_list` 按参数分「全局 / 母矿」与「我的」两种响应 |
+| ORI 游戏 | `ori_game/info`、`ori_game/record_list`、`ori_game/trade_records`、`ori_game/stats` | 见 Contract | — | 已调用 |
 
-源码另定义 3 个线上未调用的端点：`/ori/points/list`（`getPointsList`）、`/ori/points/user`（`getUserPoints`）、`/ori/ori_game/swap_record`（`getOriGameSwapRecords`）。Points 端点**在所有分支中均无调用**，Points 功能未实现（Q-20）。
+旧源码定义、**不在正式 Contract 中**（不再视为 canonical）：`round`（`getRoundInfo`，Mine 每 4 秒轮询）、`swap/price`、`swap/quote`、`swap/nonce`、`swap/submit`、`ori_game/swap_record`。
+
+## Differences
+
+**Official contract vs old source**
+
+- `round` 与四个 `swap/*` 端点不在 Contract 中；Mine 当前轮次数据与起源 swap 流程的后端来源需后端确认（Q-11）。
+- `user_asset_events`：Contract 中 `data` 为数组、无分页参数；旧调用读取 `data.list` / `data.total`。
+- `chain_asset_config`：Contract 无 `is_inner`；旧代码用它区分起源内盘 / 外盘价格。
+- `automation/user` 参数为 `user`；`wd/info` 参数为 `addr`；其余用户接口为 `user_addr` 或 `miner`。
+
+**Official contract vs previous F6 assumptions**
+
+- 成功 envelope 是 `{ data, common }`，而非 `{ error_code?, data }`；`error_code` 只出现在失败响应中（运行时）。
+
+**CONTRACT / RUNTIME MISMATCH**（Development，F6.1）
+
+- `chain_asset_config`：运行时每行含 `is_inner`（0 / 1，如 `qiyuan` 有两行）；`price` 混合 JSON number 与十进制字符串（Contract 示例为 number）；`aux_contract_addr` 混合 EIP-55 与全小写。
+- `explore`：运行时只有 `max_supply`（value 为 string）、`buried_7d`、`protocol_rev_7d`（value 为 number）；Contract 还有 `circulating_supply`，且全部 value 为带千分位的 string。
+- `reset_event/list`：运行时多出 `total_deploy`、`send_point_token`。
+- 失败 envelope（`error_code` / `message` / `errors`）未写入 Contract。
+
+**Contract 内部问题**（需后端确认，原文未改）
+
+- `round_winners/round` 的响应是轮次开始事件，`round_started/round` 的响应是中奖者列表，名称与内容对调。
+- 多处示例不是合法 JSON（单引号、行内中文注释、`reset_event/list` 的 `list` 元素缺少 `{`）。
+
+## Authentication / signing
+
+- **ORI 没有后端登录体系**：所有接口都不需要登录相关公共参数或后端签名参数（Backend owner Confirmed；与正式 Contract、Development 运行时一致）。
+- 架构锁定为 `Browser → ORI API transport → Backend`。不存在 Server signer，也不预留 Server secret reader；若未来新增登录体系，作为新的架构变更重新设计。
+- 旧 `_post`（md5 签名 + `app_id` + Origin.fun 会话 cookie）在全部分支调用 0 次，线上 bundle 中也不存在；`NEXT_PUBLIC_BACKEND_APP_ID` 与 `BACKEND_APP_SECRET` 作为 **Starter capability — inactive in current ORI** 保留在 Environment Contract 中：均为可选，ORI transport 不发送 App ID，不读取 Secret，不创建 signer（[environment.md](./environment.md#starter-capability--inactive-in-current-ori)）。
+
+## Address case
+
+- `chain_asset_config` 不需要地址参数（只有可选 `symbol`）；Registry 地址从不发送给后端。前端在本地匹配：DTO mapper 接受任意大小写并转换为 EIP-55 checksum，匹配使用 Viem `isAddressEqual`（`domains/token`）。空字符串 `aux_contract_addr`（Contract 示例）映射为无地址。
+- 用户地址参数（`user_addr`、`miner`、`user`、`addr`）：Contract 未声明大小写规则。Development 观察：`activity/origin_info`、`ori_game/info` 对同一地址的 checksum / 小写 / 大写 hex 返回相同数据；`points/user` 无法验证（返回 `error_code 500`）。在后端确认前，大小写不敏感只是**观察结果**，不是 Contract。
+- 后端返回地址的大小写不统一（如 `ori_game/trade_records.user_address` 为小写），比较一律按 EVM 地址语义。
+
+## Numeric fields
+
+- Contract 中金额字段有三种形态：链上原始整数（如 `vault_share`、`amount_per_square`、`trade_records` 中带「原始单位」注释的字符串）、按 `system_decimal`（通常 8）缩放的整数（如 `origin_info.global.*`），以及已格式化的展示字符串（`explore.*.value`，如 `"28,000,000"`）。
+- JSON number 可能超出安全整数范围（如 `log_unique_id: 9223372036854775807`）；这类字段在 `JSON.parse` 时已经丢失精度，不得用作身份 / 去重键，需要后端改为字符串或由 Feature 确认语义。
+- 前端规则：金额保留原始表示（字符串，或无指数形式的 number 转字符串），链上原始单位转 `bigint`，不对金额 `parseFloat`。每个字段的单位与 decimals 由对应 Feature 按 Contract 确认。
+
+## API foundation（F6 / F6.1）
+
+- `shared/api/request-json.ts`：浏览器 / Worker 通用 JSON transport；不读环境变量、不持有凭据、不重试、支持 `AbortSignal`、意外 redirect 报错；支持 form 与 JSON body。
+- `shared/api/ori-backend.ts`：ORI service contract（`/v1/ori`、form POST、envelope 解包）。非 0 `error_code` → `BackendBusinessError`（`backendCode`、`backendMessage`；`message` 不含后端文本）；无 `data` → `InvalidResponseError`。
+- 错误：`NetworkError`、`AbortedError`、`HttpError`、`InvalidResponseError`、`BackendBusinessError`、`ConfigurationError`。
+- DTO 边界示例：`domains/token/api/get-asset-prices.ts` → `asset-price-dto.ts`（纯 mapper）→ `model/asset-price.ts`（`symbol`、`address?`、`price` 字符串、`isInner?`）。
+- 无 Server secret reader / signer：ORI 没有需要它的接口。
+
+## Security
+
+- `api-reference/` 只能记录可公开的接口事实（规则见其 README）。曾出现在 `user-api.md` 中的后台管理凭据已移除，需由 backend / admin owner 轮换。
+- Backend currently exposes internal stack traces for some error paths（Development 未知路径 404 返回 `exception` / `file` / `line` / `trace`）；backend owner should disable detailed exception output outside controlled debugging。前端不读取、不记录这类 body。
 
 ## Realtime
 
@@ -43,10 +110,10 @@
 | `round.new_round` | `.round.data.started` | 新一轮开始 | 公共频道 |
 | `round.reset` | `.round.data.reset` | 本轮开奖（reset） | 公共频道 |
 
-结果获取方式：实时事件推送 + 查询轮询（TanStack Query `refetchInterval`）+ 链上读取（`OreProtocolView`）。新项目中实时连接的 owner、断线重连与查询失效策略需在实现时按 `docs/state-management.md` 设计；不得复制模块级全局 Echo 单例。
+旧线上为 Pusher 协议 WebSocket；新项目变量 `NEXT_PUBLIC_WS_URL`。实时连接的 owner、断线重连与查询失效策略在 F7 按 `docs/state-management.md` 设计；不得复制模块级全局 Echo 单例。
 
 ## 不迁移
 
-- axios 实例、`qs` form-urlencoded 封装、md5 签名、cookie `login_token` / `login_secret`（Origin.fun）。
+- axios 实例、`qs` 封装、md5 签名、cookie `login_token` / `login_secret`（Origin.fun）。
 - 浏览器可见的 `NEXT_PUBLIC_APP_SECRET` 签名方案。
 - 401 / 403 / 404 一律"去登录"的错误处理。

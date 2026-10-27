@@ -7,6 +7,7 @@ const development = {
   NEXT_PUBLIC_PRIVY_APP_ID: "fake-dev-app",
   NEXT_PUBLIC_DEFAULT_EVM_CHAIN_ID: "97",
   NEXT_PUBLIC_EVM_RPC_URL: "https://bsc-testnet.example.test",
+  NEXT_PUBLIC_API_BASE_URL: "https://api-dev.example.test",
   NEXT_PUBLIC_ENABLE_VCONSOLE: "false",
   RESTRICTED_COUNTRIES: "CN",
 };
@@ -16,6 +17,7 @@ const production = {
   NEXT_PUBLIC_PRIVY_APP_ID: "fake-prod-app",
   NEXT_PUBLIC_DEFAULT_EVM_CHAIN_ID: "56",
   NEXT_PUBLIC_EVM_RPC_URL: "https://bsc-mainnet.example.test",
+  NEXT_PUBLIC_API_BASE_URL: "https://api.example.test",
   RESTRICTED_COUNTRIES: "CN,US",
 };
 
@@ -47,11 +49,31 @@ describe("env check", () => {
     });
   });
 
+  test("starter backend app id and secret stay optional for ORI", () => {
+    const results = checkEnvironment(development, "development");
+    expect(results).toContainEqual({
+      status: "SKIP",
+      name: "NEXT_PUBLIC_BACKEND_APP_ID",
+      note: "not set (optional)",
+    });
+    expect(
+      fails(
+        {
+          ...development,
+          NEXT_PUBLIC_BACKEND_APP_ID: "fake-backend-app",
+          BACKEND_APP_SECRET: "fake-backend-secret",
+        },
+        "development",
+      ),
+    ).toEqual([]);
+  });
+
   test.each([
     "NEXT_PUBLIC_APP_ENV",
     "NEXT_PUBLIC_PRIVY_APP_ID",
     "NEXT_PUBLIC_DEFAULT_EVM_CHAIN_ID",
     "NEXT_PUBLIC_EVM_RPC_URL",
+    "NEXT_PUBLIC_API_BASE_URL",
   ])("missing required %s fails", (key) => {
     expect(fails({ ...development, [key]: "" }, "development")).toContainEqual({
       status: "FAIL",

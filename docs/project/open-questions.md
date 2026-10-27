@@ -4,7 +4,7 @@
 
 优先级：**P0** 阻塞项目壳层或第一批实现；**P1** 阻塞对应 Feature；**P2** 上线前确认。
 
-已解决（不再列出，见 requirements C-01、C-02、C-08、C-09）：目标运行时（EVM / BSC）；开发链（BSC Testnet 97）；生产链（BSC Mainnet 56）；Privy Dev App（`cmkw81a5y00onkw0czubpy4hj`）；开发 RPC（BNB Chain 公开测试网 RPC）；Figma SOL / Solana 为占位；HarmonyOS Sans SC 字体文件来源（线上站点自带，授权仍需确认见 Q-05）。
+已解决（不再列出）：Q-44（ORI 没有后端登录 / 会话流程，没有任何接口需要 `BACKEND_APP_SECRET`）；Q-46（`NEXT_PUBLIC_BACKEND_APP_ID` / `BACKEND_APP_SECRET` 保留为 Starter capability，在 ORI 中不启用，人工决策）——Backend owner Confirmed，见 [api.md](./api.md#authentication--signing)。另见 requirements C-01、C-02、C-08、C-09：目标运行时（EVM / BSC）；开发链（BSC Testnet 97）；生产链（BSC Mainnet 56）；Privy Dev App（`cmkw81a5y00onkw0czubpy4hj`）；开发 RPC（BNB Chain 公开测试网 RPC）；Figma SOL / Solana 为占位；HarmonyOS Sans SC 字体文件来源（线上站点自带，授权仍需确认见 Q-05）。
 
 ## P0
 
@@ -21,7 +21,7 @@
 | # | Question | Why it matters | Current evidence | Blocked |
 | --- | --- | --- | --- | --- |
 | Q-10 | 当前部署基线已从 `ori-website` master 恢复、与线上一致，ABI 已原样复制并记录 sha256（F4）。仍未确认：各 UUPS 代理的**链上当前实现**是否与这些 ABI 一致（F4 不读链，F5 后可验证）；是否有合约仓库 / 已验证 ABI 及长期的部署 / 版本发布 owner；`AssetManager.deposit(…, "claim" \| "claim_bnb", …)` 的业务语义；BSC 97 缺少 WBNB 地址（仅影响测试网 BNB 价格查询） | 链上读写的最终正确性与长期维护 | `ori-website/config/chains.ts`、`constant/*.json`、调用点；线上 bundle | 链上读写最终验证、AssetManager 功能 |
-| Q-11 | 后端 API 是否继续为新版服务（`https://gate.game.com/v1/ori/*`）？各端点请求 / 响应 Contract？测试环境 host？ | 所有数据视图 | 23 个端点名已恢复，DTO 未恢复 | Read APIs |
+| Q-11 | 后端正式 Contract 已提供（`api-reference/`），Development 测试后端可用（F6.1）。仍未确认：Production host；Contract 未列出的 `round`（Mine 当前轮次）与 `swap/*`（起源 swap）由什么接口替代；失败 envelope 与 code 表；与运行时不一致的字段（`chain_asset_config.is_inner` / `price` 类型、`explore` 字段集）；`round_winners/round` 与 `round_started/round` 名称是否对调；`points/user` 在 Development 返回 `error_code 500` | 所有数据视图 | [api.md](./api.md#differences)；Development runtime | Read APIs、Mine 轮次、Production 配置 |
 | Q-12 | 交易 UX：签名中、已提交、确认中、成功、失败、取消的视觉？成功是否需要等待后端索引？ | 设计无交易状态 | 线上仅 toast | 所有交易 |
 | Q-13 | 后端是否需要鉴权？源码与线上均无登录会话（签名 `_post` 未使用），地址作为参数，用户数据可被任意查询 | 安全与 Backend Auth 阶段 | Source；Live | Backend Auth |
 | Q-14 | Production RPC：专用 provider / endpoint 与凭据边界（凭据不得进入前端）；生产读取是否部分走后端？ | 旧 QuickNode 凭据已泄露、不得复用 | 开发 RPC 已确认（C-08） | 生产 Web3 读写 |
@@ -53,8 +53,7 @@
 | Q-41 | 费率口径：About 的 1% 平台费、90% 奖池、6% / 10% / 4% 回购表述，与合约 `feeBps`、`vaultBps`、`claimFeeBps` 的对应关系；展示文案以哪个为准 | 文案与合约一致性 | Live About 自相矛盾 | About、Rules 展示 |
 | Q-42 | 奖励领取时限是多久？UI 是否提示即将过期？ | `ClaimWindowPassed` | OreProtocol | Rewards |
 | Q-43 | 上一轮结算（checkpoint）由 bot 完成，还是前端需要在部署前触发？ | `MustCheckpointPreviousRound` | OreProtocol | Deploy |
-| Q-44 | 哪些后端接口需要 `BACKEND_APP_SECRET`？签名算法与参数？ | 已确认为真实 Secret，但 ori.supply 源码中签名请求从未被调用 | `ori-website/service/tool.js` `_post` 调用 0 次 | Server / Worker 后端代理 |
-| Q-45 | ORI 哪些功能需要 IPFS 上传（`IPFS_JWT`）？ | 已确认为真实 Secret，但新版 Figma 与 ORI 源码中尚未确认上传功能 | — | IPFS 上传边界 |
+| Q-45 | 新版 ORI 是否需要 IPFS 上传（`IPFS_JWT`）？ | 已确认为真实 Secret；**ori.supply 无上传在用（F6）**：`utils/ipfs.ts`、`utils/pinata.ts` 无任何 import，其余仅为公开 gateway 图片读取 | `ori-website` 源码 | IPFS 上传边界 |
 
 ## 安全（需要人工处理，非开发问题）
 
@@ -63,3 +62,6 @@
 | S-01 | 轮换 `origin-website` 已提交 `.env` 中的全部 secret，并决定是否重写历史 / 设为私有 |
 | S-02 | 将 `origin-website` 历史中出现过的私钥视为泄露 |
 | S-03 | 轮换 QuickNode BSC 主网 / 测试网 RPC token（出现在 `origin-website`、`ori-website` 源码与线上 bundle） |
+| S-04 | 轮换曾写在 `api-reference/user-api.md` 中的后台管理系统凭据（已从文档移除，backend / admin owner 负责） |
+| S-05 | Backend currently exposes internal stack traces for some error paths; backend owner should disable detailed exception output outside controlled debugging |
+| S-06 | 轮换曾在对话中暴露的 `BACKEND_APP_SECRET` 值（属于其他带登录能力的项目，由该项目 backend / admin owner 负责；ORI 不使用，仓库不存储任何值） |

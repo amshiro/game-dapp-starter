@@ -32,8 +32,8 @@
 | --- | --- | --- | --- | --- |
 | `NEXT_PUBLIC_APP_ENV` | Public | 是 | 是 | `development` \| `production`，与 `NODE_ENV` 无关 |
 | `NEXT_PUBLIC_SITE_URL` | Public | 是 | 是 | 站点完整 origin（不带结尾 `/`），用于重定向、回调、绝对链接、分享 |
-| `NEXT_PUBLIC_API_BASE_URL` | Public | 是 | 是 | ORI 后端 API Base URL |
-| `NEXT_PUBLIC_BACKEND_APP_ID` | Public | 是 | 可能 | 后端要求的公开应用标识（≠ Privy App ID） |
+| `NEXT_PUBLIC_API_BASE_URL` | Public | 是 | 是 | ORI 后端 origin（不含 `/v1`；`/v1/ori` 由 API 层拼接） |
+| `NEXT_PUBLIC_BACKEND_APP_ID` | Public | 是 | 可能 | **Starter capability — inactive in current ORI**：带后端登录 / 签名项目的公开应用标识（≠ Privy App ID）；可选，ORI transport 不发送 |
 | `NEXT_PUBLIC_PRIVY_APP_ID` | Public | 是 | 是 | Privy App ID（≠ App Secret） |
 | `NEXT_PUBLIC_WS_URL` | Public | 是 | 是 | 实时 / WebSocket 客户端 endpoint，仅限浏览器安全地址 |
 | `NEXT_PUBLIC_REFERRAL_CODE` | Public | 是 | 可能 | 公开邀请 / 长链接标识；若具备认证权限须重新分类 |
@@ -42,7 +42,7 @@
 | `NEXT_PUBLIC_EVM_RPC_URL` | Public | 是 | 是 | 浏览器安全 RPC，须与 chainId 同一网络 |
 | `NEXT_PUBLIC_ENABLE_VCONSOLE` | Public | 是 | 否 | `true` / `false`，默认 false |
 | `RESTRICTED_COUNTRIES` | Server / Policy | 否 | 否 | 逗号分隔 ISO 3166-1 alpha-2，当前 `CN` |
-| `BACKEND_APP_SECRET` | Server Secret | **否** | 是 | 后端签名 / 鉴权 Secret |
+| `BACKEND_APP_SECRET` | Server Secret | **否** | 是 | **Starter capability — inactive in current ORI**：带后端登录项目的签名 / 鉴权 Secret；可选，ORI 不读取、无 signer |
 | `IPFS_JWT` | Server Secret | **否** | 是 | IPFS 服务授权 |
 | `CLOUDFLARE_ACCOUNT_ID` | Deploy | 否 | — | 部署目标账户 |
 | `CLOUDFLARE_API_TOKEN` | Deploy Secret | **否** | — | 部署工具凭据 |
@@ -65,6 +65,15 @@
 
 左列名称只允许出现在历史证据文档中，不得作为新项目运行时契约。旧项目以 `NEXT_PUBLIC_` 暴露 `APP_SECRET` / `JWT_KEY` 属于 Legacy Security Debt，不为兼容而延续。
 
+## Starter capability — inactive in current ORI
+
+`NEXT_PUBLIC_BACKEND_APP_ID` 与 `BACKEND_APP_SECRET` 是 `game-dapp-starter` 的跨项目能力，供带后端登录 / 请求签名的项目使用。ORI 没有后端登录体系，所有接口都不需要登录相关公共参数或签名参数（Backend owner Confirmed），因此在 ORI 中：
+
+- 两者都是**可选**，不是 ORI 必填配置；
+- ORI API transport 不发送 `NEXT_PUBLIC_BACKEND_APP_ID`；
+- `BACKEND_APP_SECRET` 仅限 Server / Worker，ORI 当前不读取，也不创建 signer 或 Server secret reader；
+- 启用它们的项目需作为新的架构变更设计 Server 边界。
+
 ## Secret Boundary
 
 ```text
@@ -74,12 +83,13 @@ IPFS_JWT
 CLOUDFLARE_API_TOKEN
 ```
 
-Secret 只能在 Next / Worker Server Boundary 中读取。未来流程（本阶段不实现）：
+Secret 只能在 Next / Worker Server Boundary 中读取。ORI 后端 API 不经过 Server：`Browser → ORI API transport → Backend`（无 Secret、无签名）。未来 IPFS 上传若确认（Q-45，本阶段不实现）：
 
 ```text
-Backend:  Browser → Server / Worker → BACKEND_APP_SECRET → Backend
 IPFS:     Browser → Server / Worker → IPFS_JWT → IPFS Provider
 ```
+
+`BACKEND_APP_SECRET` 在 ORI 中不启用（见 Starter capability）；若 ORI 未来新增后端登录体系，作为新的架构变更设计其 Server 边界。
 
 规则：
 
@@ -128,7 +138,7 @@ pnpm env:check:production   # 检查 production
 
 | 规则 | 说明 |
 | --- | --- |
-| 必填 | `NEXT_PUBLIC_APP_ENV`、`NEXT_PUBLIC_PRIVY_APP_ID`、`NEXT_PUBLIC_DEFAULT_EVM_CHAIN_ID`、`NEXT_PUBLIC_EVM_RPC_URL`；其余 Public 变量缺失为 `SKIP` |
+| 必填 | `NEXT_PUBLIC_APP_ENV`、`NEXT_PUBLIC_PRIVY_APP_ID`、`NEXT_PUBLIC_DEFAULT_EVM_CHAIN_ID`、`NEXT_PUBLIC_EVM_RPC_URL`、`NEXT_PUBLIC_API_BASE_URL`（F6.1：主要视图依赖后端）；其余 Public 变量缺失为 `SKIP`。Production 后端 host 未定前，`env:check:production` 预期因此失败，不填假值 |
 | 格式 | 与 parser 相同：`APP_ENV` 仅 development / production；URL 为 HTTP(S)（`SITE_URL` 仅 origin；`WS_URL` 仅 ws / wss）；chainId 为正安全整数；布尔严格 true / false；`RESTRICTED_COUNTRIES` 为 ISO alpha-2 列表 |
 | 一致性 | `APP_ENV` 必须等于所检查的 mode；development ⇒ 97，production ⇒ 56（映射来自 Chain Registry）；production 的 RPC 主机不得是测试网 |
 | 命名 | 旧名称（含 `NEXT_PUBLIC_APP_SECRET`、`NEXT_PUBLIC_JWT_KEY`）、带 Secret 类别的 `NEXT_PUBLIC_*`、契约外的 `NEXT_PUBLIC_*` 一律 `FAIL` |
@@ -140,5 +150,5 @@ pnpm env:check:production   # 检查 production
 
 | Task | Note |
 | --- | --- |
-| Server config reader | 为 `RESTRICTED_COUNTRIES`、`BACKEND_APP_SECRET`、`IPFS_JWT` 建立 Server-only 读取边界（F6） |
+| Server config reader | 只在出现真实调用方时建立：`IPFS_JWT`（Q-45）、`RESTRICTED_COUNTRIES`（Q-35） |
 | Contract coherence | Development 不得使用主网合约：合约来自部署注册表（F4），由注册表按 chainId 保证，届时补充校验 |

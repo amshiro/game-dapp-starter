@@ -29,12 +29,13 @@ export const LEGACY_KEYS: Readonly<Record<string, string>> = {
   NEXT_PUBLIC_SOLANA_RPC_URL: "nothing (not an ORI runtime)",
 };
 
-/** Required in every environment at the current stage: the confirmed EVM foundation. */
+/** Required in every environment at the current stage: EVM foundation + ORI backend. */
 const REQUIRED_PUBLIC_KEYS: readonly PublicConfigKey[] = [
   "NEXT_PUBLIC_APP_ENV",
   "NEXT_PUBLIC_PRIVY_APP_ID",
   "NEXT_PUBLIC_DEFAULT_EVM_CHAIN_ID",
   "NEXT_PUBLIC_EVM_RPC_URL",
+  "NEXT_PUBLIC_API_BASE_URL",
 ];
 
 const PUBLIC_SECRET_NAME = /SECRET|JWT|PRIVATE|PASSWORD|MNEMONIC|TOKEN|API_KEY/;
