@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useId, useState } from "react";
 import type { Address } from "viem";
+import { Modal } from "../../../shared/ui/modal/modal";
 import type { EvmChain } from "../../../shared/config/evm-chains";
 import { resolveLocale } from "../../../shared/i18n/locale";
 import {
@@ -95,7 +96,7 @@ function AddressRow({
   );
 }
 
-/** Wallet-local modal behavior; native top-layer focus isolation, ESC and restoration. */
+/** Wallet content and SDK-owned identity; shared Modal owns overlay behavior. */
 export function WalletSheet({
   identity,
   targetChain,
@@ -104,25 +105,8 @@ export function WalletSheet({
   onDisconnect,
 }: Props) {
   const text = resources[resolveLocale()];
-  const dialog = useRef<HTMLDialogElement>(null);
-  const backdropPress = useRef(false);
-  const titleId = useId();
   const balanceId = useId();
   const exportId = useId();
-  useEffect(() => {
-    const node = dialog.current;
-    if (!node) return;
-    const previousOverflow = document.body.style.overflow;
-    const previousFocus = document.activeElement;
-    node.showModal();
-    document.body.style.overflow = "hidden";
-    return () => {
-      node.close();
-      document.body.style.overflow = previousOverflow;
-      if (previousFocus instanceof HTMLElement && previousFocus.isConnected)
-        previousFocus.focus({ preventScroll: true });
-    };
-  }, []);
 
   const hasAddress = "address" in identity;
   const busy =
@@ -130,100 +114,69 @@ export function WalletSheet({
     identity.status === "connecting" ||
     identity.status === "synchronizing";
   return (
-    <dialog
-      ref={dialog}
-      className={styles.dialog}
-      aria-labelledby={titleId}
-      aria-modal="true"
-      onCancel={(event) => {
-        event.preventDefault();
-        onClose();
-      }}
-      onPointerDown={(event) => {
-        backdropPress.current = event.target === event.currentTarget;
-      }}
-      onClick={(event) => {
-        if (!backdropPress.current || event.target !== event.currentTarget)
-          return;
-        const bounds = event.currentTarget.getBoundingClientRect();
-        // Transparent native backdrop outside the ORI viewport is not a close target.
-        if (
-          event.clientX >= bounds.left &&
-          event.clientX <= bounds.right &&
-          event.clientY >= bounds.top &&
-          event.clientY <= bounds.bottom
-        )
-          onClose();
+    <Modal
+      title={text.title}
+      closeLabel={text.close}
+      open={true}
+      onOpenChange={(open) => {
+        if (!open) onClose();
       }}
     >
-      <section className={styles.sheet}>
-        <div className={styles.titleRow}>
-          <h2 id={titleId}>{text.title}</h2>
+      <div className={styles.card}>
+        <div className={styles.balanceRow}>
+          <div className={styles.balance}>
+            <p>{text.balance}</p>
+            <div className={styles.amount} aria-describedby={balanceId}>
+              — ORE
+            </div>
+          </div>
+          {/* Keep the Figma Export slot. No guessed action, SDK export or Receive. */}
           <button
             type="button"
-            className={styles.close}
-            aria-label={text.close}
-            onClick={onClose}
+            className={styles.export}
+            aria-disabled="true"
+            aria-describedby={exportId}
+            title={text.exportUnavailable}
           >
-            <Icon name="close" size={24} />
+            {text.export}
           </button>
+          <span id={exportId} className={styles.srOnly}>
+            {text.exportUnavailable}
+          </span>
+          <span id={balanceId} className={styles.srOnly}>
+            {text.balanceUnavailable}
+          </span>
         </div>
-        <div className={styles.card}>
-          <div className={styles.balanceRow}>
-            <div className={styles.balance}>
-              <p>{text.balance}</p>
-              <div className={styles.amount} aria-describedby={balanceId}>
-                — ORE
-              </div>
-            </div>
-            {/* Keep the Figma Export slot. No guessed action, SDK export or Receive. */}
-            <button
-              type="button"
-              className={styles.export}
-              aria-disabled="true"
-              aria-describedby={exportId}
-              title={text.exportUnavailable}
-            >
-              {text.export}
-            </button>
-            <span id={exportId} className={styles.srOnly}>
-              {text.exportUnavailable}
-            </span>
-            <span id={balanceId} className={styles.srOnly}>
-              {text.balanceUnavailable}
-            </span>
-          </div>
-          {hasAddress ? (
-            <AddressRow
-              key={`${identity.address}:${identity.walletChainId ?? "unknown"}`}
-              address={identity.address}
-              onDisconnect={onDisconnect}
-            />
-          ) : (
-            <p
-              className={styles.identityState}
-              role="status"
-              aria-busy={busy || undefined}
-            >
-              {busy ? text.loading : text.identityUnavailable}
-            </p>
-          )}
-        </div>
-        {identity.status === "chain-mismatch" ||
-        identity.status === "chain-unknown" ? (
-          <p className={styles.chainWarning} role="status">
-            {identity.status === "chain-mismatch"
-              ? text.wrongNetwork
-              : text.networkUnknown}{" "}
-            · {text.requiredNetwork}: {targetChain.name} ({targetChain.id})
-          </p>
-        ) : null}
-        {actionFailed && (
-          <p className={styles.chainWarning} role="alert">
-            {text.actionFailed}
+        {hasAddress ? (
+          <AddressRow
+            key={`${identity.address}:${identity.walletChainId ?? "unknown"}`}
+            address={identity.address}
+            onDisconnect={onDisconnect}
+          />
+        ) : (
+          <p
+            className={styles.identityState}
+            role="status"
+            aria-busy={busy || undefined}
+          >
+            {busy ? text.loading : text.identityUnavailable}
           </p>
         )}
-      </section>
-    </dialog>
+      </div>
+      {identity.status === "chain-mismatch" ||
+      identity.status === "chain-unknown" ? (
+        <p className={styles.chainWarning} role="status">
+          {identity.status === "chain-mismatch"
+            ? text.wrongNetwork
+            : text.networkUnknown}{" "}
+          · {text.requiredNetwork}: {targetChain.name} ({targetChain.id})
+        </p>
+      ) : null}
+      {actionFailed && (
+        <p className={styles.chainWarning} role="alert">
+          {text.actionFailed}
+        </p>
+      )}
+    </Modal>
   );
 }

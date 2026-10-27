@@ -24,6 +24,16 @@
   --ori-layout-bottom-nav-height: 52px;
   --ori-layout-header-control-height: 32px;
   --ori-layout-primary-control-height: 44px;
+
+  /* Modal defaults extracted from the approved Wallet surface, not its business card. */
+  --modal-background: var(--ori-color-surface);
+  --modal-border-color: var(--ori-color-border);
+  --modal-border-width: 0px;
+  --modal-radius: var(--ori-radius-sheet);
+  --modal-backdrop: rgb(0 0 0 / 65%);
+  --modal-max-width: var(--ori-layout-max-width);
+  --modal-color: var(--ori-color-text-primary);
+  --modal-focus-color: var(--ori-color-accent);
 }
 
 @theme inline {

@@ -24,11 +24,11 @@
 | --- | --- |
 | Figma | `2003:2487` / `2003:2490` |
 | H5 呈现 | 底部 Sheet，宽 100%，顶部圆角 16 |
-| PC 呈现 | **Confirmed**：同一底部 Sheet，最大 500px，与 ORI viewport 对齐；backdrop 也限制在该 viewport |
+| PC 呈现 | **User Confirmed（Shared Modal 修正）**：垂直居中 Modal，最大 500px，与 ORI viewport 对齐；backdrop 仍限制在该 viewport。覆盖此前 PC 同形贴底方案 |
 | 遮罩 | `#000000` 65% |
 | 关闭 | ✕（Confirmed）；点遮罩（Inferred，I-11）；ESC（可访问性要求） |
 | 拖拽关闭 | **无证据，不实现** |
-| 实现 | Wallet-local 原生 `<dialog>.showModal()`（top layer、ESC、焦点隔离/恢复、`aria-modal`）；打开状态归 Wallet Feature 本地 |
+| 实现 | Shared `Modal` 的原生 `<dialog>.showModal()`（top layer、ESC、焦点隔离/恢复、`aria-modal`）；打开状态归 Wallet Feature 本地 |
 
 交易确认弹窗、结果弹窗、滑点设置弹窗均未在新版设计中出现（Q-12）。
 

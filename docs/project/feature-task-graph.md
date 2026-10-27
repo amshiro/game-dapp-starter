@@ -142,7 +142,7 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 | API dependencies | 无。没有已确认 ORE 数据 owner，不猜端点或读取 backend mining fund |
 | Web3 dependencies | 直接消费 W1 的 Privy/Wagmi identity/chain；复制当前地址、Privy logout；不请求余额或 contract |
 | Realtime dependencies | 无 |
-| UI/Figma dependencies | `2003:2487/2490`：同一 bottom sheet，top radius 16；PC max-500/centered，对齐 viewport，backdrop 也仅覆盖 viewport；四个局部原始 SVG；不画系统 Home Indicator |
+| UI/Figma dependencies | `2003:2487/2490`：H5 bottom sheet，top radius 16；PC center Modal（当前用户修正），max-500，对齐 viewport，backdrop 也仅覆盖 viewport；四个局部原始 SVG；不画系统 Home Indicator |
 | Open Questions / Blockers | 限定 Scope READY：Q-21 已解决；ORE 数据 owner、Export 行为仍 Q-22，不阻塞 unavailable visual slot / 不可用控件；字体 fallback、Q-03 最终品牌不升级 |
 | Acceptance Criteria | Header open/close/reopen；刷新后可打开；账户/链切换即时使用 SDK 新事实，无旧地址/余额；`— ORE` 明示 unavailable，不用 48.60；Export 样式/原位置保留且 aria-disabled，不绑定动作；复制失败可重试，logout 失败不伪装成功；ESC、焦点隔离/恢复、backdrop、safe-area、375/500 无 overflow |
 | QA | 全部项目 QA；真实 Header/Sheet、刷新、账户/链往返；keyboard/close/copy/disconnect；375px 与 PC 500 居中，mock 与真实证据分开报告 |

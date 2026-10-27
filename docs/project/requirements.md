@@ -51,7 +51,7 @@
 | --- | --- | --- | --- |
 | C-20 | 新版底部导航 5 项：Mine · Points · Stake · Explore · About | Figma `2003:2921`；Live i18n `Header` 键 `home / points / stake / explore / about` 与之一致 | 线上当前为 挖矿 · 起源 · 质押 · 探索 · 关于，见 Q-01 |
 | C-21 | Header：Logo + ORI 价格；未连接 `Connect`；已连接显示缩短地址 | Figma；Live | |
-| C-22 | My Wallet 为 bottom sheet：H5 100%；PC 同形、max-500 居中且对齐 ORI viewport，backdrop 仅覆盖 ORI viewport；圆角 16、关闭与 safe-area | User Confirmed；Figma `2003:2487` | 不做 PC redesign，无拖拽关闭 |
+| C-22 | My Wallet 使用 Shared Modal 默认：H5 bottom sheet，PC center；max-500 对齐 ORI viewport，backdrop 仅覆盖 ORI viewport；圆角 16、关闭与 safe-area。当前用户明确决定覆盖旧 PC bottom 工程方案 | User Confirmed；Figma `2003:2487` | 不做 PC redesign，无拖拽关闭 |
 
 ### Mine（方块游戏）
 

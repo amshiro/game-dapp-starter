@@ -196,7 +196,7 @@ Safe area：设计以 34px Home Indicator 区表达底部安全区（User / Figm
 
 ### Bottom Sheet（Wallet）
 
-ORI viewport 内 65% 黑色遮罩（User Confirmed）；H5 宽 100%、PC 与 ORI viewport 对齐且最大 500px；Sheet 宽 100%，顶部圆角 16，`#191B1F`；48px 标题栏（16 Medium 居中，右侧 24px 关闭图标）；底部含安全区。没有拖拽手柄。
+ORI viewport 内 65% 黑色遮罩（User Confirmed）；H5 宽 100%、PC 与 ORI viewport 对齐且最大 500px；Shared Modal 默认 H5 bottom、PC center（User Confirmed，覆盖旧 PC bottom 工程方案）；500px 及以上启用 PC placement 是本轮工程分界，不是 Figma PC 稿。宽 100%，bottom 顶部圆角 16 / center 四角 16，`#191B1F`、外壳无可见 border（0px，border color token 仍可覆盖）；48px 标题栏（16 Medium 居中，右侧 24px 关闭图标）；底部含安全区。没有拖拽手柄。
 
 ### Accordion（About）
 

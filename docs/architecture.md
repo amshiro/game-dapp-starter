@@ -167,7 +167,7 @@ shared/
 
 Shared 代码不得导入 `domains` 或 `features`。其公开名称与内容必须保持业务中立。出现 `swap`、`tokenLaunch`、`claimReward`、`poolPosition` 等名称，通常意味着代码应归属到其他层级。
 
-`shared/lib`、`shared/ui` 以及任何 Shared 类型模块都必须严格控制。添加模块前，应明确其实际调用方，并确认其行为不含业务语义。仅被一个 Feature 使用的模块应留在该 Feature 内，除非已有可验证的提升理由。
+`shared/lib`、`shared/ui` 以及任何 Shared 类型模块都必须严格控制。添加模块前，应明确其实际调用方，并确认其行为不含业务语义。普通模块仅被一个 Feature 使用时应留在该 Feature 内；明确成立的 Starter / Design System UI primitive 是例外，不要求等第二个 Feature。去掉业务内容后仍完整成立、其他业务可直接复用，才符合该例外。
 
 ## 依赖规则
 
@@ -208,7 +208,18 @@ domains -> domains
 2. 当代码满足 Domain 创建标准时，提升至其所属 Domain；多个相互独立的 Feature 需要同一稳定业务模型或规则，是常见但非必要的触发条件；
 3. 仅当代码完全不含业务语义时，提升至 Shared。
 
-不得为了假设中的未来复用而提取代码。相比归属不清的过早抽象，少量局部重复更可取。
+Shared UI Reuse Audit 按语义而不是单纯次数判断：
+
+1. 明确的 Starter / Design System primitive：即使只使用一次也可直接进入 `src/shared/ui`。
+2. 业务无关且跨 Feature 复用：进入 Shared。
+3. 仅同 Feature 内重复：保持 Feature-local component。
+4. 含业务内容、数据或流程语义：保持所属 Feature / Domain；跨 Feature 重复也不自动变成 Shared。
+
+Modal / Overlay Shell 是已认可的基础 primitive：持有 backdrop、positioning、header/title/close slots、ESC、overlay click、focus/accessibility、scroll lock 和 responsive/safe-area 的通用能力；业务内容以 children 注入。默认设计从已验收 canonical implementation 提取，由全局 Design System tokens 与 Shared 持有；调用方仅覆盖特殊视觉，不重复传默认 Header/close icon。Shared 不识别 Wallet、余额或 Export。
+
+Resilient / Fallback Image 也是允许的内容图片 primitive，适用于 game/project/activity/list 内容图，可管理 loading/error、网站默认 fallback、object-fit/sizing；retry 仅在实际需要时添加。它不是全站图片强制替代，不默认用于 Avatar、Logo、Token、导航图标或装饰 SVG。必须先有明确 fallback 资产/配置和真实使用范围，不凭空选默认图片。
+
+该例外不授权预建 Card、Table、Section、Badge、Accordion、StatCard 或业务行。它们仍须有跨业务成立、Design System 明确认可或 Starter 长期实际需要的依据。不得为了假设中的未来复用而批量提取代码。
 
 ## API 归属
 

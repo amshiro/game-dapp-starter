@@ -1,0 +1,79 @@
+.dialog {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: var(--modal-max-width);
+  height: 100%;
+  height: 100dvh;
+  max-height: none;
+  margin: 0 auto;
+  padding: env(safe-area-inset-top, 0px) 0 0;
+  border: 0;
+  color: var(--modal-color);
+  background: var(--modal-backdrop);
+  overflow: hidden;
+  --modal-alignment: flex-end;
+  --modal-corners: var(--modal-radius) var(--modal-radius) 0 0;
+}
+.dialog[open] {
+  display: flex;
+  align-items: var(--modal-alignment);
+}
+.dialog[data-mobile-placement="center"] {
+  --modal-alignment: center;
+  --modal-corners: var(--modal-radius);
+}
+.dialog::backdrop {
+  background: transparent;
+}
+.panel {
+  width: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: var(--modal-border-width) solid var(--modal-border-color);
+  border-radius: var(--modal-corners);
+  background: var(--modal-background);
+  padding: 8px 16px calc(40px + env(safe-area-inset-bottom, 0px));
+}
+.header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  margin-bottom: 8px;
+}
+.header h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: normal;
+}
+.close {
+  position: absolute;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.close img {
+  display: block;
+}
+.close:focus-visible {
+  outline: 2px solid var(--modal-focus-color);
+  outline-offset: 2px;
+}
+@media (min-width: 500px) {
+  .dialog[data-desktop-placement="center"] {
+    --modal-alignment: center;
+    --modal-corners: var(--modal-radius);
+  }
+  .dialog[data-desktop-placement="bottom"] {
+    --modal-alignment: flex-end;
+    --modal-corners: var(--modal-radius) var(--modal-radius) 0 0;
+  }
+}

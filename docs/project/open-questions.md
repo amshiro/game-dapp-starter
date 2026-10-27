@@ -4,7 +4,7 @@
 
 优先级：**P0** 阻塞项目壳层或第一批实现；**P1** 阻塞对应 Feature；**P2** 上线前确认。
 
-已解决（不再列出）：Q-21（User Confirmed：H5/PC 同一 Bottom Sheet，max-500 对齐，backdrop 限于 ORI viewport，见 requirements C-22）；Q-13 / Q-44（ORI 没有后端登录 / 会话流程，没有任何接口需要 `BACKEND_APP_SECRET`）；Q-46（`NEXT_PUBLIC_BACKEND_APP_ID` / `BACKEND_APP_SECRET` 保留为 Starter capability，在 ORI 中不启用，人工决策）——Backend owner Confirmed，见 [api.md](./api.md#authentication--signing)。另见 requirements C-01、C-02、C-08、C-09：目标运行时（EVM / BSC）；开发链（BSC Testnet 97）；生产链（BSC Mainnet 56）；Privy Dev App（`cmkw81a5y00onkw0czubpy4hj`）；开发 RPC（BNB Chain 公开测试网 RPC）；Figma SOL / Solana 为占位。HarmonyOS Sans SC 现使用用户提供的本地 Variable WOFF2（由用户 TTF 完整转换）；本仓库接入已授权，许可发布条件审定仍见 Q-05。
+已解决（不再列出）：Q-21（User Confirmed：H5 bottom / PC center Modal（当前用户修正旧 PC bottom 决定），max-500 对齐，backdrop 限于 ORI viewport，见 requirements C-22）；Q-13 / Q-44（ORI 没有后端登录 / 会话流程，没有任何接口需要 `BACKEND_APP_SECRET`）；Q-46（`NEXT_PUBLIC_BACKEND_APP_ID` / `BACKEND_APP_SECRET` 保留为 Starter capability，在 ORI 中不启用，人工决策）——Backend owner Confirmed，见 [api.md](./api.md#authentication--signing)。另见 requirements C-01、C-02、C-08、C-09：目标运行时（EVM / BSC）；开发链（BSC Testnet 97）；生产链（BSC Mainnet 56）；Privy Dev App（`cmkw81a5y00onkw0czubpy4hj`）；开发 RPC（BNB Chain 公开测试网 RPC）；Figma SOL / Solana 为占位。HarmonyOS Sans SC 现使用用户提供的本地 Variable WOFF2（由用户 TTF 完整转换）；本仓库接入已授权，许可发布条件审定仍见 Q-05。
 
 R0 逐项结论与来源见 [r0-evidence-audit.md](./r0-evidence-audit.md)。`PARTIALLY CONFIRMED` 仅确认列明的事实，不代表新版产品范围或完整 Feature 已解锁。
 

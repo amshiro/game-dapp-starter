@@ -4,7 +4,7 @@
 Figma Concept → Component Candidate → Ownership → Reuse Strategy
 ```
 
-归属规则遵守 `docs/architecture.md` 与 `docs/design-system.md`：视觉相似不等于语义相同；只有去掉业务语义后仍是稳定 UI primitive，且被真实设计证明复用，才进入 `shared/ui`。**本文件不授权提前创建代码**，组件在第一个真实使用它的 Feature 实现时创建。
+归属规则遵守 `docs/architecture.md` 与 `docs/design-system.md`：视觉相似不等于语义相同；只有去掉业务语义后仍是稳定 UI primitive，且属于明确的 Starter primitive 或被真实使用证明跨业务复用，才进入 `shared/ui`。**本文件不授权提前创建代码**，组件在第一个真实使用它的 Feature 实现时创建。
 
 Figma 中没有 Component，以下候选全部从重复视觉中识别。
 
@@ -20,7 +20,7 @@ Figma 中没有 Component，以下候选全部从重复视觉中识别。
 | KeyValueRow | 部署面板 Blocks / Total、Stake Summary、Rewards 行、Autominer 行 | 带 / 不带 info 图标 | Mine、Stake、Rewards | |
 | DataTable | Points Records、Explore 三表 | 横向滚动；表头 / 行 | Points、Explore | 列定义由 Feature 提供 |
 | Pagination（‹ ›） | `2003:2883` 等 | 首页只有下一页 | Explore（Points 未画分页） | 圆形 28px 按钮 |
-| Sheet / Dialog primitive | `2003:2490` | H5/PC 同一底部 Sheet，max-500 对齐，viewport 内 backdrop | 目前只有 Wallet | Wallet-local 原生 dialog 提供 top layer、ESC、焦点隔离/恢复；本轮不新增 shared primitive/dependency，无拖拽关闭 |
+| Sheet / Dialog primitive | `2003:2490` | H5 bottom / PC center，max-500 对齐，viewport 内 backdrop | 目前只有 Wallet | `shared/ui/modal` 原生 dialog 提供 top layer、ESC、遮罩点击、焦点隔离/恢复与 scroll lock；默认视觉、标题栏与关闭资产由 Shared 提供；Wallet 仅注入业务内容/标题与关闭通知，无拖拽关闭 |
 | InfoHint（ⓘ） | `2003:1988` 等 | — | Stake Summary、Rewards | 说明内容与交互（tooltip / popover）未设计，暂时只渲染图标或等待确认 |
 | AboutAccordion | About 行 `2003:2245` 等 | 默认全收起、单项展开/再点可收起 | `features/about/components` | 局部 React state + 原生 button/ARIA，调用方注入标题/内容，无新 dependency 或 Shared abstraction |
 
@@ -82,7 +82,7 @@ Figma 中没有 Component，以下候选全部从重复视觉中识别。
 | safe-area | 适用于 Bottom Navigation 与 Sheet |
 | `visualViewport` 软键盘处理 | Mine / Stake 的输入框都在页面内而不在 Sheet 中，暂不需要 |
 | H5 底部 Sheet 下拉关闭 | **ORI 设计无证据，不实现** |
-| PC 居中 Dialog | 不采用；用户确认与 H5 同一底部 Sheet |
+| PC 居中 Dialog | 采用；当前用户确认 Shared 默认 H5 bottom、PC center，覆盖旧 PC bottom 方案 |
 
 ## F9 shell implementation
 

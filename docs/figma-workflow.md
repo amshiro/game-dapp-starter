@@ -167,7 +167,7 @@ Page-only components
 
 Inventory 是项目架构辅助材料，不是立即创建组件的命令。candidate 不等于 implementation。
 
-进入 shared/ui 前必须判断：去掉业务数据和业务行为后，它是否仍是稳定、有意义的 UI Primitive？出现两次或视觉相似，都不足以证明它属于 Shared。
+进入 shared/ui 前必须判断：去掉业务数据和业务行为后，它是否仍是稳定、有意义的 UI Primitive？出现两次或视觉相似，都不足以证明它属于 Shared。反之，明确成立的 Starter / Design System primitive 不必等待第二个 Feature：首次真实使用即可 Shared，按 architecture.md 的语义规则审计。
 
 Figma Component 也不等于 React Component。Figma 的设计组织方式不能替代 React 的 reuse、behavior、state、ownership 与 maintainability 判断。反之，代码中的重要业务组件也不要求在 Figma 中存在同名 Component。
 

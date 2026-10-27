@@ -245,7 +245,7 @@ features/<name>/components/
 - 主要承担视觉或通用 interaction primitive；
 - 能由 Token 驱动，并具备其应有的 accessibility 基础。
 
-Button、Input、Dialog primitive、Drawer primitive、Tabs、Tooltip、Spinner、Skeleton 与基础 Badge 可能属于此类，但本文不要求预建其中任何组件。
+Modal / Overlay Shell 与 Resilient / Fallback Image 已被认可为 Starter primitive 类别；这不要求现在创建尚无消费者或 fallback 配置的图片组件。Button、Input、Drawer、Tabs、Tooltip、Spinner、Skeleton 等仍按真实需求判断；不据此批量预建 Card/Table/Section/Badge/Accordion/StatCard。
 
 ### Domain 与 Feature Component
 
@@ -259,7 +259,7 @@ Button、Input、Dialog primitive、Drawer primitive、Tabs、Tooltip、Spinner�
 
 ### Promotion 与视觉相似性
 
-组件默认从页面局部、Feature 局部或 Domain 局部开始。只有真实设计和业务使用证明其复用稳定、归属清晰时，才提升到 Domain 或 \`shared/ui/\`。
+组件默认从页面局部、Feature 局部或 Domain 局部开始。**明确成立的 Starter / Design System primitive 是例外**：去掉业务内容后仍完整成立、其他业务可直接复用时，即使只有一个调用方，也可直接进入 `src/shared/ui`。普通组件不能只凭相似外观或预期复用提升。具体优先级和内容图片边界见 `docs/architecture.md` 的提升规则。
 
 视觉相似不等于业务相同。两个业务卡片可以共享 Card primitive，却保留独立的 \`PositionCard\` 与 \`RewardCard\` 语义。反过来，同一 semantic component 在 PC、H5 或不同状态下可以使用不同 presentation；不得因此复制两套完整的业务逻辑。
 
@@ -475,3 +475,17 @@ Tech Stack Baseline 不等于已经安装、接入或通过 Runtime 验证。实
 - component inventory 与 exact shared/ui components；
 - icon set、asset naming scheme 与 Radix package strategy；
 - Toast appearance、animation language 与 safe-area implementation。
+
+## Shared Modal 默认设计契约
+
+当前 `src/shared/ui/modal/modal.tsx` 的默认设计来自已验收的 Wallet Sheet（canonical implementation reference），业务内容不进入 Shared。调用方不重复配置默认视觉或关闭资产：
+
+- `open/onOpenChange` 受控，close / ESC / backdrop 统一请求 `onOpenChange(false)`；Shared 不保存业务 open state。
+- 默认 mobile bottom / desktop center，分别可覆盖。当前 CSS 在 500px 及以上使用 desktopPlacement（工程选择）；bottom 顶部圆角、center 四角圆角。
+- 默认 surface、border color、radius、backdrop、max width、foreground/focus 使用 `src/styles/tokens.css` 的 `--modal-*` tokens：当前 surface #191B1F、border color #25262A、外壳 border width 0、radius 16、black 65% backdrop、max-width 500。这里的 border 不是 Wallet 业务卡片的边框。
+- 默认 Header 高 48、下间距 8，标题 16px/500 居中；右侧 24px 关闭按钮及 `/ui/modal/close.svg` 是唯一默认关闭资产。panel 保留 canonical padding 8px 16px / bottom 40px + actual safe area。没有 header 时不渲染标题/默认关闭控件，自定义内容仍由调用方提供可访问名称。
+- `header="none"` 必须给 `ariaLabel`；默认 header 的 title 自动关联 dialog。`closeLabel` 可覆盖已本地化的默认 Close；高级场景可覆盖 closeIcon。
+- `closeOnBackdrop` / `closeOnEscape` 默认 true，可分别禁用；content 点击不触发 backdrop close。保留原生 dialog focus isolation、关闭后焦点恢复及 body scroll lock。
+- `className` / typed `style` CSS variables 可覆盖 background、borderColor、borderWidth、radius；不用额外 theme DSL，业务层不再重复默认值。Header/content 的业务语义不得进入 Shared。
+
+这是一种 Modal primitive，不预建嵌套 Sheet/全局弹层管理器、Drawer、Popover 或动画框架。

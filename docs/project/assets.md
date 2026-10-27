@@ -89,7 +89,7 @@ Replace with real project asset during implementation.
 
 ### W2 Wallet Sheet exports
 
-`public/ori/wallet/close.svg`（`2003:2499`，24×24）、`address-wallet.svg`（`2003:2520`，16×16）、`copy.svg`（`2003:2512`，14×14）、`disconnect.svg`（`2003:2507`，20×20）直接下载自本轮 Figma design context，保留 SVG 原始尺寸/geometry。Export 为文字控件，无独立 icon。透明返回图层 `2003:2495`、页面截图、系统 Home Indicator、Receive 和代币资产不导入。
+`public/ui/modal/close.svg`（`2003:2499`，24×24，Shared 默认关闭图标）、`address-wallet.svg`（`2003:2520`，16×16）、`copy.svg`（`2003:2512`，14×14）、`disconnect.svg`（`2003:2507`，20×20）直接下载自本轮 Figma design context，保留 SVG 原始尺寸/geometry。Export 为文字控件，无独立 icon。透明返回图层 `2003:2495`、页面截图、系统 Home Indicator、Receive 和代币资产不导入。
 
 ### A1 Accordion UI asset
 
@@ -100,3 +100,7 @@ Replace with real project asset during implementation.
 - `public/ori/explore/page-next.svg`、`page-previous.svg`：来自当前 `2003:2883/2886`，28×28，previous 依原父层水平翻转；同组其他分页节点已复核。仅本 Feature 使用。
 - `public/ori/explore/ori-token.png`：当前 Max Supply `2003:2663` 的原始 raster，以 16×16 渲染，不升级为最终 Q-03 品牌决定。
 - Buried/Protocol Rev 的 SOL 图标不导入；对应真实资产仍待 Q-03，当前 unavailable 数值位不使用猜测图标。无数据行时不渲染行内 token 资产。
+
+## Shared Modal close asset
+
+原 Wallet `close.svg` 已随 canonical shell 提升至 `public/ui/modal/close.svg`（24×24，来自 `2003:2499`）。只保留这一份，不再由每个 Feature 重传相同图标。
