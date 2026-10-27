@@ -1,0 +1,18 @@
+{
+  "title": "Stake",
+  "mode": "Stake mode",
+  "deposit": "Deposit",
+  "withdraw": "Withdraw",
+  "amount": "amount (ORI)",
+  "balance": "Bal:",
+  "summary": "Summary",
+  "totalDeposit": "Total deposit",
+  "apr": "APR",
+  "tvl": "TVL",
+  "loading": "Loading…",
+  "unavailable": "Data unavailable",
+  "error": "Could not load data",
+  "empty": "No data",
+  "actionsUnavailable": "Actions unavailable",
+  "percentage": "of available amount"
+}

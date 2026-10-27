@@ -1,5 +1,5 @@
-import { shellRoutes } from "../_shell/routes";
+import { StakePage } from "../../src/features/stake/stake-page";
 
 export default function Page() {
-  return <h1 className="text-page-title font-bold">{shellRoutes[2].label}</h1>;
+  return <StakePage />;
 }
