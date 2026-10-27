@@ -49,13 +49,21 @@ Figma 中的 SOL 图标、SOL 文案与 Solana 叙述是**设计占位**，不�
 | --- | --- | --- | --- | --- | --- |
 | `oreContract` — **OreProtocol** | 方块挖矿主合约：部署、自动挖矿、领奖、质押、回购埋藏；UUPS 代理 | `0xA1634f0B4417c753944239ea1a6bA5A97Ce0156f` | `0x8Cc12430C18187cE40002c9a67f803fc5591344a` | `ori-website/constant/OreProtocol.json`（`src/OreProtocol.sol`） | 高：源码 + 线上一致 |
 | `readOreContract` — **OreProtocolView** | 只读聚合视图 | `0x9BdAc803A7e2b83821dFc58651B73d3f983DEdD3` | `0xF2db01A5Ef364a55C9aCBDC2223711fB6Ea334A4` | `ori-website/constant/OreProtocolView.json` | 高 |
-| `ori` — **ORI token** | ERC20，`MAX_SUPPLY` / `cap`，`mint` / `burn` 受角色控制 | `0xBBF7cc1c4e3A0ed3F0b05C3700322D36ba210101` | `0x65Ca17cd1F049F54b40A3A2E622Fd67380Cb0101` | `ori-website/constant/OreToken.json` | 高 |
-| `origin` — **起源 token** | 起源代币（与 Origin.fun 相同合约） | `0xe75B8CF742Bb13342688d740C271368412664444` | `0x7048FaCAee7Dd8198AC4F7A390d3333741D8aA19` | 标准 ERC20（`OreToken.json` 中的 ERC20 部分适用于读取）；`origin-website` 同一合约 | 高 |
+| `ori` — **ORI token** | ERC20，`MAX_SUPPLY` / `cap`，`mint` / `burn` 受角色控制 | `0xBBF7cc1c4e3A0ed3F0b05C3700322D36ba210101` | `0x65Ca17cd1F049F54b40A3A2E622Fd67380Cb0101` | `ori-website/constant/OreToken.json`（`src/token/OreToken.sol`，完整 ABI，非精简 ERC20） | 高 |
+| `origin` — **起源 token** | 起源代币（与 Origin.fun 相同合约）；ORI 运行时**只用作价格查询的地址标识**（匹配后端 `chain_asset_config` 的 `aux_contract_addr`），无链上调用 | `0xe75B8CF742Bb13342688d740C271368412664444` | `0x7048FaCAee7Dd8198AC4F7A390d3333741D8aA19` | 无（不需要 ABI） | 高 |
 | `claimContract` — **AssetManager**（存取 / 埋藏） | `depositETH`、`deposit(…, "claim" \| "claim_bnb", …)`、`withdraw2`、`withdrawETH`、`bury`、`oriPointToken`；UUPS 代理 | `0x641fD5502c4bE2c4Bd7aA7aCaca0548cbAB319eA` | `0xb1D5F44E94Ab9428E6217c3517355c173F3544D0` | `ori-website/constant/AssetManager.json`（`src/AssetManager.sol`） | 高（`claim` / `claim_bnb` 语义见 Q-10） |
 | `oriSwap` | ORI 游戏交易挖矿：`buyOri`（payable）、`sellOri`、`amountOut`、`TradeVolume` 事件 | `0x6050c41Fa3395494feb87798CEaBB8840a8D0b67` | `0x7623c9d6385bae0c8bc24da6862e202bfdddec72` | `ori-website/constant/OriSwapRouterV2.json`（`src/OriSwapRouterV2.sol`） | 高；**新版 Figma 不含该功能** |
-| `bnb` | WBNB | `0xBB4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c` | （空） | `ori-website/config/chains.ts` | 高 |
+| `bnb` | WBNB；ORI 运行时**只用作 BNB 价格查询的地址标识**，无链上调用 | `0xBB4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c` | **缺失**（源码为空字符串） | 无（不需要 ABI） | 高 |
 
-ABI 文件尚未进入本仓库。实现时以 `ori-website/constant/*.json`（带 `contractName` / `sourceName` 的编译产物）为当前事实来源，按 owner 放置（`docs/architecture.md`）；如有合约仓库或 BscScan 已验证 ABI，应优先核对。地址均为 UUPS 代理，代理当前实现版本需在实现前复核（Q-10）。
+### Contract Registry（F4）
+
+- 部署事实与 ABI 由 `shared/config` 中的 Contract Registry 持有（跨 Mine / Stake / Rewards / Explore 共享的公共合约配置，见 `docs/architecture.md`）；Chain Registry 只持有链身份。
+- `chainId → deployment set`：56 与 97 各自独立；不支持的链、未知合约名、缺失的地址一律 fail closed，无默认地址或跨链 fallback。
+- **Contracts**（带 ABI）：`oreProtocol`、`oreProtocolView`、`oriToken`、`assetManager`、`oriSwap`。ABI 从 `ori-website/constant/*.json`（master）**原样复制**（仅 `abi` 数组，不含 bytecode），记录来源与 sha256，测试校验内容未被修改；不提供精简或共享的 ERC20 ABI，ORI token 使用完整 `OreToken` ABI。
+- **Assets**（仅地址标识，无 ABI）：`originToken`、`wbnb`。
+- 合约地址不属于环境变量；`APP_ENV → Chain Registry → Contract Registry` 决定部署。
+- 地址只做语法校验（0x + 40 hex、非零、跨链不复用）；checksum 校验在 F5 引入 Viem 后补充。地址均为 UUPS 代理，代理当前实现版本见 Q-10。
+- **已知缺口**：BSC 97 无 WBNB 地址（仅影响测试网 BNB 价格查询，不影响合约交互）。
 
 ## Mine（方块游戏）协议事实
 

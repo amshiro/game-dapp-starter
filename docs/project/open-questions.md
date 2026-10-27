@@ -20,7 +20,7 @@
 
 | # | Question | Why it matters | Current evidence | Blocked |
 | --- | --- | --- | --- | --- |
-| Q-10 | 代理合约当前实现是否与 `ori-website/constant/*.json` 一致？是否有合约仓库 / 已验证 ABI？测试网地址是否可用于新开发？`AssetManager.deposit(…, "claim" \| "claim_bnb", …)` 的业务语义？ | 所有链上读写 | 地址与 ABI 已从源码确认，与线上一致（见 web3.md） | 交易、链上读取 |
+| Q-10 | 当前部署基线已从 `ori-website` master 恢复、与线上一致，ABI 已原样复制并记录 sha256（F4）。仍未确认：各 UUPS 代理的**链上当前实现**是否与这些 ABI 一致（F4 不读链，F5 后可验证）；是否有合约仓库 / 已验证 ABI 及长期的部署 / 版本发布 owner；`AssetManager.deposit(…, "claim" \| "claim_bnb", …)` 的业务语义；BSC 97 缺少 WBNB 地址（仅影响测试网 BNB 价格查询） | 链上读写的最终正确性与长期维护 | `ori-website/config/chains.ts`、`constant/*.json`、调用点；线上 bundle | 链上读写最终验证、AssetManager 功能 |
 | Q-11 | 后端 API 是否继续为新版服务（`https://gate.game.com/v1/ori/*`）？各端点请求 / 响应 Contract？测试环境 host？ | 所有数据视图 | 23 个端点名已恢复，DTO 未恢复 | Read APIs |
 | Q-12 | 交易 UX：签名中、已提交、确认中、成功、失败、取消的视觉？成功是否需要等待后端索引？ | 设计无交易状态 | 线上仅 toast | 所有交易 |
 | Q-13 | 后端是否需要鉴权？源码与线上均无登录会话（签名 `_post` 未使用），地址作为参数，用户数据可被任意查询 | 安全与 Backend Auth 阶段 | Source；Live | Backend Auth |

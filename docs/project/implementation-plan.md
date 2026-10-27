@@ -18,10 +18,10 @@
 
 | # | Task | Depends on | Verifiable outcome |
 | --- | --- | --- | --- |
-| F1 | Environment Parser Alignment + `env:check` — **COMPLETE（待审核）** | Environment Contract V1 | public config parser 只读取契约变量；`APP_ENV` 仅 development / production；`pnpm env:check` / `env:check:production` 只输出变量名 + PASS / FAIL / SKIP |
+| F1 | Environment Parser Alignment + `env:check` — **COMPLETE** | Environment Contract V1 | public config parser 只读取契约变量；`APP_ENV` 仅 development / production；`pnpm env:check` / `env:check:production` 只输出变量名 + PASS / FAIL / SKIP |
 | F2 | （并入 F1） | — | — |
-| F3 | BSC Chain Registry — **COMPLETE（待审核）** | F1 | 97 / 56 链定义与浏览器信息由注册表提供，不来自 env；environment → chain 映射只有注册表一个代码 owner |
-| F4 | Contract Registry / ABI integration | F3；Q-10 | `chainId → address + ABI`，ABI 来自 `ori-website/constant/*.json` |
+| F3 | BSC Chain Registry — **COMPLETE** | F1 | 97 / 56 链定义与浏览器信息由注册表提供，不来自 env；environment → chain 映射只有注册表一个代码 owner |
+| F4 | Contract Registry / ABI integration — **COMPLETE（待审核）** | F3；Q-10 | `chainId → address + ABI`，ABI 原样来自 `ori-website/constant/*.json`；56 / 97 合约集完整，BSC 97 缺 WBNB 价格查询地址 |
 | F5 | Privy + Wagmi + Viem | F1、F3 | 开发环境（Privy Dev App + BSC 97）连接 / 断开；EVM capability gating 生效 |
 | F6 | API Transport / Server Secret Boundary | F1；Q-11、Q-44 | `shared/api` transport；`BACKEND_APP_SECRET` 仅在 Server / Worker |
 | F7 | Realtime Foundation | F1、F6 | `NEXT_PUBLIC_WS_URL` 连接与频道订阅的 owner 与生命周期 |
