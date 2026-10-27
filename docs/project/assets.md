@@ -94,3 +94,9 @@ Replace with real project asset during implementation.
 ### A1 Accordion UI asset
 
 `public/ori/about/chevron-right.svg` 为当前 About 的原始 16×16 矢量（`2003:2257`，design context 下载）。展开稿 `2003:2249` 使用相同 SVG 与 -90° 旋转；两份导出文件 hash 相同，因此只保留一份资产，按 Figma 旋转显示。分隔线是 CSS 1px / dash 4 / gap 4；不导入 Figma 正文、页脚、系统 UI 或外链资产。
+
+## Explore Core UI assets
+
+- `public/ori/explore/page-next.svg`、`page-previous.svg`：来自当前 `2003:2883/2886`，28×28，previous 依原父层水平翻转；同组其他分页节点已复核。仅本 Feature 使用。
+- `public/ori/explore/ori-token.png`：当前 Max Supply `2003:2663` 的原始 raster，以 16×16 渲染，不升级为最终 Q-03 品牌决定。
+- Buried/Protocol Rev 的 SOL 图标不导入；对应真实资产仍待 Q-03，当前 unavailable 数值位不使用猜测图标。无数据行时不渲染行内 token 资产。

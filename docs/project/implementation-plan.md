@@ -10,7 +10,7 @@
 | Product & Runtime Reconstruction | COMPLETE |
 | Environment Contract V1（[environment.md](./environment.md)） | COMPLETE |
 | Project Knowledge Lock | COMPLETE（对应 Feature Unknown 继续保留） |
-| Implementation Foundation | F1–F9 COMPLETE；F10 规划完成，待审核 |
+| Implementation Foundation | F1–F10 COMPLETE；W1/W2、A1 Accordion 子集、Typography 已审核并 push；完整 A1 仍阻塞 |
 
 ## Implementation Foundation task graph
 
@@ -27,7 +27,9 @@
 | F7 | Realtime Foundation — **COMPLETE** | F1、F6；Q-47 | Pusher 协议客户端（`pusher-js`，懒加载）；`NEXT_PUBLIC_WS_URL` + `NEXT_PUBLIC_PUSHER_APP_KEY`；按需连接、引用计数订阅、去重、重连后 `resync`、空闲释放、payload 边界；realtime 只触发 Query invalidation，polling 保留（[api.md](./api.md#realtime)）；Development 实时服务 502，真实事件未观察到 |
 | F8 | Design Foundation — **COMPLETE** | Q-05 继续保留许可条款审定/发布边界 | Semantic tokens、global styles、ORI viewport；Typography Foundation 已接入用户提供的 HarmonyOS Sans SC variable，全局单一字体 owner，CSS 400/500/700，fallback 保留 |
 | F9 | App Shell — **COMPLETE** | F8 | ORI viewport、sticky Header、fixed Bottom Navigation、safe-area、pathname active state；五个标题占位页，用户确认 URL 映射与根路径跳转见 routes.md；Wallet / Header price data 待后续接入 |
-| F10 | Feature Task Graph — **COMPLETE** | F1–F9 | [逐票据 Scope、READY / PARTIALLY BLOCKED / BLOCKED、依赖与 Human Gates](./feature-task-graph.md)；W1 已审核并 push；[R0 静态证据审计](./r0-evidence-audit.md) 已完成，下一张建议 W2（先过 Q-21/Q-22 Gate） |
+| F10 | Feature Task Graph — **COMPLETE** | F1–F9 | [逐票据 Scope、READY / PARTIALLY BLOCKED / BLOCKED、依赖与 Human Gates](./feature-task-graph.md)；W1 已审核并 push；[R0 静态证据审计](./r0-evidence-audit.md) 已完成，W2 已审核并 push；A1 Accordion 子集已审核并 push，正式正文仍 OPEN；E1 Core UI 已完成并通过人工审核，数据 Gate 未通过 |
+
+Typography Foundation 已完成、审核并 push：Starter 单一 HarmonyOS Sans SC Variable WOFF2，完整 wght 40–900，许可文件保留。E1 Core UI 只交付正式 /explore 的展示结构，真实数据接入仍为 PARTIALLY BLOCKED（Q-27/Q-11）。
 
 每个任务单独实现、单独 QA，不跨任务顺手实现。
 

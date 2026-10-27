@@ -1,5 +1,5 @@
-import { shellRoutes } from "../_shell/routes";
+import { ExplorePage } from "../../src/features/explore/explore-page";
 
 export default function Page() {
-  return <h1 className="text-page-title font-bold">{shellRoutes[3].label}</h1>;
+  return <ExplorePage />;
 }

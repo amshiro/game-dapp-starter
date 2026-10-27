@@ -123,7 +123,9 @@ Step3  获胜方块保持点亮 10s
 
 - **Confirmed**：挖矿、母矿、回购记录与分页（C-60）。
 - **Inferred**：H5 表格横向滚动（I-31）。
-- **Unknown**：新版范围（Q-27）。
+- **Confirmed（E1 Core UI Human Gate）**：正式 `/explore` 只交付当前四张统计卡、Mining/Motherlodes/Buybacks 三表及分页结构，无旧版多分支。未接数据时统计值为 `—`，表格没有数据行，显示中性 `Data unavailable`。
+- **Implementation decision**：Feature typed display model 支持 loading/empty/error/unavailable/populated；已确认空列表与尚无数据源分别显示 No records / Data unavailable。无真实分页 metadata 不显示 current page/total/count，prev/next 使用原生 disabled；未来数据 owner 提供 currentPage/hasPrevious/hasNext 与受控回调，当前页可识别，不建本地假页数。
+- **Unknown**：完整数据范围、Buybacks 类型与 Q-11 字段/单位/ID；保持 Q-27，未接 API/Realtime。Figma 营销副标题本轮不进入正式文案；SOL Spent 按已锁链事实显示 BNB Spent，不导入 SOL 资产。
 
 ## About
 

@@ -1,10 +1,10 @@
 # ORI Feature Task Graph
 
-本文件是 F10 的执行票据入口。基线为已审核的 F1–F9、已审核并 push 的 W1 与当前 Repository；R0 仅更新证据和文档，没有实现后续 Feature。任务 ID 表示交付顺序与验收边界，不代表新增目录、全局 abstraction 或外部操作授权。
+本文件是 F10 的执行票据入口。基线为已审核的 F1–F9、已审核并 push 的 W1/W2、A1 Accordion 子集、Typography 与当前 Repository；R0 仅更新证据和文档，没有实现后续 Feature。任务 ID 表示交付顺序与验收边界，不代表新增目录、全局 abstraction 或外部操作授权。
 
 ## 基线与事实边界
 
-- `app/_shell/routes.ts` 是导航映射唯一 owner：`/mine`、`/points`、`/stake`、`/explore`、`/about`；`/` redirect 到 `/mine`。五个页面现在都只有标题。
+- `app/_shell/routes.ts` 是导航映射唯一 owner：`/mine`、`/points`、`/stake`、`/explore`、`/about`；`/` redirect 到 `/mine`。`/explore` 已接入 E1 Core UI；其余四个路由仍只有标题。
 - F9 Header 的 Connect 在 W1 中已接入 SDK 登录与只读身份；W2 已接入 Sheet；价格与真实余额数据未接入。W1 已通过人工审核并完成 commit/push；实现与自动化验证已落地，真实连接/正确链 97 已验证；稳定 OKX profile 刷新 5/5、账户切换及实际链切换往返已由用户验收；取消重试、受控 provider 错误恢复及视觉检查通过，证据见 web3.md。不解锁资金流程。原 profile A 已归类为 Development browser profile issue / non-application blocker（见 web3.md），停止调查且不添加恢复 workaround。
 - F6 提供 ORI form POST transport、错误边界和 Token price mapper；没有各 Feature 的 Query hooks。ORI 不需要后端登录、App ID 或签名。Q-13 已按已有 Backend owner 确认移出问题清单，答案见 requirements C-82 与 [api.md](./api.md#authentication--signing)，不得重新实现 Backend Auth。
 - F7 是懒连接、引用计数、去重、重连 resync 的基础能力；事件 payload 仍为 unknown，Development 502 与真实事件未观察到的 Q-47 没有解决。本轮未重新探测服务。
@@ -24,11 +24,11 @@
 | --- | --- | --- | --- |
 | R0 | 只读数据与合约证据核对（支撑票据） | READY | 限定静态审计已完成，见 R0 报告；Q-10/Q-11 未关闭，链上与新服务验证尚未执行 |
 | W1 | Development 钱包连接与 identity | READY | 已完成限定行为、QA、人工审核及 commit/push；不包含余额、Sheet 或交易 |
-| A1 | About accordion 与正式内容 | PARTIALLY BLOCKED | 已批准并实现隔离 Accordion UI/Interaction 子集，待审核；完整 A1 仍受正式正文/链接、Q-41/Q-30 阻塞，正式 /about 未替换 |
-| W2 | Wallet Sheet Core：身份、复制/断开、ORE visual slot、Export UI | READY | Human Gate 已锁定；本轮实现后待人工审核。无真实余额、Receive 或 Export 行为 |
+| A1 | About accordion 与正式内容 | PARTIALLY BLOCKED | Accordion UI/Interaction 子集已完成、人工审核并 push；完整 A1 仍受正式正文/链接、Q-41/Q-30 阻塞，正式 /about 未替换 |
+| W2 | Wallet Sheet Core：身份、复制/断开、ORE visual slot、Export UI | READY | 限定 Core 已完成、人工审核并 push。无真实余额、Receive 或 Export 行为 |
 | W3 | Wallet export / receive | BLOCKED | W2、Q-22；不能把外部钱包解释成可导出私钥 |
 | H1 | Header ORI price | PARTIALLY BLOCKED | 已有 transport/mapper；旧 ORI/getPrice 来源已确认，97 数据集/价格单位与 Q-11 字段语义待确认 |
-| E1 | Explore read/UI | PARTIALLY BLOCKED | 可核对 DTO 与现有设计；Q-27 范围/type、Q-11 circulating_supply 缺失与状态设计未锁定 |
+| E1 | Explore read/UI | PARTIALLY BLOCKED | 用户已批准 E1 Core UI 正式接入 /explore；四卡/三表、受控分页与中性读取状态已完成并通过人工审核；真实数据仍受 Q-27/Q-11 阻塞 |
 | P1 | Points read/UI | BLOCKED | Q-01、Q-20、Q-11 `points/user` 500；不能先写积分公式 |
 | S1 | Stake read/UI | PARTIALLY BLOCKED | R0/W1；Summary 与读取可拆出，Q-26 范围、Q-24 提示、资产/状态仍未齐 |
 | S2 | Stake deposit / withdraw | BLOCKED | S1/W1；Q-10、Q-12、金额/allowance/完成契约与安全 Gate |
@@ -186,7 +186,7 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 
 | Field | Ticket |
 | --- | --- |
-| Goal | 实现经确认范围的统计、Mining/Motherlodes/Buybacks 分页与表格 |
+| Goal | E1 Core UI：当前四卡、Mining/Motherlodes/Buybacks 三表与受控分页，正式接入 /explore；完整票据后续接真实数据 |
 | Route | `/explore` |
 | Owner / Dependencies | `features/explore`；F6/F9；R0 的对应后端证据通过；公开数据不要求钱包登录 |
 | Source of Truth | C-60、Q-27、api-reference 正式 Contract 与 api.md Differences；旧调用只作证据 |
@@ -194,7 +194,7 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 | Web3 dependencies | 无默认合约调用；链维度用于隔离数据集，链上 explorer URL 来自 Registry |
 | Realtime dependencies | 无必需订阅；不要复制 Mine 事件接线 |
 | UI/Figma dependencies | `2003:2534`、`2003:2659` 等统计卡、`2003:2883` 等分页；375px 表格局部滚动 |
-| Open Questions / Blockers | PARTIALLY BLOCKED：可核对 DTO/单位与表结构；Q-27 旧多标签是否保留、Q-11 缺 circulating_supply/number-string 差异、不安全 number ID、加载/空/错误与资产待定；不能先决定隐藏字段 |
+| Open Questions / Blockers | PARTIALLY BLOCKED：Core UI 子集已获用户授权；无 metadata 不显示页码，prev/next 禁用，统计 —、三表 Data unavailable；中性 loading/empty/error/populated 接受 typed display props，不接 API。完整数据接入仍需 Q-27 新版数据范围与回购类型映射、Q-11 缺 circulating_supply/number-string 差异、不安全 number ID、加载/空/错误与资产待定；不能先决定隐藏字段 |
 | Acceptance Criteria | G-P/G-D/G-V 后完成；不虚构缺失统计；分页/filter Query identity 完整；大整数行 ID 不用已丢精度值；表格滚动不造成整页 overflow |
 | QA | 通用 QA；DTO 缺字段/超大 ID、分页边界与过滤、错误/无记录、375/500 长表 |
 | Non-goals | 起源/ORI 游戏页面、swap、交易、用相似 Table 提前造通用系统 |
