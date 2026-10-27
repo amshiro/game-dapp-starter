@@ -40,6 +40,17 @@ source code、`package.json`、lockfile、config 与 Git working tree 是当前�
 
 不得只根据文档猜测当前项目状态。
 
+### 项目文档
+
+如果存在 `docs/project/`，实现项目相关工作前必须先读取 `docs/project/README.md` 及与当前任务相关的项目文档。
+
+```text
+docs/project/*  → 项目专属事实（需求、视觉、页面、资产、未决问题）
+docs/*.md       → 可复用的全局工程规范
+```
+
+项目文档中标记为 Unknown 或列入未决问题的事项，不得自行补默认值。不得把项目专属事实写入 `AGENTS.md` 或全局 `docs/*.md`。
+
 ### 按任务类型读取专项规范
 
 | 任务类型 | 必须额外读取 |
