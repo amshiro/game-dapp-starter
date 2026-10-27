@@ -20,7 +20,7 @@ Figma 中没有 Component，以下候选全部从重复视觉中识别。
 | KeyValueRow | 部署面板 Blocks / Total、Stake Summary、Rewards 行、Autominer 行 | 带 / 不带 info 图标 | Mine、Stake、Rewards | |
 | DataTable | Points Records、Explore 三表 | 横向滚动；表头 / 行 | Points、Explore | 列定义由 Feature 提供 |
 | Pagination（‹ ›） | `2003:2883` 等 | 首页只有下一页 | Explore（Points 未画分页） | 圆形 28px 按钮 |
-| Sheet / Dialog primitive | `2003:2490` | H5 bottom / PC center，max-500 对齐，viewport 内 backdrop | 目前只有 Wallet | `shared/ui/modal` 原生 dialog 提供 top layer、ESC、遮罩点击、焦点隔离/恢复与 scroll lock；默认视觉、标题栏与关闭资产由 Shared 提供；Wallet 仅注入业务内容/标题与关闭通知，无拖拽关闭 |
+| Sheet / Dialog primitive | `2003:2490` | H5 bottom / PC center，面板 PC 400px 居中，全屏 backdrop | 目前只有 Wallet | `shared/ui/modal` 原生 dialog 提供 top layer、ESC、遮罩点击、焦点隔离/恢复与 scroll lock；默认视觉、标题栏与关闭资产由 Shared 提供；Wallet 仅注入业务内容/标题与关闭通知，无拖拽关闭 |
 | InfoHint（ⓘ） | `2003:1988` 等 | — | Stake Summary、Rewards | 说明内容与交互（tooltip / popover）未设计，暂时只渲染图标或等待确认 |
 | AboutAccordion | About 行 `2003:2245` 等 | 默认全收起、单项展开/再点可收起 | `features/about/components` | 局部 React state + 原生 button/ARIA，调用方注入标题/内容，无新 dependency 或 Shared abstraction |
 
@@ -39,7 +39,7 @@ Figma 中没有 Component，以下候选全部从重复视觉中识别。
 | --- | --- | --- |
 | ConnectButton | Header `Connect`、部署面板 `Connect wallet` | 两处样式不同，共享连接行为 |
 | WalletButton（缩短地址） | `2003:999` | 打开 WalletSheet |
-| WalletSheet | `2003:2490` | ORE unavailable visual slot、不可用 Export UI、地址复制/断开；SDK 身份唯一 owner；Receive 排除；真实余额/Export 行为见 Q-22 |
+| WalletSheet | `2003:2490` | ORE unavailable visual slot、external-only：隐藏 Export / Receive、地址复制/断开；SDK 身份唯一 owner；Receive 排除；真实 ORE owner 见 Q-22；未来 embedded 另过 Gate |
 | AddressDisplay + Copy | Wallet Sheet、Miners 列表、Explore 表格 | 缩短规则：设计为 `0x12…3456` / `0xAB…CDEF`（EVM 地址）；格式化 primitive 可放 `shared/web3`，复制交互可共享 |
 
 ## Mining Feature（`features/mining`）
@@ -86,6 +86,6 @@ Figma 中没有 Component，以下候选全部从重复视觉中识别。
 
 ## F9 shell implementation
 
-`app/_shell/` owns the project shell: sticky Header, semantic Main, fixed BottomNavigation limited to the ORI viewport. Bottom content padding reserves 52px plus the actual device bottom safe area; Header adds the actual top safe area outside its 56px row. `usePathname` drives `aria-current` directly, without a route store.
+`app/_shell/` owns the project shell: full-width sticky Header (PC horizontal padding 120px), semantic Main capped at 500px centered, fixed BottomNavigation capped at 500px centered. Bottom content padding reserves 52px plus the actual device bottom safe area; Header adds the actual top safe area outside its 56px row. `usePathname` drives `aria-current` directly, without a route store.
 
 The current Figma Header artwork is replaceable pending Q-03. Header price data remains absent pending Q-23; no sample price is rendered. F9 originally reserved a disabled Connect button; W1 now composes `features/wallet/WalletHeader` for SDK login and read-only identity, including readiness, cancellation, failure and chain mismatch. The connected capsule follows `2003:999` (110×32, 14×14 icon); W2 adds the Sheet trigger and product disconnect UI; no balance data or export behavior is inferred. Navigation labels use the current Figma English names under the existing en-only locale policy; Q-30 remains open.

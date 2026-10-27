@@ -8,7 +8,7 @@ import type {
   ReadDisplay,
   ExploreSectionId,
 } from "../model/explore-display";
-import { exploreCopy as copy } from "../copy";
+import { useExploreCopy } from "../copy";
 import { ExplorePagination } from "./explore-pagination";
 import styles from "./explore.module.css";
 
@@ -23,6 +23,7 @@ export function ExploreTableSection({
   pagination?: PaginationDisplay;
   onPageChange?: (page: number) => void;
 }>) {
+  const copy = useExploreCopy();
   const heading = useId();
   const buybacks = kind === "buybacks";
   const columns = buybacks

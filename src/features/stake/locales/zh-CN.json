@@ -1,0 +1,23 @@
+{
+  "title": "质押",
+  "mode": "质押模式",
+  "deposit": "存入",
+  "withdraw": "取出",
+  "amount": "数量（ORI）",
+  "balance": "余额：",
+  "summary": "概览",
+  "totalDeposit": "总质押量",
+  "apr": "年化收益率",
+  "tvl": "总锁仓价值",
+  "loading": "加载中…",
+  "unavailable": "数据暂不可用",
+  "error": "数据加载失败",
+  "empty": "暂无数据",
+  "actionsUnavailable": "操作暂不可用",
+  "percentage": "可用数量",
+  "disconnected": "钱包未连接",
+  "wrongChain": "网络错误",
+  "refresh": "刷新",
+  "availableBalance": "可用 ORI 余额",
+  "stakedBalance": "已质押 ORI 余额"
+}

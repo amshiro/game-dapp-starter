@@ -7,7 +7,7 @@ import {
   type StakeMode,
   type StakeReadValue,
 } from "../model/stake-display";
-import { stakeCopy as copy } from "../copy";
+import { useStakeCopy } from "../copy";
 import styles from "./stake.module.css";
 
 export function StakePanel({
@@ -21,6 +21,7 @@ export function StakePanel({
   onRefresh?: () => void;
   refreshing: boolean;
 }>) {
+  const copy = useStakeCopy();
   const [mode, setMode] = useState<StakeMode>("deposit");
   const balance = mode === "deposit" ? available : staked;
   const id = useId();

@@ -1,3 +1,6 @@
+"use client";
+
+import { useWalletCopy } from "../copy";
 import type { EvmChain } from "../../../shared/config/evm-chains";
 import type { ConnectionNotice } from "../model/connection-notice";
 import {
@@ -23,16 +26,17 @@ export function WalletHeaderView({
   onOpenWallet,
   walletOpen,
 }: Props) {
+  const text = useWalletCopy();
   if (identity && "address" in identity && targetChain) {
     const detail =
       identity.status === "chain-mismatch"
-        ? "Wrong network"
+        ? text.wrongNetwork
         : identity.status === "chain-unknown"
-          ? "Network unknown"
+          ? text.networkUnknown
           : undefined;
     const description = detail
-      ? `${detail}. Wallet chain ${identity.walletChainId ?? "unknown"}. Required ${targetChain.name} (${targetChain.id}).`
-      : `Connected to ${targetChain.name} (${targetChain.id}).`;
+      ? `${detail}. ${text.walletChain} ${identity.walletChainId ?? text.unknown}. ${text.requiredNetwork}: ${targetChain.name} (${targetChain.id}).`
+      : `${text.connectedTo} ${targetChain.name} (${targetChain.id}).`;
     return (
       <div className={styles.control}>
         <button
@@ -41,7 +45,7 @@ export function WalletHeaderView({
           aria-haspopup="dialog"
           aria-expanded={walletOpen ?? false}
           className={`${styles.identity} ${detail ? styles.warning : ""}`}
-          aria-label={`Wallet ${identity.address}. ${description}`}
+          aria-label={`${text.wallet} ${identity.address}. ${description}`}
           title={`${identity.address}. ${description}`}
         >
           {/* Exact 14×14 asset from Header wallet node 2003:1003. */}
@@ -71,19 +75,19 @@ export function WalletHeaderView({
     status === "synchronizing";
   const label =
     status === "connecting"
-      ? "Connecting…"
+      ? text.connecting
       : busy
-        ? "Loading…"
+        ? text.loading
         : status === "wallet-missing"
-          ? "Reconnect"
-          : "Connect";
+          ? text.reconnect
+          : text.connect;
   const detail =
     status === "unsupported-wallet"
-      ? "External wallet required"
+      ? text.externalRequired
       : notice === "cancelled"
-        ? "Connection cancelled"
+        ? text.connectionCancelled
         : notice === "failed"
-          ? "Connection failed"
+          ? text.connectionFailed
           : undefined;
   return (
     <div className={styles.control}>
@@ -92,7 +96,7 @@ export function WalletHeaderView({
         className={`${styles.connect} ${status === "connecting" ? styles.connecting : ""}`}
         disabled={!canConnect}
         aria-busy={busy || undefined}
-        aria-label={!identity ? "Wallet connection unavailable" : label}
+        aria-label={!identity ? text.connectionUnavailable : label}
         onClick={canConnect ? onConnect : undefined}
       >
         {label}

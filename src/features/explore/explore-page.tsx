@@ -7,7 +7,7 @@ import {
   type ExploreDisplay,
   type ExploreSectionId,
 } from "./model/explore-display";
-import { exploreCopy as copy } from "./copy";
+import { useExploreCopy } from "./copy";
 import styles from "./components/explore.module.css";
 
 export function ExplorePage({
@@ -17,6 +17,7 @@ export function ExplorePage({
   model?: ExploreDisplay;
   onPageChange?: (section: ExploreSectionId, page: number) => void;
 }>) {
+  const copy = useExploreCopy();
   return (
     <div className={styles.page}>
       <h1 className="text-page-title font-bold">{copy.title}</h1>

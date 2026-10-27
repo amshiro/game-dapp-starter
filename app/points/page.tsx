@@ -1,5 +1,6 @@
-import { shellRoutes } from "../_shell/routes";
-
-export default function Page() {
-  return <h1 className="text-page-title font-bold">{shellRoutes[1].label}</h1>;
+import { getRequestLocale } from "../request-locale";
+import { getShellCopy } from "../_shell/copy";
+export default async function Page() {
+  const copy = getShellCopy(await getRequestLocale());
+  return <h1 className="text-page-title font-bold">{copy.points}</h1>;
 }

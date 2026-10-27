@@ -1,0 +1,19 @@
+{
+  "headline": "使用 Vite 构建 Next.js 风格应用，并部署到边缘。",
+  "summary": "本项目采用 vinext、Tailwind CSS 和 Cloudflare Workers。",
+  "steps": {
+    "develop": {
+      "title": "开发",
+      "description": "运行本地 vinext 开发服务器。"
+    },
+    "build": {
+      "title": "构建",
+      "description": "生成适用于 Worker 的生产构建。"
+    },
+    "deploy": {
+      "title": "部署",
+      "description": "使用 cf 部署生成的 Worker。"
+    }
+  },
+  "apiRouteLink": "API 路由"
+}

@@ -31,7 +31,7 @@
   --modal-border-width: 0px;
   --modal-radius: var(--ori-radius-sheet);
   --modal-backdrop: rgb(0 0 0 / 65%);
-  --modal-max-width: var(--ori-layout-max-width);
+  --modal-max-width: 400px;
   --modal-color: var(--ori-color-text-primary);
   --modal-focus-color: var(--ori-color-accent);
 }
@@ -72,8 +72,8 @@
 }
 
 .ori-app-viewport {
+  /* Full-page shell; each content region owns its width constraint. */
   width: 100%;
-  max-width: var(--ori-layout-max-width);
   min-height: 100vh;
   min-height: 100svh;
   margin-inline: auto;

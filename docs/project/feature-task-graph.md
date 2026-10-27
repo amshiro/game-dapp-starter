@@ -25,7 +25,7 @@
 | R0 | 只读数据与合约证据核对（支撑票据） | READY | 限定静态审计已完成，见 R0 报告；Q-10/Q-11 未关闭，链上与新服务验证尚未执行 |
 | W1 | Development 钱包连接与 identity | READY | 已完成限定行为、QA、人工审核及 commit/push；不包含余额、Sheet 或交易 |
 | A1 | About accordion 与正式内容 | PARTIALLY BLOCKED | Accordion UI/Interaction 子集已完成、人工审核并 push；完整 A1 仍受正式正文/链接、Q-41/Q-30 阻塞，正式 /about 未替换 |
-| W2 | Wallet Sheet Core：身份、复制/断开、ORE visual slot、Export UI | READY | 限定 Core 已完成、人工审核并 push。无真实余额、Receive 或 Export 行为 |
+| W2 | Wallet Sheet Core：身份、复制/断开、ORE visual slot | READY | 限定 Core 已完成、人工审核并 push。无真实余额、Receive 或 Export 行为 |
 | W3 | Wallet export / receive | BLOCKED | W2、Q-22；不能把外部钱包解释成可导出私钥 |
 | H1 | Header ORI price | PARTIALLY BLOCKED | 已有 transport/mapper；旧 ORI/getPrice 来源已确认，97 数据集/价格单位与 Q-11 字段语义待确认 |
 | E1 | Explore read/UI | PARTIALLY BLOCKED | 用户已批准 E1 Core UI 正式接入 /explore；四卡/三表、受控分页与中性读取状态已完成并通过人工审核；真实数据仍受 Q-27/Q-11 阻塞 |
@@ -135,16 +135,16 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 
 | Field | Ticket |
 | --- | --- |
-| Goal | Header connected identity 打开/关闭/重开 Sheet；当前身份、地址复制/断开、ORE balance visual slot 与 Export UI |
+| Goal | Header connected identity 打开/关闭/重开 Sheet；当前身份、地址复制/断开、ORE balance visual slot；external 钱包不显示 Export / Receive |
 | Route | 全局 overlay，无新 Route |
 | Owner / Dependencies | 现有 `features/wallet`，依赖 W1/F8/F9；开关与交互反馈为 React local state，不新增 Provider/store/dependency |
 | Source of Truth | User Confirmed W2 Human Gate → 当前 Figma；C-22/C-83–C-85。旧 Wallet 不作为新版需求来源 |
 | API dependencies | 无。没有已确认 ORE 数据 owner，不猜端点或读取 backend mining fund |
 | Web3 dependencies | 直接消费 W1 的 Privy/Wagmi identity/chain；复制当前地址、Privy logout；不请求余额或 contract |
 | Realtime dependencies | 无 |
-| UI/Figma dependencies | `2003:2487/2490`：H5 bottom sheet，top radius 16；PC center Modal（当前用户修正），max-500，对齐 viewport，backdrop 也仅覆盖 viewport；四个局部原始 SVG；不画系统 Home Indicator |
-| Open Questions / Blockers | 限定 Scope READY：Q-21 已解决；ORE 数据 owner、Export 行为仍 Q-22，不阻塞 unavailable visual slot / 不可用控件；字体 fallback、Q-03 最终品牌不升级 |
-| Acceptance Criteria | Header open/close/reopen；刷新后可打开；账户/链切换即时使用 SDK 新事实，无旧地址/余额；`— ORE` 明示 unavailable，不用 48.60；Export 样式/原位置保留且 aria-disabled，不绑定动作；复制失败可重试，logout 失败不伪装成功；ESC、焦点隔离/恢复、backdrop、safe-area、375/500 无 overflow |
+| UI/Figma dependencies | `2003:2487/2490`：H5 bottom sheet，top radius 16；PC center Modal（当前用户修正），内容面板 PC 400px 居中，backdrop 全屏；四个局部原始 SVG；不画系统 Home Indicator |
+| Open Questions / Blockers | 限定 Scope READY：Q-21 已解决；ORE 数据 owner 仍 Q-22；Export / Receive 已确认仅 embedded wallet，external 隐藏，不阻塞 unavailable visual slot / 不可用控件；字体 fallback、Q-03 最终品牌不升级 |
+| Acceptance Criteria | Header open/close/reopen；刷新后可打开；账户/链切换即时使用 SDK 新事实，无旧地址/余额；`— ORE` 明示 unavailable，不用 48.60；external Wallet 不渲染 Export / Receive；不为两按钮创建 embedded wallet；复制失败可重试，logout 失败不伪装成功；ESC、焦点隔离/恢复、backdrop、safe-area、375/500 无 overflow |
 | QA | 全部项目 QA；真实 Header/Sheet、刷新、账户/链往返；keyboard/close/copy/disconnect；375px 与 PC 500 居中，mock 与真实证据分开报告 |
 | Non-goals | Receive/QR/fundWallet、真实 Export/私钥/助记词、真实余额/多资产、旧 mining fund、Backend session、交易或其他 Feature |
 
@@ -160,7 +160,7 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 | Web3 dependencies | 当前没有获准 write；receive 若仅展示地址也不能演变成发送资产。外部钱包不提供应用可导出的私钥 |
 | Realtime dependencies | 无 |
 | UI/Figma dependencies | Wallet `2003:2526` 等操作位；缺少详细流程设计，确认后重读/补设计 |
-| Open Questions / Blockers | BLOCKED：export 的对象、receive 的操作与余额资产均未知 |
+| Open Questions / Blockers | BLOCKED：当前 external-only 明确隐藏两入口；未来 embedded 模型尚未批准，ORE 资产仍未知 |
 | Acceptance Criteria | 语义、支持钱包、隐私/失败路径经人工签收；实现与确认操作完全对应，不接触或传递私钥；若产生交易另过 G-T |
 | QA | 通用 QA 加批准流程的专项用例；真实资金操作不作为普通 smoke |
 | Non-goals | 从按钮名称推断 transfer、创建 embedded wallet 或拼接未确认的二维码/支付协议 |
@@ -467,3 +467,7 @@ R0 当时的限定交付见 [R0 Evidence Audit](./r0-evidence-audit.md)：仅比
 ## 本轮文档 QA 范围
 
 仅更新规划文档、交叉链接和阶段状态，执行 `pnpm format:check`、`git diff --check` 与内容/依赖一致性检查。依 `docs/qa.md` 的 Docs 矩阵，本轮不要求 build、业务测试、外部 API/RPC/WS smoke 或浏览器视觉 QA；这些是后续实现票据的验收要求。本轮没有关闭产品 Unknown，也没有授予 commit/push/deploy 或业务实现权限。
+
+## Current UI locale / Wallet action correction
+
+用户已授权现有 UI 的 en / zh-CN 切换，32px Header 语言按钮与 request-cookie resolution 见 ui-behavior.md。external Wallet 的 Export / Receive 现在均隐藏；仅 Privy embedded wallet 才有对应私钥导出 / 二维码入口，当前配置仍关闭 embedded。此调整不解锁 W3 的 embedded 模型、资金操作，也不批准正式 About 正文、费率或生产默认语言。

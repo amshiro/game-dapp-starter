@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { resolveLocale } from "@/src/shared/i18n/locale";
+import { getRequestLocale } from "./request-locale";
+import { LocaleProvider } from "../src/shared/i18n/locale-provider";
 import Providers from "./providers";
 import { AppShell } from "./_shell/app-shell";
 import "./globals.css";
@@ -14,11 +15,12 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const locale = await getRequestLocale();
   return (
-    <html lang={resolveLocale()}>
+    <html lang={locale}>
       <head>
         <link
           rel="preload"
@@ -29,9 +31,11 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <Providers>
-          <AppShell>{children}</AppShell>
-        </Providers>
+        <LocaleProvider locale={locale}>
+          <Providers>
+            <AppShell locale={locale}>{children}</AppShell>
+          </Providers>
+        </LocaleProvider>
       </body>
     </html>
   );

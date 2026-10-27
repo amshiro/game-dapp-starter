@@ -4,20 +4,27 @@ import type { ReactNode } from "react";
 import { OriViewport } from "../ori-viewport";
 import { BottomNavigation } from "./bottom-navigation";
 import { shellRoutes } from "./routes";
+import type { Locale } from "../../src/shared/i18n/locale";
+import { getShellCopy } from "./copy";
+import { LanguageSwitch } from "./language-switch";
 import styles from "./shell.module.css";
 
-export function AppShell({ children }: Readonly<{ children: ReactNode }>) {
+export function AppShell({
+  children,
+  locale,
+}: Readonly<{ children: ReactNode; locale: Locale }>) {
+  const copy = getShellCopy(locale);
   return (
     <OriViewport className={styles.shell}>
       <a className={styles.skip} href="#main-content">
-        Skip to content
+        {copy.skip}
       </a>
       <header className={styles.header}>
         <div className={styles.headerRow}>
           <Link
             className={styles.brand}
             href={shellRoutes[0].href}
-            aria-label="ORI home"
+            aria-label={copy.home}
           >
             {/* Exact current Figma assets; final brand approval remains Q-03. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -30,7 +37,10 @@ export function AppShell({ children }: Readonly<{ children: ReactNode }>) {
               alt="ORI"
             />
           </Link>
-          <WalletHeader />
+          <div className={styles.headerActions}>
+            <WalletHeader />
+            <LanguageSwitch />
+          </div>
         </div>
       </header>
       <main id="main-content" tabIndex={-1} className={styles.main}>

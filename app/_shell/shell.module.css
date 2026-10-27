@@ -25,6 +25,9 @@
 }
 .main {
   flex: 1;
+  width: 100%;
+  max-width: var(--ori-layout-max-width);
+  margin-inline: auto;
   min-width: 0;
   padding: 24px var(--ori-layout-page-inset)
     calc(
@@ -88,4 +91,35 @@
 }
 .skip:focus {
   transform: translate(-50%, 0);
+}
+
+/* Use the existing 500px desktop boundary; the Header is independent of Main's cap. */
+@media (min-width: 500px) {
+  .headerRow {
+    padding-inline: 120px;
+  }
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.languageSwitch {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 2px solid var(--ori-color-border);
+  background: var(--ori-color-background);
+  font-size: 13px;
+  font-weight: 400;
+  cursor: pointer;
+}
+.languageSwitch:focus-visible {
+  outline: 2px solid var(--ori-color-accent);
+  outline-offset: 2px;
+}
+.languageSwitch:disabled {
+  cursor: wait;
 }

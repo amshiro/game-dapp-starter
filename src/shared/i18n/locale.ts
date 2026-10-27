@@ -1,15 +1,14 @@
-// BCP 47 identifiers. Add a locale only together with reviewed resources for every namespace.
-export const supportedLocales = ["en"] as const;
-
+// Explicit selection is persisted server-side; browser language never overrides it.
+export const supportedLocales = ["en", "zh-CN"] as const;
 export type Locale = (typeof supportedLocales)[number];
-
 export const defaultLocale: Locale = "en";
+export const localeCookieName = "app_locale";
 
-/**
- * The single authoritative locale for a render.
- * No route, cookie, profile, or browser input is defined yet; when one is, its
- * precedence is decided here once instead of by individual pages.
- */
-export function resolveLocale(): Locale {
-  return defaultLocale;
+export function resolveLocale(preference?: string): Locale {
+  return (
+    supportedLocales.find((locale) => locale === preference) ?? defaultLocale
+  );
+}
+export function nextLocale(locale: Locale): Locale {
+  return locale === "en" ? "zh-CN" : "en";
 }

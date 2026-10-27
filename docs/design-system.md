@@ -482,10 +482,12 @@ Tech Stack Baseline 不等于已经安装、接入或通过 Runtime 验证。实
 
 - `open/onOpenChange` 受控，close / ESC / backdrop 统一请求 `onOpenChange(false)`；Shared 不保存业务 open state。
 - 默认 mobile bottom / desktop center，分别可覆盖。当前 CSS 在 500px 及以上使用 desktopPlacement（工程选择）；bottom 顶部圆角、center 四角圆角。
-- 默认 surface、border color、radius、backdrop、max width、foreground/focus 使用 `src/styles/tokens.css` 的 `--modal-*` tokens：当前 surface #191B1F、border color #25262A、外壳 border width 0、radius 16、black 65% backdrop、max-width 500。这里的 border 不是 Wallet 业务卡片的边框。
+- 默认 surface、border color、radius、backdrop、max width、foreground/focus 使用 `src/styles/tokens.css` 的 `--modal-*` tokens：当前 surface #191B1F、border color #25262A、外壳 border width 0、radius 16、black 65% 全屏 backdrop、PC 内容面板宽 400px、H5 宽 100% / 内边距 16px。这里的 border 不是 Wallet 业务卡片的边框。
 - 默认 Header 高 48、下间距 8，标题 16px/500 居中；右侧 24px 关闭按钮及 `/ui/modal/close.svg` 是唯一默认关闭资产。panel 保留 canonical padding 8px 16px / bottom 40px + actual safe area。没有 header 时不渲染标题/默认关闭控件，自定义内容仍由调用方提供可访问名称。
 - `header="none"` 必须给 `ariaLabel`；默认 header 的 title 自动关联 dialog。`closeLabel` 可覆盖已本地化的默认 Close；高级场景可覆盖 closeIcon。
-- `closeOnBackdrop` / `closeOnEscape` 默认 true，可分别禁用；content 点击不触发 backdrop close。保留原生 dialog focus isolation、关闭后焦点恢复及 body scroll lock。
+- `closeOnBackdrop` 不传或传 true 时点击空白关闭，仅传 false 禁止；`closeOnEscape` 默认 true，可禁用；content 点击不触发 backdrop close。保留原生 dialog focus isolation、关闭后焦点恢复及 body scroll lock。
 - `className` / typed `style` CSS variables 可覆盖 background、borderColor、borderWidth、radius；不用额外 theme DSL，业务层不再重复默认值。Header/content 的业务语义不得进入 Shared。
+
+Modal 入场采用 CSS：遮罩/整体 180ms 淡入、面板 240ms ease-out 上移（bottom 24px、center 8px）；`prefers-reduced-motion: reduce` 时关闭动画。该过渡由用户本轮授权，不改变受控关闭、焦点或滚动锁生命周期，不增加动画依赖。
 
 这是一种 Modal primitive，不预建嵌套 Sheet/全局弹层管理器、Drawer、Popover 或动画框架。

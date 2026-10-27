@@ -1,5 +1,7 @@
 "use client";
 
+import { useLocale } from "../../src/shared/i18n/locale-provider";
+import { getShellCopy } from "./copy";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { CSSProperties } from "react";
@@ -8,9 +10,10 @@ import styles from "./shell.module.css";
 
 export function BottomNavigation() {
   const pathname = usePathname();
+  const copy = getShellCopy(useLocale());
 
   return (
-    <nav className={styles.nav} aria-label="Primary navigation">
+    <nav className={styles.nav} aria-label={copy.navigation}>
       <div className={styles.navItems}>
         {shellRoutes.map((route) => (
           <Link
@@ -30,7 +33,7 @@ export function BottomNavigation() {
                 } as CSSProperties
               }
             />
-            <span>{route.label}</span>
+            <span>{copy[route.id]}</span>
           </Link>
         ))}
       </div>

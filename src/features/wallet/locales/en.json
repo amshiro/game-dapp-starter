@@ -3,8 +3,6 @@
   "close": "Close wallet",
   "balance": "Balance",
   "balanceUnavailable": "ORE balance unavailable",
-  "export": "Export",
-  "exportUnavailable": "Export is not available yet",
   "copyAddress": "Copy wallet address",
   "copied": "Address copied",
   "copyFailed": "Could not copy address. Try again.",
@@ -14,5 +12,16 @@
   "wrongNetwork": "Wrong network",
   "networkUnknown": "Network unknown",
   "requiredNetwork": "Required",
-  "actionFailed": "Wallet action failed. Try again."
+  "actionFailed": "Wallet action failed. Try again.",
+  "connect": "Connect",
+  "reconnect": "Reconnect",
+  "connecting": "Connecting…",
+  "externalRequired": "External wallet required",
+  "connectionCancelled": "Connection cancelled",
+  "connectionFailed": "Connection failed",
+  "connectionUnavailable": "Wallet connection unavailable",
+  "wallet": "Wallet",
+  "connectedTo": "Connected to",
+  "walletChain": "Wallet chain",
+  "unknown": "unknown"
 }

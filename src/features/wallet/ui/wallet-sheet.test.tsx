@@ -35,12 +35,12 @@ describe("Wallet Sheet contract", () => {
     ])
       expect(markup).toContain(`aria-label="${label}"`);
   });
-  it("leaves ORE unavailable and Export inert, without inventing a balance or Receive", () => {
+  it("hides both embedded-only actions for external identities, without inventing a balance", () => {
     const markup = render();
     expect(markup).toContain("— ORE");
     expect(markup).toContain("ORE balance unavailable");
-    expect(markup).toContain('aria-disabled="true"');
-    expect(markup).toContain("Export is not available yet");
+    expect(markup).not.toContain("Export");
+    expect(markup).not.toContain("Receive");
     for (const invented of [
       "48.60",
       "BNB balance",

@@ -1,3 +1,5 @@
+"use client";
+
 import { StakePanel } from "./components/stake-panel";
 import { StakeSummary } from "./components/stake-summary";
 import {
@@ -5,7 +7,7 @@ import {
   type StakeSummaryDisplay,
   type StakeReadValue,
 } from "./model/stake-display";
-import { stakeCopy as copy } from "./copy";
+import { useStakeCopy } from "./copy";
 import styles from "./components/stake.module.css";
 
 export function StakePage({
@@ -21,6 +23,7 @@ export function StakePage({
   onRefresh?: () => void;
   refreshing?: boolean;
 }>) {
+  const copy = useStakeCopy();
   return (
     <div className={styles.page}>
       <h1 className="text-page-title font-bold">{copy.title}</h1>

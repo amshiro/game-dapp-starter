@@ -6,6 +6,7 @@
 
 ## Navigation
 
+- **User Confirmed（PC 布局修正）**：Header 全宽，PC 左右 padding 120px；Main / Bottom Navigation 保持 max-500 居中；Modal backdrop 全屏，PC 内容面板 400px。
 - **Confirmed**：底部导航 Mine · Points · Stake · Explore · About；当前项白色，其余 `#606164`（C-20）。线上第 2 项为 "起源"（Q-01）。
 - **Inferred**：Header 与底部导航在所有主视图中固定；sticky / fixed 为实现决策。
 
@@ -15,7 +16,7 @@
 - **Inferred**：`Connect` / `Connect wallet` 打开 Privy 钱包登录；已连接后 Header 显示缩短地址，点击打开 Wallet Sheet（I-10）。
 - **Inferred**：Sheet 内复制图标复制完整地址；退出图标断开连接；断开后回到未连接状态。复制成功反馈未设计。
 - **Confirmed（W2 Human Gate）**：ORE visual slot 暂无数据 owner，显示 `— ORE` 并声明 unavailable；不请求余额 API/contract，不替换 BNB 或加入旧 mining fund。
-- **Confirmed（W2）**：Export 保留 Figma 按钮位置/样式，`aria-disabled` 并声明不可用，不绑定业务动作。Receive 明确排除，不渲染按钮/QR，不调用 fundWallet。余额 owner 和 Export 行为继续 Q-22。
+- **User Confirmed（当前修正）**：external wallet 同时隐藏 Export / Receive。仅 Privy embedded wallet 才有这两项能力；当前 embedded off，不能创建新钱包来补按钮，不调用 key export / funding / deposit API。ORE owner 继续 Q-22。
 - Sheet 显示 SDK 当前身份；同步/不可用时不保留旧地址动作；wrong/unknown network 与 target-ready 分开。复制有成功/失败反馈，断开委托 Privy logout，失败可重试，不承诺撤销扩展站点权限。
 
 ## Modal / Sheet
@@ -24,9 +25,9 @@
 | --- | --- |
 | Figma | `2003:2487` / `2003:2490` |
 | H5 呈现 | 底部 Sheet，宽 100%，顶部圆角 16 |
-| PC 呈现 | **User Confirmed（Shared Modal 修正）**：垂直居中 Modal，最大 500px，与 ORI viewport 对齐；backdrop 仍限制在该 viewport。覆盖此前 PC 同形贴底方案 |
+| PC 呈现 | **User Confirmed（Shared Modal 修正）**：垂直居中 Modal，面板宽 400px，水平居中；backdrop 覆盖整个页面。覆盖此前 PC 同形贴底方案 |
 | 遮罩 | `#000000` 65% |
-| 关闭 | ✕（Confirmed）；点遮罩（Inferred，I-11）；ESC（可访问性要求） |
+| 关闭 | ✕（Confirmed）；点遮罩默认关闭，传 `closeOnBackdrop={false}` 禁止（User Confirmed）；ESC（可访问性要求） |
 | 拖拽关闭 | **无证据，不实现** |
 | 实现 | Shared `Modal` 的原生 `<dialog>.showModal()`（top layer、ESC、焦点隔离/恢复、`aria-modal`）；打开状态归 Wallet Feature 本地 |
 
@@ -147,4 +148,10 @@ Step3  获胜方块保持点亮 10s
 ## Responsive
 
 - **Confirmed**：H5 100%，PC 500px 居中，结构不变（C-10–C-12）。
-- **Implementation decision**：边距固定、网格列宽随容器伸缩；PC 时 Header 与底部导航同宽居中。
+- **Implementation decision**：边距固定、网格列宽随容器伸缩；Main / Bottom Navigation 保持 500px 居中，Header 按当前 User Confirmed 全宽 / PC padding 120px。
+
+## Language switch
+
+User Confirmed：钱包入口右侧提供单个 32×32 `中` / `EN` 切换按钮；显示当前语言，点击切换另一语言。13px / 400，radius 8px、2px border、项目背景色。支持 `en` / `zh-CN`；保留 EN 默认值，显式选择优先，不检测浏览器语言。
+
+`app_locale` cookie（Path=/、SameSite=Lax、1 年；HTTPS 下 Secure）是服务端可见偏好。`app/request-locale.ts` 每请求统一解析；RootLayout 将同一 locale 交给 html lang、App Shell 与 LocaleProvider。切换写 cookie 后 `router.refresh()` 刷新 RSC，不 reload，不 key/remount Wallet Provider，不修改钱包、链或查询 identity。资源按 App Shell / Feature / Shared owner 存放；Client 使用 Context 中的同一 resolved locale，无 localStorage / Zustand locale 镜像。现有 Stake、Explore、Wallet 与占位标题可切换；正式 About 正文、Points 规则、Privy SDK 自有弹窗文案不在此资源中推造。

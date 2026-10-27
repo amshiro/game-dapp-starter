@@ -7,8 +7,9 @@ import {
   type CSSProperties,
   type ReactNode,
 } from "react";
-import { resolveLocale } from "../../i18n/locale";
+import { useLocale } from "../../i18n/locale-provider";
 import en from "./locales/en.json";
+import zh from "./locales/zh-CN.json";
 import styles from "./modal.module.css";
 
 type Placement = "bottom" | "center";
@@ -38,7 +39,7 @@ export type ModalProps = Readonly<{
   mobilePlacement?: Placement;
   /** 500px 及以上的视口布局，默认 center；可指定 bottom。分界由 Modal CSS 维护。 */
   desktopPlacement?: Placement;
-  /** 点击容器内空白遮罩是否请求关闭，默认 true；点击内容不会触发。 */
+  /** 点击全屏空白遮罩是否请求关闭。不传或传 true 时关闭；仅 false 禁止。点击内容不会触发。 */
   closeOnBackdrop?: boolean;
   /** ESC 是否请求关闭，默认 true；禁用时请提供其他明确的退出方式。 */
   closeOnEscape?: boolean;
@@ -69,7 +70,7 @@ export type ModalProps = Readonly<{
         ariaLabel: string;
       }
   );
-const resources = { en };
+const resources = { en, "zh-CN": zh };
 
 /**
  * Design System 弹层壳，默认视觉提取自已验收的 Wallet Sheet。
@@ -96,11 +97,12 @@ export function Modal({
   desktopPlacement = "center",
   closeOnBackdrop = true,
   closeOnEscape = true,
-  closeLabel = resources[resolveLocale()].close,
+  closeLabel,
   closeIcon,
   className,
   style,
 }: ModalProps) {
+  const text = resources[useLocale()];
   const dialog = useRef<HTMLDialogElement>(null);
   const backdropPress = useRef(false);
   const titleId = useId();
@@ -161,7 +163,7 @@ export function Modal({
             <button
               type="button"
               className={styles.close}
-              aria-label={closeLabel}
+              aria-label={closeLabel ?? text.close}
               onClick={() => onOpenChange(false)}
             >
               {closeIcon ?? (

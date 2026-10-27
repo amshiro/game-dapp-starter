@@ -141,7 +141,7 @@ Figma 中的 SOL 图标、SOL 文案与 Solana 叙述是**设计占位**，不�
 | Wrong chain → 97 | PASS（用户人工）：连接详情中的实际 EVM 切链显示 Wrong network，切回 97 约 1 秒恢复；无需刷新，无交易 |
 | Cancel / retry | PASS（真实 SDK 浏览器）：键盘启动、关闭弹窗、Connect 恢复可用，再次点击可重新打开 |
 | Recoverable provider error | PASS（受控 SDK mock）：非取消错误 -32002 不崩溃，仍可重试，成功后由新 SDK 事实收敛；原始错误不展示。未人为制造真实钱包服务故障 |
-| Header 375 / 500 | PASS：375px 全宽；1440px viewport 内 500px 居中；Header 56px、控件 32px，无横向溢出。未更改已有身份胶囊/错误状态样式 |
+| Header 375 / 500（W1 历史验收） | PASS：当时 375px 全宽、PC 500px 居中；Header 56px、控件 32px，无横向溢出。当前用户已改为 PC Header 全宽/左右 padding 120px，现行布局见 design-system.md；身份胶囊/错误状态逻辑不变 |
 | SDK disconnect | PASS（独立 mock）：委托 Privy logout；产品断开入口属于 W2 |
 | Final QA | PASS：env:check、typecheck、lint、format:check、test（22 files / 321 tests）、build、git diff --check |
 

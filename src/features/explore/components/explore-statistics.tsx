@@ -1,5 +1,7 @@
+"use client";
+
 import type { ExploreDisplay, StatisticId } from "../model/explore-display";
-import { exploreCopy as copy } from "../copy";
+import { useExploreCopy } from "../copy";
 import styles from "./explore.module.css";
 
 const order: readonly StatisticId[] = [
@@ -11,6 +13,7 @@ const order: readonly StatisticId[] = [
 export function ExploreStatistics({
   values,
 }: Readonly<{ values: ExploreDisplay["statistics"] }>) {
+  const copy = useExploreCopy();
   return (
     <section aria-label={copy.statistics}>
       <dl className={styles.statistics}>

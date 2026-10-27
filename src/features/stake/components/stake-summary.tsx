@@ -1,10 +1,13 @@
-import { stakeCopy as copy } from "../copy";
+"use client";
+
+import { useStakeCopy } from "../copy";
 import type { StakeSummaryDisplay } from "../model/stake-display";
 import styles from "./stake.module.css";
 
 export function StakeSummary({
   values,
 }: Readonly<{ values: StakeSummaryDisplay }>) {
+  const copy = useStakeCopy();
   return (
     <section aria-label={copy.summary} className={styles.summary}>
       <h2>{copy.summary}</h2>

@@ -22,7 +22,7 @@ PC:
 具体 CSS（`max-width`、media query、容器组件）属于实现决策，不是设计事实。实现时注意：
 
 - 375px 稿中的固定数值（14px 边距、65px 区块等）在其他宽度下如何伸缩，设计未定义。合理做法是保持边距固定，让内容宽度与网格列宽随容器伸缩。这是 implementation decision，需在视觉验证时与设计确认。
-- PC 两侧空白区域的背景处理、Header 与 Bottom Navigation 是否同样限制为 500px：设计未提供，默认与内容同宽居中，标记为 implementation decision。
+- User Confirmed（本次 PC 布局修正）：ORI viewport 全宽；Header 全宽，PC 左右 padding 120px；Main 与 Bottom Navigation 保持 max-width 500px 居中。H5 Header 维持 14px inset。沿用现有 500px desktop 分界是 implementation decision，不是 Figma PC 稿。
 
 ### 375px 参考尺寸
 
@@ -196,7 +196,7 @@ Safe area：设计以 34px Home Indicator 区表达底部安全区（User / Figm
 
 ### Bottom Sheet（Wallet）
 
-ORI viewport 内 65% 黑色遮罩（User Confirmed）；H5 宽 100%、PC 与 ORI viewport 对齐且最大 500px；Shared Modal 默认 H5 bottom、PC center（User Confirmed，覆盖旧 PC bottom 工程方案）；500px 及以上启用 PC placement 是本轮工程分界，不是 Figma PC 稿。宽 100%，bottom 顶部圆角 16 / center 四角 16，`#191B1F`、外壳无可见 border（0px，border color token 仍可覆盖）；48px 标题栏（16 Medium 居中，右侧 24px 关闭图标）；底部含安全区。没有拖拽手柄。
+全屏 65% 黑色遮罩（User Confirmed，覆盖旧 viewport 限制）；内容面板 H5 宽 100%、PC 400px 居中；Shared Modal 默认 H5 bottom、PC center（User Confirmed，覆盖旧 PC bottom 工程方案）；500px 及以上启用 PC placement 是本轮工程分界，不是 Figma PC 稿。宽 100%，bottom 顶部圆角 16 / center 四角 16，`#191B1F`、外壳无可见 border（0px，border color token 仍可覆盖）；48px 标题栏（16 Medium 居中，右侧 24px 关闭图标）；底部含安全区。遮罩点击默认关闭，仅 `closeOnBackdrop={false}` 禁止；没有拖拽手柄。
 
 ### Accordion（About）
 

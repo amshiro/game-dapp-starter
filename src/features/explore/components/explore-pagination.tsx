@@ -5,7 +5,7 @@ import {
   validPagination,
   type PaginationDisplay,
 } from "../model/explore-display";
-import { exploreCopy as copy } from "../copy";
+import { useExploreCopy } from "../copy";
 import styles from "./explore.module.css";
 
 export function ExplorePagination({
@@ -19,6 +19,7 @@ export function ExplorePagination({
   busy?: boolean;
   onPageChange?: (page: number) => void;
 }>) {
+  const copy = useExploreCopy();
   return (
     <nav
       aria-label={`${title} ${copy.pagination}`}

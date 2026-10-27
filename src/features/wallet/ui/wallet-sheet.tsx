@@ -4,12 +4,11 @@ import { useId, useState } from "react";
 import type { Address } from "viem";
 import { Modal } from "../../../shared/ui/modal/modal";
 import type { EvmChain } from "../../../shared/config/evm-chains";
-import { resolveLocale } from "../../../shared/i18n/locale";
+import { useWalletCopy } from "../copy";
 import {
   shortenWalletAddress,
   type WalletIdentity,
 } from "../model/wallet-identity";
-import copy from "../locales/en.json";
 import { copyWalletAddress } from "../model/copy-wallet-address";
 import styles from "./wallet-sheet.module.css";
 
@@ -20,9 +19,6 @@ type Props = Readonly<{
   onClose: () => void;
   onDisconnect: () => Promise<void>;
 }>;
-
-// The only supported locale is resolved centrally. No locale or SDK state mirror.
-const resources = { en: copy };
 
 function Icon({ name, size }: Readonly<{ name: string; size: number }>) {
   // Exact, locally downloaded Figma vectors. Decorative inside labelled controls.
@@ -39,7 +35,7 @@ function AddressRow({
   address: Address;
   onDisconnect: () => Promise<void>;
 }>) {
-  const text = resources[resolveLocale()];
+  const text = useWalletCopy();
   const [feedback, setFeedback] = useState<"copied" | "copyFailed">();
   const [disconnecting, setDisconnecting] = useState(false);
   async function copyAddress() {
@@ -104,9 +100,8 @@ export function WalletSheet({
   onClose,
   onDisconnect,
 }: Props) {
-  const text = resources[resolveLocale()];
+  const text = useWalletCopy();
   const balanceId = useId();
-  const exportId = useId();
 
   const hasAddress = "address" in identity;
   const busy =
@@ -130,19 +125,7 @@ export function WalletSheet({
               — ORE
             </div>
           </div>
-          {/* Keep the Figma Export slot. No guessed action, SDK export or Receive. */}
-          <button
-            type="button"
-            className={styles.export}
-            aria-disabled="true"
-            aria-describedby={exportId}
-            title={text.exportUnavailable}
-          >
-            {text.export}
-          </button>
-          <span id={exportId} className={styles.srOnly}>
-            {text.exportUnavailable}
-          </span>
+          {/* W1 exposes external-wallet identities only. Export/Receive belong to embedded wallets and stay absent here. */}
           <span id={balanceId} className={styles.srOnly}>
             {text.balanceUnavailable}
           </span>

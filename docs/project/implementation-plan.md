@@ -33,6 +33,8 @@ Typography Foundation 已完成、审核并 push：Starter 单一 HarmonyOS Sans
 
 S1 Core UI 已审核并 push。当前限定 Development 97 Read Integration 接入 ORI balanceOf、View stakedAmount / totalStaked，已通过最终人工验收；详见 web3.md 的 S1 read evidence。金额输入只读，percentage/action 禁用；无 API、signature 或 transaction。APR/TVL/reward semantics 与 Production 56 仍 gated，完整 S1 保持 PARTIALLY BLOCKED，S2/S3 未开始。
 
+用户本轮 UI 修正：external Wallet 隐藏 Export / Receive；当前 UI 接入 en / zh-CN Header 切换，request-cookie / SSR / Client 使用同一 locale。embedded 钱包未启用，正式 About / 费率 / Production 默认语言仍需审定。
+
 每个任务单独实现、单独 QA，不跨任务顺手实现。
 
 原则：

@@ -33,8 +33,8 @@
 | C-81 | RPC endpoint 不得硬编码在 Feature / 业务代码中，由 Starter 配置层按环境提供 | User Confirmed | 见 ADR-001 |
 | C-82 | ORI 没有后端登录 / 会话，接口不需要 App ID、Secret 或后端签名；Starter 的可选认证 capability 在 ORI 中不启用 | Backend owner Confirmed；正式 Contract / F6.1，见 [api.md](./api.md#authentication--signing) | Q-13 / Q-44 / Q-46 已解决；不建立 Backend Auth |
 | C-83 | W2 保留 Figma 的单行 ORE balance visual slot；无已确认数据 owner 时显示 unavailable，不使用示例 48.60，不替换 BNB/ORI/起源或增加多资产 | User Confirmed | 真实数据 owner、资产定义与来源仍 OPEN |
-| C-84 | W2 保留 Export UI/位置样式，明确不可用；行为 OPEN，不导出密钥/助记词，不解释成复制地址或历史导出 | User Confirmed；Figma `2003:2528/2529` | external EVM wallet-only，embedded off |
-| C-85 | W2 不实现 Receive、QR、Privy fundWallet 或旧版 mining fund；Header identity 打开 Sheet，地址复制/断开沿用 SDK 身份 owner | User Confirmed | Receive 后续是否需要/具体语义须重新明确授权 |
+| C-84 | Export（Privy 私钥导出）与 Receive（Privy 二维码入口）仅属于 Privy embedded wallet；external wallet 两个按钮都隐藏 | User Confirmed（本次修正覆盖旧 Export inert UI 决策）；Figma `2003:2526–2529` 两入口已复核 | 当前仍 external-only / embedded off，不创建钱包或调用导出/充值接口 |
+| C-85 | 当前 external Wallet 保留身份、地址复制、断开及 unavailable ORE；不显示 Export / Receive，不引入旧 mining fund | User Confirmed | 若未来启用 embedded，需单独通过身份/资产归属 Gate，不能仅为按钮改模型 |
 | C-86 | A1 UI 子集：最多一项展开，打开另一项关闭上一项；无初始默认项证据则全部 collapsed，展开稿仅证明状态视觉 | User Confirmed；Figma 2003:2235 / 2359 无 prototype 起点 | 本轮不预开 Intro；正文/外链/Q-41/Q-30 继续 OPEN |
 
 ### Responsive
@@ -50,8 +50,8 @@
 | ID | Requirement | Source | Notes |
 | --- | --- | --- | --- |
 | C-20 | 新版底部导航 5 项：Mine · Points · Stake · Explore · About | Figma `2003:2921`；Live i18n `Header` 键 `home / points / stake / explore / about` 与之一致 | 线上当前为 挖矿 · 起源 · 质押 · 探索 · 关于，见 Q-01 |
-| C-21 | Header：Logo + ORI 价格；未连接 `Connect`；已连接显示缩短地址 | Figma；Live | |
-| C-22 | My Wallet 使用 Shared Modal 默认：H5 bottom sheet，PC center；max-500 对齐 ORI viewport，backdrop 仅覆盖 ORI viewport；圆角 16、关闭与 safe-area。当前用户明确决定覆盖旧 PC bottom 工程方案 | User Confirmed；Figma `2003:2487` | 不做 PC redesign，无拖拽关闭 |
+| C-21 | Header：Logo + ORI 价格；未连接 `Connect`；已连接显示缩短地址。PC 全宽、左右 padding 120px，H5 保持现有 inset | Figma；Live；PC 布局 User Confirmed | |
+| C-22 | My Wallet 使用 Shared Modal 默认：H5 bottom sheet，PC center；内容面板 PC 400px 居中，backdrop 覆盖整个页面；圆角 16、关闭与 safe-area。当前用户明确决定覆盖旧 PC bottom 工程方案 | User Confirmed；Figma `2003:2487` | 不做 PC redesign，无拖拽关闭 |
 
 ### Mine（方块游戏）
 
@@ -102,7 +102,7 @@
 
 | ID | Requirement | Source | Notes |
 | --- | --- | --- | --- |
-| C-70 | 产品有英文与中文两套文案（`en`、`zh`） | Live（`/locales/{en,zh}/common.json`） | 新版默认语言见 Q-30 |
+| C-70 | 当前 UI 支持 `en` / `zh-CN`，Header 钱包右侧 32×32 中/EN 切换按钮（13px/400、radius 8、2px border、项目背景色） | User Confirmed | 保留既有 EN 技术默认值；显式偏好写 server-visible cookie，生产默认语言审定仍 Q-30 |
 
 ## Inferred Requirements
 

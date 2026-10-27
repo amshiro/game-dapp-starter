@@ -5,6 +5,10 @@ import { defaultLocale, resolveLocale, supportedLocales } from "./locale";
 
 // Fixture namespaces only; real copy belongs to its owner's resources.
 const resources = {
+  "zh-CN": {
+    fixture: { label: "测试标签", blank: "", nested: { title: "嵌套" } },
+    other: { onlyHere: "其他" },
+  },
   en: {
     fixture: { label: "Fixture label", blank: "", nested: { title: "Nested" } },
     other: { onlyHere: "Other owner" },
@@ -45,7 +49,7 @@ describe("server translation", () => {
   });
 
   test("unsupported locale falls back to the default resources", async () => {
-    const { t } = await getT("fixture", "zh-CN");
+    const { t } = await getT("fixture", "fr-FR");
     expect(t("label")).toBe("Fixture label");
   });
 
