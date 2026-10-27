@@ -1,15 +1,15 @@
 # ORI Feature Task Graph
 
-本文件是 F10 的执行票据入口。基线为已审核的 F1–F9 与当前 Repository；本轮没有实现任何 Feature。任务 ID 表示交付顺序与验收边界，不代表新增目录、全局 abstraction 或外部操作授权。
+本文件是 F10 的执行票据入口。基线为已审核的 F1–F9、已审核并 push 的 W1 与当前 Repository；R0 仅更新证据和文档，没有实现后续 Feature。任务 ID 表示交付顺序与验收边界，不代表新增目录、全局 abstraction 或外部操作授权。
 
 ## 基线与事实边界
 
 - `app/_shell/routes.ts` 是导航映射唯一 owner：`/mine`、`/points`、`/stake`、`/explore`、`/about`；`/` redirect 到 `/mine`。五个页面现在都只有标题。
-- F9 Header 的 Connect 在 W1 中已接入 SDK 登录与只读身份；价格、Sheet 与余额未接入。W1 实现与自动化验证已落地，真实连接/正确链 97 已验证；稳定 OKX profile 刷新 5/5、账户切换及实际链切换往返已由用户验收；取消重试、受控 provider 错误恢复及视觉检查通过，证据见 web3.md。不解锁资金流程。原 profile A 已归类为 Development browser profile issue / non-application blocker（见 web3.md），停止调查且不添加恢复 workaround。
-- F6 提供 ORI form POST transport、错误边界和 Token price mapper；没有各 Feature 的 Query hooks。ORI 不需要后端登录、App ID 或签名。`open-questions.md` 的 Q-13 仍保留旧鉴权提问，但不得据此重新实现 Backend Auth；已确认的 F6 事实见 [api.md](./api.md#authentication--signing)。本票据不擅自清理问题清单。
+- F9 Header 的 Connect 在 W1 中已接入 SDK 登录与只读身份；价格、Sheet 与余额未接入。W1 已通过人工审核并完成 commit/push；实现与自动化验证已落地，真实连接/正确链 97 已验证；稳定 OKX profile 刷新 5/5、账户切换及实际链切换往返已由用户验收；取消重试、受控 provider 错误恢复及视觉检查通过，证据见 web3.md。不解锁资金流程。原 profile A 已归类为 Development browser profile issue / non-application blocker（见 web3.md），停止调查且不添加恢复 workaround。
+- F6 提供 ORI form POST transport、错误边界和 Token price mapper；没有各 Feature 的 Query hooks。ORI 不需要后端登录、App ID 或签名。Q-13 已按已有 Backend owner 确认移出问题清单，答案见 requirements C-82 与 [api.md](./api.md#authentication--signing)，不得重新实现 Backend Auth。
 - F7 是懒连接、引用计数、去重、重连 resync 的基础能力；事件 payload 仍为 unknown，Development 502 与真实事件未观察到的 Q-47 没有解决。本轮未重新探测服务。
 - 开发目标为 BSC 97；生产 56 的 App、RPC、后端与 WS 配置仍有独立发布 Gate。不可把生产未知项泛化为所有开发工作的阻塞，也不可将开发通过当作生产通过。
-- 视觉依据是 `ORI-AI测试`，完整 node 索引见 [figma-inventory.md](./figma-inventory.md)。下面引用 node 是实现时重新读取 Figma MCP 的入口，不是本轮新读取的设计数据。BURY、SOL 占位、历史 live UI 不提供当前视觉标准。
+- 视觉依据是 `ORI-AI测试`，完整 node 索引见 [figma-inventory.md](./figma-inventory.md)。R0 已重新读取登记的 Mine、Points、Explore、Wallet、Header、About 与品牌节点，事实见 [r0-evidence-audit.md](./r0-evidence-audit.md)；实现时仍须重读精确设计数据。BURY、SOL 占位、历史 live UI 不提供当前视觉标准。
 - Q-03 品牌与代币资产、Q-05 字体授权继续保留。沿用已审核 F8 system fallback 与 F9 可替换单色 Header，不自行下载字体或选择最终品牌。需要新的 Token/BNB/起源资产时先过资产 Gate。
 
 ## 状态定义与总览
@@ -22,13 +22,13 @@
 
 | ID | Slice | Status | 现在可做 / 完成前必须解锁 |
 | --- | --- | --- | --- |
-| R0 | 只读数据与合约证据核对（支撑票据） | READY | 可核对并输出逐项通过/阻塞矩阵；不保证一次核对就能关闭 Q-10/Q-11 |
-| W1 | Development 钱包连接与 identity | READY | 已实现且限定行为验收通过，最终 QA 已通过，待人工审核及 Git checkpoint；不包含余额、Sheet 或交易 |
+| R0 | 只读数据与合约证据核对（支撑票据） | READY | 限定静态审计已完成，见 R0 报告；Q-10/Q-11 未关闭，链上与新服务验证尚未执行 |
+| W1 | Development 钱包连接与 identity | READY | 已完成限定行为、QA、人工审核及 commit/push；不包含余额、Sheet 或交易 |
 | A1 | About accordion 与正式内容 | PARTIALLY BLOCKED | 可做本地视觉/交互子集；Q-41 正文审定前不能完成正式内容 |
 | W2 | Wallet Sheet：地址、复制、断开、余额 | PARTIALLY BLOCKED | W1；Q-21 PC、Q-22 余额语义、Q-03 资产与必要状态反馈 |
 | W3 | Wallet export / receive | BLOCKED | W2、Q-22；不能把外部钱包解释成可导出私钥 |
-| H1 | Header ORI price | PARTIALLY BLOCKED | 已有 transport/mapper；Q-23 价格身份/来源与 Q-11 字段语义待确认 |
-| E1 | Explore read/UI | PARTIALLY BLOCKED | 可核对 DTO 与现有设计；Q-27 范围、Q-11 运行差异和状态设计未锁定 |
+| H1 | Header ORI price | PARTIALLY BLOCKED | 已有 transport/mapper；旧 ORI/getPrice 来源已确认，97 数据集/价格单位与 Q-11 字段语义待确认 |
+| E1 | Explore read/UI | PARTIALLY BLOCKED | 可核对 DTO 与现有设计；Q-27 范围/type、Q-11 circulating_supply 缺失与状态设计未锁定 |
 | P1 | Points read/UI | BLOCKED | Q-01、Q-20、Q-11 `points/user` 500；不能先写积分公式 |
 | S1 | Stake read/UI | PARTIALLY BLOCKED | R0/W1；Summary 与读取可拆出，Q-26 范围、Q-24 提示、资产/状态仍未齐 |
 | S2 | Stake deposit / withdraw | BLOCKED | S1/W1；Q-10、Q-12、金额/allowance/完成契约与安全 Gate |
@@ -173,7 +173,7 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 | Route | 全局 Header |
 | Owner / Dependencies | `app/_shell` 组合、现有 `domains/token` read/model；F6/F9；R0 对应端点核对 |
 | Source of Truth | C-21、Q-23、api.md Numeric fields 与现有 asset-price mapper |
-| API dependencies | 候选 `query/chain_asset_config`；不能未经确认改用 `activity/origin_info`。symbol/address/isInner 匹配语义先锁定 |
+| API dependencies | 旧 Header 来源已确认是 `query/chain_asset_config`；见 R0，不能改用 `activity/origin_info`。新版 97 数据集与 symbol/address/isInner 多行/缺价匹配语义仍须 G-D |
 | Web3 dependencies | 使用 Registry 的 ORI 资产身份；本票据不补 BSC 97 WBNB 地址，不把缺失 BNB 美元价变成 0 |
 | Realtime dependencies | 无；刷新策略由 price Query owner 定义 |
 | UI/Figma dependencies | Header `2003:195` 价格位；空/加载/失败显示需 G-V |
@@ -276,10 +276,10 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 | Owner / Dependencies | Mining read owner；F6、Registry/F5、R0；账户读接 W1。是否成立 `domains/round` 按真正复用决定，不按票据预创建 |
 | Source of Truth | C-30/C-43/C-45/C-49、api.md、web3.md View methods、正式 API Contract |
 | API dependencies | latest/events、reset_event/round、两个名称疑似互换的 round endpoints；旧 `round` 不在 Contract。参与人数/列表/排序/分页及 identity 尚需补齐；不能宣称 View squareAmounts 就包含人数/名单 |
-| Web3 dependencies | 已验证 View getCurrentRoundInfo/getCurrentRoundSquareStats/getCurrentRoundSquares/getMinerSquares，必要时 board/getTreasuryState；确定 roundId、block 时间与 chain head 语义 |
+| Web3 dependencies | 已核对 ABI 声明的 View getCurrentRoundInfo/getCurrentRoundSquareStats/getCurrentRoundSquares/getMinerSquares；部署兼容性未验证，必要时 board/getTreasuryState；确定 roundId、block 时间与 chain head 语义 |
 | Realtime dependencies | 无；Query 不依赖 WS 才可工作 |
 | UI/Figma dependencies | `2003:485` 等 Metrics、`2003:508` Miners 的字段需求；不把 Figma 示例数字做默认数据 |
-| Open Questions / Blockers | PARTIALLY BLOCKED：可先完成逐字段来源表与 mapper 测试；Q-10、Q-11 当前 round API 缺口/端点对调、单位/大整数 ID、参与者数据不足必须过 G-D。采用链上替代须核对覆盖字段并经评审，不能默认为等价 |
+| Open Questions / Blockers | PARTIALLY BLOCKED：可先完成逐字段来源表与 mapper 测试；Q-10、Q-11 当前 round API 缺口/latest max 层级/Rank 参数与响应冲突、单位/大整数 ID、参与者数据不足必须过 G-D。采用链上替代须核对覆盖字段并经评审，不能默认为等价 |
 | Acceptance Criteria | 每个字段有 canonical 来源、单位、identity 和冲突/缺失处理；public/account Queries 分离、round 切换原子隔离旧结果；缺失字段不补零；G-D 签收后才宣布 read model 完成 |
 | QA | 通用 QA；DTO/精度/地址大小写/25 项长度、旧 round 响应迟到、账户/链切换、API/链上差异用例 |
 | Non-goals | 投注/领奖、巨型 roundStore、把全部旧接口搬进 Shared、擅自选择后端替代 endpoint |
@@ -424,18 +424,20 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 
 | Field | Ticket |
 | --- | --- |
-| Goal | 按一个下游 Slice 的字段需求核对 API/ABI/部署事实，产出 PASS/未验证/阻塞矩阵与需后端/协议 owner 确认的差异；不要求一次覆盖全系统 |
+| Goal | 按一个下游 Slice 的字段需求核对 API/ABI/部署事实，产出 CONFIRMED / PARTIALLY CONFIRMED / STILL OPEN / CONTRADICTORY 证据矩阵与需后端/协议 owner 确认的差异；不要求一次覆盖全系统 |
 | Route | 无 UI route |
 | Owner / Dependencies | 文档与对应 DTO/contract owner 的调研；现有 F3–F6；READY |
 | Source of Truth | Registry/原始 ABI、正式 api-reference、Development read 返回；api.md/web3.md 的旧说明只提供调查入口 |
 | API dependencies | 仅核对下游列明的只读 POST 端点/字段/参数/单位/失败 envelope，不把 POST 一概当 mutation，也不调用未知操作 |
 | Web3 dependencies | BSC 97 部署代码/代理实现与已验证 ABI、必要 read simulation/call、ORI decimals；记录版本 owner、校验依据与无法验证项，不能靠一次成功 call 证明整个 ABI 一致 |
 | Realtime dependencies | R0 不关闭 Q-47，真实 WS 核对属于 M8/G-R |
-| UI/Figma dependencies | 无；消费 Slice 的字段清单，不设计新 UI |
+| UI/Figma dependencies | 按登记的当前节点核对范围/文案/资产；消费 Slice 字段清单，不设计新 UI |
 | Open Questions / Blockers | 可以开始核对；答案仍需 backend/protocol owner。97 WBNB 缺口仅阻塞对应美元价，不阻塞无关读取。缺失数据源时允许输出 BLOCKED，禁止虚构替代 |
 | Acceptance Criteria | 逐字段列来源/单位/identity/证据/差异/owner；明确哪些下游 reads 可解锁；保持 Q-10/Q-11 未确认部分，敏感连接信息/完整 backend trace 不入文档 |
 | QA | 检查采样与 Contract 对照、地址/链匹配、文档 diff/format；真实服务不可达如实报告，不冒充本轮重测成功 |
 | Non-goals | contract write、发交易、修改 endpoint/key/auth、安装替代 SDK、修后端或部署、自动关闭 Unknown |
+
+本次限定交付见 [R0 Evidence Audit](./r0-evidence-audit.md)：仅比较现有 Repository、当前 Figma、旧源码、API Contract、ABI 与既有 F6.1/F7 记录，没有新 API/RPC/WS 请求。完整 Feature 状态均未升级为 READY；W2/H1/M1/S1 的准备边界更明确，不代表 data/product Gate 已通过。
 
 ## Human Gates
 
@@ -451,9 +453,9 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 
 ## 推荐实施顺序与下一张票据
 
-**F10 首票选择依据：W1 — Development Wallet connection / identity（现已实现并通过限定 Acceptance / QA，待人工审核及 Git checkpoint）。** F5/F9 已具备 Provider、capability 和真实 Header 入口，开发链/App 已确认；本票据不依赖资金、价格、Sheet 未决动作或 Mine API 缺口，且能验证最小 Client boundary 与 Shell 的组合。只读身份状态是 W1 的明确交付边界，不宣称完整 Wallet 已完成；G-W 未过不进入资金流程。
+**F10 首票选择依据：W1 — Development Wallet connection / identity（已完成 Acceptance / QA、人工审核及 commit/push）。** F5/F9 已具备 Provider、capability 和真实 Header 入口，开发链/App 已确认；本票据不依赖资金、价格、Sheet 未决动作或 Mine API 缺口，且能验证最小 Client boundary 与 Shell 的组合。只读身份状态是 W1 的明确交付边界，不宣称完整 Wallet 已完成；G-W 未过不进入资金流程。
 
-1. W1（限定验收与 QA 已通过，待人工审核 / checkpoint）；同时可分批执行 R0 的只读核对与人工决策，不需要等钱包连接成功才审阅文案或公开 API。
+1. W1 已完成；R0 限定静态审计已完成，未核实的数据/产品项继续走对应 Gate。**下一张推荐 W2 — Wallet Sheet core**：W1 身份已经稳定，地址/复制/SDK logout 职责明确，且不依赖 Points、Mine、资金交易或 WS。先由产品/设计签收 Q-21 PC 呈现与 Q-22 新版余额资产/口径；未通过时只允许原票据已列的独立测试子集，不缩减完整 W2 验收。
 2. Q-41/copy 审定后完成 A1，作为无资金长页面的视觉 Gate；Q-21/Q-22 核定后完成 W2。若这些 Gate 先解除，可以调整顺序，但不自动改为 READY。
 3. 经对应 G-D/G-P 解锁的 E1、H1、S1；M1 → M2 与 M7。M7 不等 WS 恢复，M5 可在数据契约/身份稳定后独立推进。Points P1 只在 Q-20 与接口修复后进入队列，不能为了补齐导航提前实现。
 4. 先评审 S2 的 approve/deposit/withdraw，再按独立 Gate 评审 M3、M6；M4 因预付公式与执行器依赖更强，后置。S3 先决定是否保留；所有真实交易仍逐类授权。

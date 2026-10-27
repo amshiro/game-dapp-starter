@@ -27,7 +27,7 @@
 | F7 | Realtime Foundation — **COMPLETE** | F1、F6；Q-47 | Pusher 协议客户端（`pusher-js`，懒加载）；`NEXT_PUBLIC_WS_URL` + `NEXT_PUBLIC_PUSHER_APP_KEY`；按需连接、引用计数订阅、去重、重连后 `resync`、空闲释放、payload 边界；realtime 只触发 Query invalidation，polling 保留（[api.md](./api.md#realtime)）；Development 实时服务 502，真实事件未观察到 |
 | F8 | Design Foundation — **COMPLETE** | Q-05 remains open; authorized system font fallback | Semantic tokens、font fallback/weight mapping、global styles、ORI viewport primitive；HarmonyOS Sans SC licensed asset remains TBD |
 | F9 | App Shell — **COMPLETE** | F8 | ORI viewport、sticky Header、fixed Bottom Navigation、safe-area、pathname active state；五个标题占位页，用户确认 URL 映射与根路径跳转见 routes.md；Wallet / Header price data 待后续接入 |
-| F10 | Feature Task Graph — **COMPLETE（待审核）** | F1–F9 | [逐票据 Scope、READY / PARTIALLY BLOCKED / BLOCKED、依赖与 Human Gates](./feature-task-graph.md)；下一张建议 W1 Development Wallet connection / identity，不在本轮实施 |
+| F10 | Feature Task Graph — **COMPLETE** | F1–F9 | [逐票据 Scope、READY / PARTIALLY BLOCKED / BLOCKED、依赖与 Human Gates](./feature-task-graph.md)；W1 已审核并 push；[R0 静态证据审计](./r0-evidence-audit.md) 已完成，下一张建议 W2（先过 Q-21/Q-22 Gate） |
 
 每个任务单独实现、单独 QA，不跨任务顺手实现。
 
@@ -82,8 +82,8 @@ Stage 1–2 可以在 Stage 0 未完成时开始，但导航项与 Logo 位置�
 | 项 | 内容 |
 | --- | --- |
 | Scope | 根据后端 Contract 决定是否需要鉴权以及方式 |
-| Required facts | Q-13 |
-| Note | **当前不需要**：ORI 没有后端登录体系，接口不需要登录参数或签名（Backend owner Confirmed）。不得复制 Origin.fun 的 md5 签名方案。若产品未来需要后端登录，作为新架构变更重新设计（Q-13） |
+| Required facts | requirements C-82；Q-13 已解决 |
+| Note | **当前不需要**：ORI 没有后端登录体系，接口不需要登录参数或签名（Backend owner Confirmed）。不得复制 Origin.fun 的 md5 签名方案。若产品未来需要后端登录，作为新架构变更重新设计（见 requirements C-82） |
 
 ## Stage 5 — Read APIs 与链上读取
 

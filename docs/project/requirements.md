@@ -41,6 +41,7 @@
 | C-09 | **Production environment**：BSC Mainnet，chainId **56**；Privy Production App；BSC 56 生产合约地址；生产后端配置；**Production RPC 待定** | User Confirmed | 不得沿用旧项目已泄露的 QuickNode URL / 凭据（Q-14） |
 | C-80 | 环境必须整体一致：禁止 Dev Privy + 主网合约、测试网 RPC + 主网链、Production Privy + 测试网合约等混用 | User Confirmed | 见 [ADR-001](./decisions/ADR-001-runtime-environments.md) |
 | C-81 | RPC endpoint 不得硬编码在 Feature / 业务代码中，由 Starter 配置层按环境提供 | User Confirmed | 见 ADR-001 |
+| C-82 | ORI 没有后端登录 / 会话，接口不需要 App ID、Secret 或后端签名；Starter 的可选认证 capability 在 ORI 中不启用 | Backend owner Confirmed；正式 Contract / F6.1，见 [api.md](./api.md#authentication--signing) | Q-13 / Q-44 / Q-46 已解决；不建立 Backend Auth |
 
 ### Responsive
 
@@ -130,4 +131,4 @@
 
 ## Unknown
 
-见 [open-questions.md](./open-questions.md)。主要包括：起源与交易挖矿在新版中的去留、Points 规则冲突、金额快捷按钮数值、Logo 与代币图标确认、合约版本与 ABI 来源、RPC、后端 Contract 与鉴权、交易状态 UX、加载 / 空 / 错误状态、Wallet `导出` / `接收`、默认语言。
+见 [open-questions.md](./open-questions.md)。主要包括：起源与交易挖矿在新版中的去留、Points 规则冲突、金额快捷按钮数值、Logo 与代币图标确认、合约版本与 ABI 来源、RPC、后端 Contract 差异、交易状态 UX、加载 / 空 / 错误状态、Wallet `导出` / `接收`、默认语言。

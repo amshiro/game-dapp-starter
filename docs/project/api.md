@@ -12,7 +12,7 @@ ORI 后端接口的前端结论。后端正式 Contract 原文见 [api-reference
 | 环境 | Development 测试后端可用（F6.1）；Production host 待定（Q-11）。旧 `gate.game.com` 自 2026-10-27 对所有路径返回 404 | Runtime |
 | 方法 | 全部 `POST` | Contract |
 | 请求编码 | Contract 未声明（示例为 JSON 样式 body）。Development 同时接受 `application/x-www-form-urlencoded` 与 `application/json`；前端使用 form（与 `ori-website` 一致），参数值为字符串 | Runtime |
-| 鉴权 | Contract 中无任何鉴权、签名、`app_id` 或 Secret；用户相关接口以钱包地址为参数 | Contract；是否需要新鉴权见 Q-13 |
+| 鉴权 | Contract 中无任何鉴权、签名、`app_id` 或 Secret；用户相关接口以钱包地址为参数 | Backend owner Confirmed；见 Authentication / signing（Q-13 已解决） |
 | 成功 envelope | `{ data, common: { timestamp, app_name, chain_asset_config? } }`；无 `error_code` | Contract + Runtime |
 | 失败 envelope | **HTTP 200** + `{ error_code: number, message: string, errors: { <field>: string[] } }`，无 `data`。观察到 `10400`（参数校验）、`500`（`points/user`） | Runtime only；**Contract 未记录** |
 | 业务 code | 无 code 表；不建立 enum，只保留数字 | Unknown |
@@ -52,6 +52,8 @@ ORI 后端接口的前端结论。后端正式 Contract 原文见 [api-reference
 **Official contract vs old source**
 
 - `round` 与四个 `swap/*` 端点不在 Contract 中；Mine 当前轮次数据与起源 swap 流程的后端来源需后端确认（Q-11）。
+- R0 静态复核：`latest/events` 的 `data.max` 内才有 `round_started_round_id` / `reset_event_round_id`；旧 Mine 读取顶层 `data.round_id` / `data.reset_event_round_id`，不能直接视为等价。需后端锁定 canonical round 来源，不复制旧基于 gameState 数值 4 的推断。
+- 旧 Rank 对 `round_winners/round` 传 `winner_address`（Contract 未列），并读 `data.list`；Contract 却给单条 started 对象。不能仅按 endpoint 名称交换 URL。字段/identity/单位边界见 [R0 证据核对](./r0-evidence-audit.md#api-字段级核对)；本轮未重测服务。
 - `user_asset_events`：Contract 中 `data` 为数组、无分页参数；旧调用读取 `data.list` / `data.total`。
 - `chain_asset_config`：Contract 无 `is_inner`；旧代码用它区分起源内盘 / 外盘价格。
 - `automation/user` 参数为 `user`；`wd/info` 参数为 `addr`；其余用户接口为 `user_addr` 或 `miner`。
