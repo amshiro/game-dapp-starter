@@ -1,0 +1,14 @@
+/* Starter-wide font registration. One variable face for every supported weight. */
+@font-face {
+  font-family: "HarmonyOS Sans SC";
+  src: url("/fonts/harmonyos-sans/HarmonyOS_Sans_SC.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 40 900;
+  font-display: swap;
+}
+
+:root {
+  --font-family-sans:
+    "HarmonyOS Sans SC", "Noto Sans SC", ui-sans-serif, system-ui,
+    -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}

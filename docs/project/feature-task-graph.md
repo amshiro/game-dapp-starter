@@ -10,7 +10,7 @@
 - F7 是懒连接、引用计数、去重、重连 resync 的基础能力；事件 payload 仍为 unknown，Development 502 与真实事件未观察到的 Q-47 没有解决。本轮未重新探测服务。
 - 开发目标为 BSC 97；生产 56 的 App、RPC、后端与 WS 配置仍有独立发布 Gate。不可把生产未知项泛化为所有开发工作的阻塞，也不可将开发通过当作生产通过。
 - 视觉依据是 `ORI-AI测试`，完整 node 索引见 [figma-inventory.md](./figma-inventory.md)。R0 已重新读取登记的 Mine、Points、Explore、Wallet、Header、About 与品牌节点，事实见 [r0-evidence-audit.md](./r0-evidence-audit.md)；实现时仍须重读精确设计数据。BURY、SOL 占位、历史 live UI 不提供当前视觉标准。
-- Q-03 品牌与代币资产、Q-05 字体授权继续保留。沿用已审核 F8 system fallback 与 F9 可替换单色 Header，不自行下载字体或选择最终品牌。需要新的 Token/BNB/起源资产时先过资产 Gate。
+- Q-03 品牌与代币资产、Q-05 字体许可条款审定/发布边界继续保留。Typography Foundation 已按用户授权接入本地 HarmonyOS Sans SC variable，全局 fallback 保留；F9 Header 仍可替换，不自行下载字体或选择最终品牌。需要新的 Token/BNB/起源资产时先过资产 Gate。
 
 ## 状态定义与总览
 
@@ -91,7 +91,7 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 3. Privy/Wagmi 持有钱包事实；不复制到 Zustand。金额/原始整数用 string/bigint，按真实 decimals/单位转换。不能用 `parseFloat`、浮点乘除或不安全 JSON number ID 做资金计算与去重。
 4. API 必须经现有 ORI transport 和 DTO boundary；错误不泄露 backend body/trace。Contract/runtime mismatch 分字段记录，不悄悄任选一个版本。测试 fixture 可以描述已知输入，不能进入生产数据路径或冒充真实余额/价格。
 5. 每个会改变运行行为的票据至少运行当前 `env:check`、typecheck、lint、format:check、test、build、`git diff --check`，并完成相应浏览器/真实环境验证；具体矩阵遵守 `docs/qa.md`。不写纯 CSS snapshot，不为每个静态节点加形式测试。
-6. UI 验证覆盖 375px、常见手机宽度、PC 500px 居中；检查键盘、focus、长地址/长数字、内容滚动与 safe-area。Q-05 未解决时沿用授权的 fallback；Q-30 未解决时不扩建 locale routing 或自行决定新默认语言，正式 en/zh 资源与产品审定单独过 Gate。
+6. UI 验证覆盖 375px、常见手机宽度、PC 500px 居中；检查键盘、focus、长地址/长数字、内容滚动与 safe-area。字体消费全局 Typography Foundation，不在 Feature 注册；Q-05 的许可发布边界继续保留。Q-30 未解决时不扩建 locale routing 或自行决定新默认语言，正式 en/zh 资源与产品审定单独过 Gate。
 7. 每个写流程在实现前定义：simulation、签名/拒签、广播、receipt/revert、replacement/cancel、超时、后端 reconciliation、完成后的 owner invalidation。txHash 不是业务成功；捕获并冻结 account/chain/contract/round/operation 上下文，切换上下文不能把旧交易结果归到新账户。
 8. 模拟/单元测试不授权真实交易。真实测试必须有用户针对该类操作与目标环境的明确授权；确认 BSC 97、测试合约、测试账户、额度与收款地址。不得顺手调用 `resetRound`、checkpoint、执行器、approve 或 transfer 作为 smoke。生产写与 deploy 均另行授权。
 

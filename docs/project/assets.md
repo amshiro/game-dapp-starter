@@ -2,6 +2,8 @@
 
 原则（User Confirmed，C-03）：使用真实 Figma 资产。禁止用 emoji、Lucide、相似图片或 CSS 临摹替代品牌标志、代币图标和设计师提供的 SVG。导出规格（倍率、格式、命名）遵守 `docs/figma-workflow.md`。
 
+字体是 Starter 通用资产，位于 `public/fonts/harmonyos-sans/`，不放入 `public/ori/`。本轮使用用户提供的本地 Variable WOFF2（由用户 TTF 完整转换），没有从旧站或网络下载；metadata、加载和许可边界见 [字体说明](../../public/fonts/harmonyos-sans/README.md)。Q-05 仅保留许可发布条件审定边界，当前本地接入已由用户授权。
+
 ## Logo 与代币图标（待最终确认，Q-03）
 
 | 来源 | Logo | ORI 代币图标 | 起源代币图标 |

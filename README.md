@@ -69,3 +69,13 @@ Run `pnpm test src/shared/config/parse-public-config.test.ts` for parser tests.
 children from the Server layout. Query clients are fresh on the server and reused
 in the browser; query policies remain with each query's owner. Zustand is available
 for future owner-colocated shared client state; no store or persistence is created.
+
+## Typography
+
+The Starter uses the supplied HarmonyOS Sans SC variable font through one global
+`src/styles/fonts.css` registration, imported by `app/globals.css`. The shared
+`--font-family-sans` stack and Tailwind `font-sans` use the same source; no Feature
+loads its own font. CSS 400/500/700 use real variable coordinates, with synthesis
+disabled. See [font metadata and delivery/licensing boundaries](public/fonts/harmonyos-sans/README.md)
+and [the design-system rules](docs/design-system.md#当前-starter-默认字体) before
+reusing or redistributing this font in another project.

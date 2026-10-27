@@ -19,6 +19,15 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang={resolveLocale()}>
+      <head>
+        <link
+          rel="preload"
+          href="/fonts/harmonyos-sans/HarmonyOS_Sans_SC.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body>
         <Providers>
           <AppShell>{children}</AppShell>

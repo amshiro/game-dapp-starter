@@ -218,6 +218,14 @@ language fallback
 
 字体来源和加载方式由真实资源决定。不得在 starter 中强制选择 \`next/font\`、\`@font-face\`、remote CDN 或 local font 其中一种；一旦确定，应避免多个互相冲突的字体加载入口。
 
+### 当前 Starter 默认字体
+
+当前 Starter 使用用户提供的 HarmonyOS Sans SC 2.040，资产位于 `public/fonts/harmonyos-sans/`，不归属于具体项目或 Feature。唯一注册入口为 `src/styles/fonts.css`，由 `app/globals.css` 导入；全局 `--font-family-sans` 提供 HarmonyOS Sans SC → Noto Sans SC → system UI fallback，Tailwind `font-sans` 消费同一入口。Feature 只选择字号/字重，不重复注册或加载字体。
+
+该文件为 normal TrueType Variable Font，`wght` 范围 40–900。使用一个 `@font-face`、`font-weight: 40 900`、`font-display: swap`；root layout 对同一 URL 做 anonymous font preload，避免按 Regular/Medium/Bold 重复请求。保留全局 `font-synthesis: none`，不可依赖伪造的粗体/斜体。CSS 400/500/700 均为真实可插值字重；文件命名 Bold 为 706，不应把命名实例和 CSS 坐标混为一谈。
+
+后续 Starter 项目默认可沿用此技术入口，并按自己的设计事实核对 weight mapping。运行资产使用保留完整字形与 40–900 axis 的单文件 WOFF2（12.43 MB，原始 TTF 20.62 MB 不进入仓库）；preload 与 CSS 使用同一 WOFF2。首次慢网加载仍须按项目验收；用户提供的 `LICENSE-update.txt` 原样保留为本地许可依据，发布模板前需核对适用条款。来源、版本、覆盖范围与 hash 见 [字体资产说明](../public/fonts/harmonyos-sans/README.md)。本节不包含项目颜色、页面尺寸或业务规则。
+
 ## Component Ownership 与提升规则
 
 组件归属必须与 \`docs/architecture.md\` 保持一致：
