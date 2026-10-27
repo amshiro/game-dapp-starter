@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { WalletHeader } from "@/src/features/wallet/wallet-header";
 import type { ReactNode } from "react";
 import { OriViewport } from "../ori-viewport";
 import { BottomNavigation } from "./bottom-navigation";
@@ -29,14 +30,7 @@ export function AppShell({ children }: Readonly<{ children: ReactNode }>) {
               alt="ORI"
             />
           </Link>
-          <button
-            type="button"
-            className={styles.connect}
-            disabled
-            aria-label="Connect wallet, unavailable"
-          >
-            Connect
-          </button>
+          <WalletHeader />
         </div>
       </header>
       <main id="main-content" tabIndex={-1} className={styles.main}>

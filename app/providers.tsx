@@ -9,6 +9,7 @@ import { readPublicConfig } from "@/src/shared/config/public-config";
 import { resolveRealtimeCapability } from "@/src/shared/config/realtime-capability";
 import { getQueryClient } from "@/src/shared/query/query-client";
 import { RealtimeProvider } from "@/src/shared/realtime/realtime-provider";
+import { EvmTargetChainContext } from "@/src/shared/web3/evm/evm-target-chain-context";
 import { createEvmRuntime } from "@/src/shared/web3/evm/evm-runtime";
 
 function createConfiguredEvmRuntime() {
@@ -31,7 +32,9 @@ export default function Providers({
   // Realtime only signals freshness into the Query cache; it does not depend on Web3.
   const content = (
     <RealtimeProvider capability={realtimeCapability}>
-      {children}
+      <EvmTargetChainContext value={evmRuntime?.targetChain}>
+        {children}
+      </EvmTargetChainContext>
     </RealtimeProvider>
   );
 

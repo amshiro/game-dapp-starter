@@ -124,7 +124,35 @@ Figma 中的 SOL 图标、SOL 文案与 Solana 叙述是**设计占位**，不�
 - Wagmi config 按 Provider tree 创建（Server 每次请求独立、浏览器稳定），不在模块顶层创建。
 - Dev 兼容（F5.1）：vinext 1.3.1 把 Next 的 server-external 默认列表也加入 client `optimizeDeps.exclude`，导致 Privy → `@walletconnect/logger` 的 `import "pino"` 在 `pnpm dev` 中无法解析；`vite.config.ts` 只把 `pino` 从 client exclude 中移除（与 production build 一致，打包 pino 的 browser 版本）。vinext 修复后可删除。
 - 本地 Privy Allowed Origins：`http://localhost:3000`、`http://localhost:5199`。
-- 尚未实现：登录 UI、Wallet Sheet、合约读写、交易。
+- W1 已接入 Header 钱包登录：`features/wallet` 直接读取 Privy ready/authenticated/wallets 与 Wagmi `useConnection`；以当前 Wagmi address 匹配已连接 Privy wallet，不用 linked account 或数组首项替代当前身份。仅局部保存取消/失败提示，不保存认证、地址或链副本。
+- Runtime target context 仅传递已校验的 Business Target Chain 配置；capability 不可用时不挂载 SDK hooks。钱包 current chain 与目标链分开判断，链未知/桥接不同步不显示正确链；W1 不提供切链 UX。
+- SDK logout 由独立测试验证；产品断开入口仍属 W2，logout 不承诺撤销扩展钱包站点权限。
+- W1 真实 Development 钱包连接、正确链 97 和取消重试已验证；稳定 OKX / clean profile 的刷新恢复由用户人工确认连续 5/5，约 1 秒恢复。账户切换已由用户验收：已有授权及新授权账户均约 1 秒更新，无需刷新；未批准新账户连接时仍显示网站已获授权的旧账户，符合授权语义。错误链验收已通过：用户在 localhost 连接详情切换实际 EVM 网络后出现 Wrong network，切回 BSC Testnet 97 后约 1 秒内恢复正常，无需刷新。钱包资产页网络筛选不作为网站连接切链的验收证据。
+- 尚未实现：Wallet Sheet、余额、合约读写、交易。
+
+### W1 Acceptance evidence（2026-10-27）
+
+| Check | Evidence / Result |
+| --- | --- |
+| Connect / identity | PASS：真实 OKX Development 钱包登录，目标链 97；身份来自 Privy/Wagmi，无额外钱包 store |
+| Refresh | PASS（用户人工）：稳定 OKX profile 连续 5/5，约 1 秒恢复；无扩展对照正常 |
+| Account switch | PASS（用户人工）：已有/新授权账户约 1 秒更新，无需刷新；未批准账户连接不替代当前已授权账户 |
+| Wrong chain → 97 | PASS（用户人工）：连接详情中的实际 EVM 切链显示 Wrong network，切回 97 约 1 秒恢复；无需刷新，无交易 |
+| Cancel / retry | PASS（真实 SDK 浏览器）：键盘启动、关闭弹窗、Connect 恢复可用，再次点击可重新打开 |
+| Recoverable provider error | PASS（受控 SDK mock）：非取消错误 -32002 不崩溃，仍可重试，成功后由新 SDK 事实收敛；原始错误不展示。未人为制造真实钱包服务故障 |
+| Header 375 / 500 | PASS：375px 全宽；1440px viewport 内 500px 居中；Header 56px、控件 32px，无横向溢出。未更改已有身份胶囊/错误状态样式 |
+| SDK disconnect | PASS（独立 mock）：委托 Privy logout；产品断开入口属于 W2 |
+| Final QA | PASS：env:check、typecheck、lint、format:check、test（22 files / 321 tests）、build、git diff --check |
+
+本次验收仅覆盖 W1，等待人工审核 / Git checkpoint；不授权后续 Feature、交易、Production 配置或 deploy。
+
+### Development browser profile issue / non-application blocker
+
+2026-10-27 人工审核结论：当前证据支持 browser profile / environment issue，不支持 ORI Provider、Privy/Wagmi bridge 或 W1 业务代码存在需要修复的问题；原 Chrome profile A 不再作为 W1 阻塞，停止调查其隐私设置、扩展、缓存及 site data。
+
+证据摘要：A 一轮约 58.8 秒恢复（iframe 资源加载约 56.9 秒），另两轮超过 60 秒未 ready；iframe ready 到达后约 50ms 内钱包与 Wagmi 恢复。无扩展对照三轮约 2.73 / 0.88 / 0.68 秒 ready；独立 OKX profile 由用户确认连续 5/5、约 1 秒恢复。Provider/config 没有观察到异常重建。独立 iframe 的 `pending` 文案不等于网络阻塞，已撤回该推断；确切浏览器子原因未定位，不将扩展注入警告当作根因。
+
+临时诊断和对照 route 已移除；不修改 Provider、不增加 timeout、钱包 localStorage 镜像或 reconnect workaround，不升级依赖。
 
 新项目按 Starter 规范：Privy 负责认证与钱包事实，Wagmi / Viem 负责 EVM 交互；不得复制线上 Zustand 地址副本、ethers 封装或 `estimateGas × 1.2` 约定。
 

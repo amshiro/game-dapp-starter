@@ -5,7 +5,7 @@
 ## 基线与事实边界
 
 - `app/_shell/routes.ts` 是导航映射唯一 owner：`/mine`、`/points`、`/stake`、`/explore`、`/about`；`/` redirect 到 `/mine`。五个页面现在都只有标题。
-- F9 Header 的 Connect 仍禁用，价格没有接入；已有 Privy/Wagmi/Viem Provider 不等于已有钱包交互 Feature。
+- F9 Header 的 Connect 在 W1 中已接入 SDK 登录与只读身份；价格、Sheet 与余额未接入。W1 实现与自动化验证已落地，真实连接/正确链 97 已验证；稳定 OKX profile 刷新 5/5、账户切换及实际链切换往返已由用户验收；取消重试、受控 provider 错误恢复及视觉检查通过，证据见 web3.md。不解锁资金流程。原 profile A 已归类为 Development browser profile issue / non-application blocker（见 web3.md），停止调查且不添加恢复 workaround。
 - F6 提供 ORI form POST transport、错误边界和 Token price mapper；没有各 Feature 的 Query hooks。ORI 不需要后端登录、App ID 或签名。`open-questions.md` 的 Q-13 仍保留旧鉴权提问，但不得据此重新实现 Backend Auth；已确认的 F6 事实见 [api.md](./api.md#authentication--signing)。本票据不擅自清理问题清单。
 - F7 是懒连接、引用计数、去重、重连 resync 的基础能力；事件 payload 仍为 unknown，Development 502 与真实事件未观察到的 Q-47 没有解决。本轮未重新探测服务。
 - 开发目标为 BSC 97；生产 56 的 App、RPC、后端与 WS 配置仍有独立发布 Gate。不可把生产未知项泛化为所有开发工作的阻塞，也不可将开发通过当作生产通过。
@@ -23,7 +23,7 @@
 | ID | Slice | Status | 现在可做 / 完成前必须解锁 |
 | --- | --- | --- | --- |
 | R0 | 只读数据与合约证据核对（支撑票据） | READY | 可核对并输出逐项通过/阻塞矩阵；不保证一次核对就能关闭 Q-10/Q-11 |
-| W1 | Development 钱包连接与 identity | READY | 下一张 Feature Ticket；不依赖余额、Sheet 或交易规则 |
+| W1 | Development 钱包连接与 identity | READY | 已实现且限定行为验收通过，最终 QA 已通过，待人工审核及 Git checkpoint；不包含余额、Sheet 或交易 |
 | A1 | About accordion 与正式内容 | PARTIALLY BLOCKED | 可做本地视觉/交互子集；Q-41 正文审定前不能完成正式内容 |
 | W2 | Wallet Sheet：地址、复制、断开、余额 | PARTIALLY BLOCKED | W1；Q-21 PC、Q-22 余额语义、Q-03 资产与必要状态反馈 |
 | W3 | Wallet export / receive | BLOCKED | W2、Q-22；不能把外部钱包解释成可导出私钥 |
@@ -451,9 +451,9 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 
 ## 推荐实施顺序与下一张票据
 
-**下一张真正执行的 Feature Ticket：W1 — Development Wallet connection / identity。** F5/F9 已具备 Provider、capability 和真实 Header 入口，开发链/App 已确认；本票据不依赖资金、价格、Sheet 未决动作或 Mine API 缺口，且能验证最小 Client boundary 与 Shell 的组合。只读身份状态是 W1 的明确交付边界，不宣称完整 Wallet 已完成；G-W 未过不进入资金流程。
+**F10 首票选择依据：W1 — Development Wallet connection / identity（现已实现并通过限定 Acceptance / QA，待人工审核及 Git checkpoint）。** F5/F9 已具备 Provider、capability 和真实 Header 入口，开发链/App 已确认；本票据不依赖资金、价格、Sheet 未决动作或 Mine API 缺口，且能验证最小 Client boundary 与 Shell 的组合。只读身份状态是 W1 的明确交付边界，不宣称完整 Wallet 已完成；G-W 未过不进入资金流程。
 
-1. W1；同时可分批执行 R0 的只读核对与人工决策，不需要等钱包连接成功才审阅文案或公开 API。
+1. W1（限定验收与 QA 已通过，待人工审核 / checkpoint）；同时可分批执行 R0 的只读核对与人工决策，不需要等钱包连接成功才审阅文案或公开 API。
 2. Q-41/copy 审定后完成 A1，作为无资金长页面的视觉 Gate；Q-21/Q-22 核定后完成 W2。若这些 Gate 先解除，可以调整顺序，但不自动改为 READY。
 3. 经对应 G-D/G-P 解锁的 E1、H1、S1；M1 → M2 与 M7。M7 不等 WS 恢复，M5 可在数据契约/身份稳定后独立推进。Points P1 只在 Q-20 与接口修复后进入队列，不能为了补齐导航提前实现。
 4. 先评审 S2 的 approve/deposit/withdraw，再按独立 Gate 评审 M3、M6；M4 因预付公式与执行器依赖更强，后置。S3 先决定是否保留；所有真实交易仍逐类授权。

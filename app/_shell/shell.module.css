@@ -23,15 +23,6 @@
   gap: 8px;
   padding-left: 2px;
 }
-.connect {
-  width: 75px;
-  height: var(--ori-layout-header-control-height);
-  border-radius: var(--ori-radius-pill);
-  background: var(--ori-color-text-primary);
-  color: var(--ori-color-surface);
-  font-size: 13px;
-  font-weight: 500;
-}
 .main {
   flex: 1;
   min-width: 0;

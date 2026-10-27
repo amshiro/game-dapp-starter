@@ -1,0 +1,55 @@
+.control {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  max-width: 180px;
+}
+.connect {
+  width: 75px;
+  height: var(--ori-layout-header-control-height);
+  border-radius: var(--ori-radius-pill);
+  background: var(--ori-color-text-primary);
+  color: var(--ori-color-surface);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.connect:disabled {
+  cursor: default;
+}
+.connecting {
+  width: 110px;
+}
+.connect:focus-visible {
+  outline: 2px solid var(--ori-color-accent);
+  outline-offset: 2px;
+}
+.identity {
+  display: flex;
+  align-items: center;
+  padding-inline: 11px;
+  gap: 4px;
+  width: 110px;
+  height: var(--ori-layout-header-control-height);
+  border: 1px solid var(--ori-color-border);
+  border-radius: var(--ori-radius-pill);
+  background: var(--ori-color-surface);
+  color: var(--ori-color-text-primary);
+  font-size: 13px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+.warning {
+  border-color: var(--ori-color-error);
+}
+.detail {
+  color: var(--ori-color-error);
+  font-size: 10px;
+  line-height: 12px;
+  white-space: nowrap;
+}
+
+.neutralDetail {
+  color: var(--ori-color-text-secondary);
+}

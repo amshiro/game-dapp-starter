@@ -15,6 +15,7 @@ export function createEvmRuntime(
 ) {
   const chain = toViemChain(capability.chain, capability.rpcUrl);
   return {
+    targetChain: capability.chain,
     privyAppId: capability.privyAppId,
     privyConfig: createPrivyClientConfig(chain),
     wagmiConfig: createWagmiConfig(chain, capability.rpcUrl),

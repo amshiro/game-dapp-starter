@@ -80,3 +80,7 @@ Replace with real project asset during implementation.
 ## F9 shell exports
 
 `public/ori/shell/` contains only current Figma shell SVGs: `mark.svg` (`2003:3112`), `wordmark.svg` (`2003:3110`), `mine.svg` (`2003:589`), `points.svg` (`2003:600`), `stake.svg` (`2003:606`), `explore.svg` (`2003:616`), `about.svg` (`2003:622`). Navigation SVGs are CSS masks using currentColor; original geometry is retained. Header artwork is the current Figma monochrome version, replaceable pending Q-03. No token or SOL placeholder asset is included.
+
+### W1 Header wallet asset
+
+`public/ori/wallet/header-wallet.svg` is the exact current Figma Header wallet icon (`2003:1003`, parent `2003:999`), rendered at 14×14 inside the 110×32 identity capsule. It is separate from the 16×16 Wallet address-row candidate above. No Sheet, token or chain assets are added in W1; Q-03 remains open.
