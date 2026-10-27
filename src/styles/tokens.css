@@ -1,0 +1,85 @@
+:root {
+  --ori-color-background: #0d0f13;
+  --ori-color-surface: #191b1f;
+  --ori-color-surface-raised: #303135;
+  --ori-color-border: #25262a;
+  --ori-color-accent: #efc462;
+  --ori-color-text-primary: #ffffff;
+  --ori-color-text-secondary: #868789;
+  --ori-color-text-muted: #4a4b4e;
+  --ori-color-error: #ff3c4c;
+  --ori-color-success: #2ed075;
+
+  --ori-font-family:
+    "HarmonyOS Sans SC", "Noto Sans SC", ui-sans-serif, system-ui,
+    -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --ori-radius-control: 8px;
+  --ori-radius-card: 8px;
+  --ori-radius-sheet-card: 12px;
+  --ori-radius-sheet: 16px;
+  --ori-radius-pill: 9999px;
+
+  --ori-layout-max-width: 500px;
+  --ori-layout-page-inset: 14px;
+  --ori-layout-header-height: 56px;
+  --ori-layout-bottom-nav-height: 52px;
+  --ori-layout-header-control-height: 32px;
+  --ori-layout-primary-control-height: 44px;
+}
+
+@theme inline {
+  --color-background: var(--ori-color-background);
+  --color-surface: var(--ori-color-surface);
+  --color-surface-raised: var(--ori-color-surface-raised);
+  --color-border: var(--ori-color-border);
+  --color-accent: var(--ori-color-accent);
+  --color-text-primary: var(--ori-color-text-primary);
+  --color-text-secondary: var(--ori-color-text-secondary);
+  --color-text-muted: var(--ori-color-text-muted);
+  --color-error: var(--ori-color-error);
+  --color-success: var(--ori-color-success);
+
+  --font-sans: var(--ori-font-family);
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  --text-page-title: 1.75rem;
+  --text-section-title: 1.25rem;
+  --text-subheading: 1.125rem;
+  --text-amount: 1.5rem;
+  --text-body: 0.875rem;
+  --text-control: 0.8125rem;
+  --text-caption: 0.75rem;
+  --text-micro: 0.625rem;
+
+  --radius-control: var(--ori-radius-control);
+  --radius-card: var(--ori-radius-card);
+  --radius-sheet-card: var(--ori-radius-sheet-card);
+  --radius-sheet: var(--ori-radius-sheet);
+  --radius-pill: var(--ori-radius-pill);
+  --container-ori: var(--ori-layout-max-width);
+  --spacing-page-inset: var(--ori-layout-page-inset);
+}
+
+.ori-app-viewport {
+  width: 100%;
+  max-width: var(--ori-layout-max-width);
+  min-height: 100vh;
+  min-height: 100svh;
+  margin-inline: auto;
+  background: var(--ori-color-background);
+}
+
+.ori-page-container {
+  padding-inline: var(--ori-layout-page-inset);
+}
+
+.ori-safe-area-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.ori-safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}

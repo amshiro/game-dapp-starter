@@ -24,8 +24,8 @@
 | F4 | Contract Registry / ABI integration — **COMPLETE** | F3；Q-10 | `chainId → address + ABI`，ABI 原样来自 `ori-website/constant/*.json`；56 / 97 合约集完整，BSC 97 缺 WBNB 价格查询地址 |
 | F5 | Privy + Wagmi + Viem Runtime Foundation（含 F5.1 Runtime Stabilization）— **COMPLETE** | F1、F3 | Provider 组合与单链 Wagmi / Privy config；EVM capability 校验 Registry 链与环境一致；连接 / 断开 UI 属后续 Wallet 任务 |
 | F6 | API Transport（含 F6.1 Contract Reconciliation、F6.1a App ID audit、F6.2 Security Cleanup）— **COMPLETE** | F1；Q-11 | `Browser → ORI API transport → Backend`；ORI 无后端登录 / 签名 / Secret；正式 Contract 对照与差异；Token 价格 DTO；Development 测试后端验证 |
-| F7 | Realtime Foundation — **COMPLETE（待审核）** | F1、F6；Q-47 | Pusher 协议客户端（`pusher-js`，懒加载）；`NEXT_PUBLIC_WS_URL` + `NEXT_PUBLIC_PUSHER_APP_KEY`；按需连接、引用计数订阅、去重、重连后 `resync`、空闲释放、payload 边界；realtime 只触发 Query invalidation，polling 保留（[api.md](./api.md#realtime)）；Development 实时服务 502，真实事件未观察到 |
-| F8 | Design Foundation | Q-05 | Token、字体、全局样式（Stage 1） |
+| F7 | Realtime Foundation — **COMPLETE** | F1、F6；Q-47 | Pusher 协议客户端（`pusher-js`，懒加载）；`NEXT_PUBLIC_WS_URL` + `NEXT_PUBLIC_PUSHER_APP_KEY`；按需连接、引用计数订阅、去重、重连后 `resync`、空闲释放、payload 边界；realtime 只触发 Query invalidation，polling 保留（[api.md](./api.md#realtime)）；Development 实时服务 502，真实事件未观察到 |
+| F8 | Design Foundation — **COMPLETE** | Q-05 remains open; authorized system font fallback | Semantic tokens、font fallback/weight mapping、global styles、ORI viewport primitive；HarmonyOS Sans SC licensed asset remains TBD |
 | F9 | App Shell | F8 | 容器、Header、Bottom Navigation、路由（Stage 2） |
 | F10 | Feature Task Graph | F1–F9 | 按 Feature 拆分 Mine / Stake / Points / Explore / About / Wallet 的实现任务 |
 
@@ -54,7 +54,7 @@ Stage 1–2 可以在 Stage 0 未完成时开始，但导航项与 Logo 位置�
 | --- | --- |
 | Scope | 项目 Token（`src/styles/tokens.css`）、HarmonyOS Sans SC 字体、全局背景；i18n 资源结构（en / zh 两套，默认语言见 Q-30） |
 | Required facts | design-system.md；requirements C-70 |
-| Blockers | Q-05（字体授权） |
+| Blockers | Q-05（HarmonyOS Sans SC 字体资产授权仍 TBD；不阻塞 tokens、fallback 与全局样式） |
 | QA | typecheck、lint、format、test、build；颜色对照 Figma |
 
 ## Stage 2 — UI Shell
