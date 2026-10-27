@@ -1,0 +1,161 @@
+.dialog {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: var(--ori-layout-max-width);
+  height: 100%;
+  height: 100dvh;
+  max-height: none;
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+  color: var(--ori-color-text-primary);
+  background: rgb(0 0 0 / 65%);
+  overflow: hidden;
+}
+.dialog[open] {
+  display: flex;
+  align-items: flex-end;
+}
+.dialog::backdrop {
+  background: transparent;
+}
+.sheet {
+  width: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: var(--ori-radius-sheet) var(--ori-radius-sheet) 0 0;
+  background: var(--ori-color-surface);
+  padding: 8px 16px calc(40px + env(safe-area-inset-bottom, 0px));
+}
+.titleRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  margin-bottom: 8px;
+}
+.titleRow h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: normal;
+}
+.close {
+  position: absolute;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+.card {
+  border: 1px solid var(--ori-color-surface-raised);
+  border-radius: var(--ori-radius-sheet-card);
+  position: relative;
+}
+.balanceRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 82px;
+  padding: 15px;
+  background: var(--ori-color-border);
+  border-radius: 11px 11px 0 0;
+  border-bottom: 1px solid var(--ori-color-surface-raised);
+}
+.balance {
+  min-width: 0;
+}
+.balance p {
+  margin: 0 0 8px;
+  color: rgb(255 255 255 / 35%);
+  font-size: 12px;
+  line-height: 15px;
+}
+.amount {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 28px;
+  white-space: nowrap;
+}
+.export {
+  position: absolute;
+  right: 73px;
+  top: 25px;
+  width: 50px;
+  height: 31px;
+  border-radius: var(--ori-radius-pill);
+  background: var(--ori-color-surface-raised);
+  color: var(--ori-color-text-primary);
+  font-size: 13px;
+  font-weight: 400;
+  cursor: not-allowed;
+}
+.addressRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 39px;
+  padding-inline: 15px;
+  color: var(--ori-color-text-secondary);
+}
+.address {
+  font-size: 13px;
+  line-height: 15px;
+}
+.copy,
+.disconnect {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.copy {
+  margin-left: -4px;
+  width: 14px;
+  height: 24px;
+}
+.disconnect {
+  margin-left: auto;
+  width: 20px;
+  height: 28px;
+}
+.disconnect:disabled {
+  cursor: wait;
+}
+.close:focus-visible,
+.copy:focus-visible,
+.disconnect:focus-visible,
+.export:focus-visible {
+  outline: 2px solid var(--ori-color-accent);
+  outline-offset: 2px;
+}
+.feedback,
+.chainWarning,
+.identityState {
+  margin: 0;
+  padding: 8px 15px;
+  font-size: 12px;
+  line-height: 16px;
+  overflow-wrap: anywhere;
+}
+.chainWarning {
+  color: var(--ori-color-error);
+  padding-inline: 0;
+}
+.identityState {
+  color: var(--ori-color-text-secondary);
+}
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

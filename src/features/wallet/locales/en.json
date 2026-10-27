@@ -1,0 +1,18 @@
+{
+  "title": "My Wallet",
+  "close": "Close wallet",
+  "balance": "Balance",
+  "balanceUnavailable": "ORE balance unavailable",
+  "export": "Export",
+  "exportUnavailable": "Export is not available yet",
+  "copyAddress": "Copy wallet address",
+  "copied": "Address copied",
+  "copyFailed": "Could not copy address. Try again.",
+  "disconnect": "Disconnect wallet",
+  "loading": "Loading…",
+  "identityUnavailable": "Wallet unavailable",
+  "wrongNetwork": "Wrong network",
+  "networkUnknown": "Network unknown",
+  "requiredNetwork": "Required",
+  "actionFailed": "Wallet action failed. Try again."
+}

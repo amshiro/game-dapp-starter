@@ -2,7 +2,7 @@
 
 新版 ORI 必须遵循的链、合约、钱包与交易事实。全局规则（精度、交易语义、owner、Fail-closed）见 `docs/web3.md`；本文件只记录 ORI 项目事实及来源。
 
-来源说明：合约地址与 ABI 来自 ori.supply 源码 `ori-website`（`config/chains.ts`、`constant/*.json`），并与线上公开 bundle 逐项核对一致；产品规则取自线上 About 文案。详见 [legacy-runtime-audit.md](./legacy-runtime-audit.md)。
+来源说明：合约地址与 ABI 来自 ori.supply 源码 `ori-website`（`config/chains.ts`、`constant/*.json`），并与线上公开 bundle 逐项核对一致；线上 About 仅为历史对外说明，不是新版需求；新版 Scope 以用户/当前 Figma 为准。详见 [legacy-runtime-audit.md](./legacy-runtime-audit.md)。
 
 ## Chain
 
@@ -128,7 +128,8 @@ Figma 中的 SOL 图标、SOL 文案与 Solana 叙述是**设计占位**，不�
 - Runtime target context 仅传递已校验的 Business Target Chain 配置；capability 不可用时不挂载 SDK hooks。钱包 current chain 与目标链分开判断，链未知/桥接不同步不显示正确链；W1 不提供切链 UX。
 - SDK logout 由独立测试验证；产品断开入口仍属 W2，logout 不承诺撤销扩展钱包站点权限。
 - W1 真实 Development 钱包连接、正确链 97 和取消重试已验证；稳定 OKX / clean profile 的刷新恢复由用户人工确认连续 5/5，约 1 秒恢复。账户切换已由用户验收：已有授权及新授权账户均约 1 秒更新，无需刷新；未批准新账户连接时仍显示网站已获授权的旧账户，符合授权语义。错误链验收已通过：用户在 localhost 连接详情切换实际 EVM 网络后出现 Wrong network，切回 BSC Testnet 97 后约 1 秒内恢复正常，无需刷新。钱包资产页网络筛选不作为网站连接切链的验收证据。
-- 尚未实现：Wallet Sheet、余额、合约读写、交易。
+- W2：Header identity 打开局部原生 dialog Sheet；复制直接使用当前 SDK address，断开委托 Privy logout。复制反馈按 identity/chain 边界重置；不镜像 wallet/auth/address。ORE 仅 unavailable visual slot，无余额 API/RPC owner；Export UI 不调用 SDK export，Receive 排除。
+- 尚未实现：真实余额数据、Export 行为、合约读写、交易。
 
 ### W1 Acceptance evidence（2026-10-27）
 

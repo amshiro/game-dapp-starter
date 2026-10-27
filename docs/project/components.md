@@ -20,7 +20,7 @@ Figma 中没有 Component，以下候选全部从重复视觉中识别。
 | KeyValueRow | 部署面板 Blocks / Total、Stake Summary、Rewards 行、Autominer 行 | 带 / 不带 info 图标 | Mine、Stake、Rewards | |
 | DataTable | Points Records、Explore 三表 | 横向滚动；表头 / 行 | Points、Explore | 列定义由 Feature 提供 |
 | Pagination（‹ ›） | `2003:2883` 等 | 首页只有下一页 | Explore（Points 未画分页） | 圆形 28px 按钮 |
-| Sheet / Dialog primitive | `2003:2490` | H5 底部 Sheet；PC 呈现未定（Q-21） | 目前只有 Wallet | 使用 Radix Dialog 或等价 accessible primitive（Portal、ESC、焦点管理、`aria-modal`）。无拖拽关闭证据，不实现 |
+| Sheet / Dialog primitive | `2003:2490` | H5/PC 同一底部 Sheet，max-500 对齐，viewport 内 backdrop | 目前只有 Wallet | Wallet-local 原生 dialog 提供 top layer、ESC、焦点隔离/恢复；本轮不新增 shared primitive/dependency，无拖拽关闭 |
 | InfoHint（ⓘ） | `2003:1988` 等 | — | Stake Summary、Rewards | 说明内容与交互（tooltip / popover）未设计，暂时只渲染图标或等待确认 |
 | Accordion primitive | About 行 `2003:2245` 等 | 展开 / 收起 | 目前只有 About | 可用 Radix Accordion 提供行为，视觉保留在 About 页面局部 |
 
@@ -39,7 +39,7 @@ Figma 中没有 Component，以下候选全部从重复视觉中识别。
 | --- | --- | --- |
 | ConnectButton | Header `Connect`、部署面板 `Connect wallet` | 两处样式不同，共享连接行为 |
 | WalletButton（缩短地址） | `2003:999` | 打开 WalletSheet |
-| WalletSheet | `2003:2490` | 余额、导出、接收、地址复制、断开；依赖 Privy 钱包（web3.md）；导出 / 接收见 Q-22 |
+| WalletSheet | `2003:2490` | ORE unavailable visual slot、不可用 Export UI、地址复制/断开；SDK 身份唯一 owner；Receive 排除；真实余额/Export 行为见 Q-22 |
 | AddressDisplay + Copy | Wallet Sheet、Miners 列表、Explore 表格 | 缩短规则：设计为 `0x12…3456` / `0xAB…CDEF`（EVM 地址）；格式化 primitive 可放 `shared/web3`，复制交互可共享 |
 
 ## Mining Feature（`features/mining`）
@@ -82,10 +82,10 @@ Figma 中没有 Component，以下候选全部从重复视觉中识别。
 | safe-area | 适用于 Bottom Navigation 与 Sheet |
 | `visualViewport` 软键盘处理 | Mine / Stake 的输入框都在页面内而不在 Sheet 中，暂不需要 |
 | H5 底部 Sheet 下拉关闭 | **ORI 设计无证据，不实现** |
-| PC 居中 Dialog | PC 呈现未确认（Q-21） |
+| PC 居中 Dialog | 不采用；用户确认与 H5 同一底部 Sheet |
 
 ## F9 shell implementation
 
 `app/_shell/` owns the project shell: sticky Header, semantic Main, fixed BottomNavigation limited to the ORI viewport. Bottom content padding reserves 52px plus the actual device bottom safe area; Header adds the actual top safe area outside its 56px row. `usePathname` drives `aria-current` directly, without a route store.
 
-The current Figma Header artwork is replaceable pending Q-03. Header price data remains absent pending Q-23; no sample price is rendered. F9 originally reserved a disabled Connect button; W1 now composes `features/wallet/WalletHeader` for SDK login and read-only identity, including readiness, cancellation, failure and chain mismatch. The connected capsule follows `2003:999` (110×32, 14×14 icon); Sheet and product disconnect UI remain W2. Navigation labels use the current Figma English names under the existing en-only locale policy; Q-30 remains open.
+The current Figma Header artwork is replaceable pending Q-03. Header price data remains absent pending Q-23; no sample price is rendered. F9 originally reserved a disabled Connect button; W1 now composes `features/wallet/WalletHeader` for SDK login and read-only identity, including readiness, cancellation, failure and chain mismatch. The connected capsule follows `2003:999` (110×32, 14×14 icon); W2 adds the Sheet trigger and product disconnect UI; no balance data or export behavior is inferred. Navigation labels use the current Figma English names under the existing en-only locale policy; Q-30 remains open.

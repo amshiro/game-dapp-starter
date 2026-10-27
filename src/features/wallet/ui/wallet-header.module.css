@@ -21,11 +21,13 @@
 .connecting {
   width: 110px;
 }
-.connect:focus-visible {
+.connect:focus-visible,
+.identity:focus-visible {
   outline: 2px solid var(--ori-color-accent);
   outline-offset: 2px;
 }
 .identity {
+  cursor: pointer;
   display: flex;
   align-items: center;
   padding-inline: 11px;

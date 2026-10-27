@@ -32,7 +32,7 @@ docs/*.md       → Starter 全局工程规范（如何实现）
 
 | 来源 | 角色 |
 | --- | --- |
-| `https://ori.supply`（线上） | 当前线上产品：真实业务行为、合约、API、实时、About 规则的最高运行证据 |
+| `https://ori.supply`（线上） | 历史/现网技术与运行证据；不决定新版产品 Scope |
 | `/Users/shiro/Documents/git-project/ori-website`（`master`） | **ori.supply 的源码**：链配置、ABI 文件、合约调用、API 定义 |
 | `/Users/shiro/Documents/git-project/origin-website` | 前代产品 **Origin.fun** 的源码（共享后端、Privy App 与起源代币），**不是** ori.supply 的源码 |
 
@@ -40,19 +40,15 @@ docs/*.md       → Starter 全局工程规范（如何实现）
 
 ## Source of Truth 优先级
 
-冲突时按顺序，低优先级不得覆盖高优先级：
+新版产品的 Source of Truth（User Confirmed，适用于所有 Feature Slice）：
 
-1. 用户明确确认
-2. 当前线上真实行为（`ori.supply`）
-3. ori.supply 源码 `ori-website`（Runtime 与业务逻辑证据）
-4. `ORI-AI测试` Figma（当前视觉设计）
-5. 线上 About 对外说明
-6. `颜色规范、Logo`（品牌 / 资产参考，需与线上品牌核对）
-7. `ORI · Design Specification`
-8. `BURY` 历史稿；`origin-website`（前代 Origin.fun，仅历史证据）
-9. Agent 推断
+1. 用户明确确认的需求最高优先级。
+2. 当前 `ORI-AI测试` 决定新版 UI、页面结构、交互和 Feature Scope；与旧 UI/源码冲突时按当前 Figma。
+3. Figma 未设计且用户未确认的功能保持 OPEN / Human Gate，不从旧版补齐。
+4. `ori-website` 不是新版产品需求来源。只有当前 Figma/用户已经确定需要某项技术能力时，才用于恢复 address、ABI/method、API request/response、chain config 和 historical runtime evidence。
+5. 旧导航、按钮、Wallet 功能、页面结构和线上 About 文案都不得自动继承。品牌参考页、生成的 Design Specification、BURY 与 Origin.fun 历史材料不能提升为新版需求。
 
-分领域：视觉冲突以新版 Figma 为准；链、合约、API、Runtime 冲突以线上运行与代码为准；产品文案与玩法解释以线上 About 为重要证据。
+技术事实仍须区分正式 API Contract、已记录 runtime 与历史调用；冲突保持待核对，不能由 Figma 示例推导接口、金额或链上规则。R0 是静态历史证据，不能替代本原则或新的产品决定。
 
 ## 文档结构
 

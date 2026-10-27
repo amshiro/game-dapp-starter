@@ -192,7 +192,7 @@ Safe area：设计以 34px Home Indicator 区表达底部安全区（User / Figm
 
 ### Bottom Sheet（Wallet）
 
-全屏 65% 黑色遮罩；Sheet 宽 100%，顶部圆角 16，`#191B1F`；48px 标题栏（16 Medium 居中，右侧 24px 关闭图标）；底部含安全区。没有拖拽手柄。
+ORI viewport 内 65% 黑色遮罩（User Confirmed）；H5 宽 100%、PC 与 ORI viewport 对齐且最大 500px；Sheet 宽 100%，顶部圆角 16，`#191B1F`；48px 标题栏（16 Medium 居中，右侧 24px 关闭图标）；底部含安全区。没有拖拽手柄。
 
 ### Accordion（About）
 

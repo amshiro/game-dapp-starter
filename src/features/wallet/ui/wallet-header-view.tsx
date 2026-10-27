@@ -11,6 +11,8 @@ type Props = Readonly<{
   targetChain?: EvmChain;
   notice?: ConnectionNotice;
   onConnect?: () => void;
+  onOpenWallet?: () => void;
+  walletOpen?: boolean;
 }>;
 
 export function WalletHeaderView({
@@ -18,6 +20,8 @@ export function WalletHeaderView({
   targetChain,
   notice,
   onConnect,
+  onOpenWallet,
+  walletOpen,
 }: Props) {
   if (identity && "address" in identity && targetChain) {
     const detail =
@@ -31,9 +35,12 @@ export function WalletHeaderView({
       : `Connected to ${targetChain.name} (${targetChain.id}).`;
     return (
       <div className={styles.control}>
-        <div
+        <button
+          type="button"
+          onClick={onOpenWallet}
+          aria-haspopup="dialog"
+          aria-expanded={walletOpen ?? false}
           className={`${styles.identity} ${detail ? styles.warning : ""}`}
-          role="status"
           aria-label={`Wallet ${identity.address}. ${description}`}
           title={`${identity.address}. ${description}`}
         >
@@ -46,8 +53,12 @@ export function WalletHeaderView({
             alt=""
           />
           <span>{shortenWalletAddress(identity.address)}</span>
-        </div>
-        {detail && <span className={styles.detail}>{detail}</span>}
+        </button>
+        {detail && (
+          <span className={styles.detail} role="status">
+            {detail}
+          </span>
+        )}
       </div>
     );
   }

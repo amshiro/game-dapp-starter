@@ -84,3 +84,7 @@ Replace with real project asset during implementation.
 ### W1 Header wallet asset
 
 `public/ori/wallet/header-wallet.svg` is the exact current Figma Header wallet icon (`2003:1003`, parent `2003:999`), rendered at 14×14 inside the 110×32 identity capsule. It is separate from the 16×16 Wallet address-row candidate above. No Sheet, token or chain assets are added in W1; Q-03 remains open.
+
+### W2 Wallet Sheet exports
+
+`public/ori/wallet/close.svg`（`2003:2499`，24×24）、`address-wallet.svg`（`2003:2520`，16×16）、`copy.svg`（`2003:2512`，14×14）、`disconnect.svg`（`2003:2507`，20×20）直接下载自本轮 Figma design context，保留 SVG 原始尺寸/geometry。Export 为文字控件，无独立 icon。透明返回图层 `2003:2495`、页面截图、系统 Home Indicator、Receive 和代币资产不导入。

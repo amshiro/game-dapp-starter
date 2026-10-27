@@ -2,7 +2,7 @@
 
 每条行为标注 **Confirmed**、**Inferred** 或 **Unknown**，编号对应 [requirements.md](./requirements.md) 与 [open-questions.md](./open-questions.md)。重点记录 Figma 静态画面无法表达、但实现必须知道的行为。
 
-**Visual redesign ≠ business redesign**：Mine、Stake、Explore、About 在新版 Figma 中是视觉重做，业务行为保留线上实现（[web3.md](./web3.md)）。实现时按 Figma 重写 UI，不迁移线上或旧代码的组件。
+新版 UI、交互与 Feature Scope 按用户明确确认和当前 Figma；旧实现仅在已确定能力需要时恢复技术证据，不自动继承业务。见 [Source of Truth](./README.md#source-of-truth-优先级)。
 
 ## Navigation
 
@@ -14,7 +14,9 @@
 - **Confirmed**：仅钱包登录（Privy，Binance / OKX / MetaMask），无嵌入式钱包（C-04）。
 - **Inferred**：`Connect` / `Connect wallet` 打开 Privy 钱包登录；已连接后 Header 显示缩短地址，点击打开 Wallet Sheet（I-10）。
 - **Inferred**：Sheet 内复制图标复制完整地址；退出图标断开连接；断开后回到未连接状态。复制成功反馈未设计。
-- **Unknown**：`导出` / `接收` 含义与余额资产（Q-22）。外部钱包不存在应用可导出的私钥；应用代码不得接触私钥（`docs/web3.md`）。
+- **Confirmed（W2 Human Gate）**：ORE visual slot 暂无数据 owner，显示 `— ORE` 并声明 unavailable；不请求余额 API/contract，不替换 BNB 或加入旧 mining fund。
+- **Confirmed（W2）**：Export 保留 Figma 按钮位置/样式，`aria-disabled` 并声明不可用，不绑定业务动作。Receive 明确排除，不渲染按钮/QR，不调用 fundWallet。余额 owner 和 Export 行为继续 Q-22。
+- Sheet 显示 SDK 当前身份；同步/不可用时不保留旧地址动作；wrong/unknown network 与 target-ready 分开。复制有成功/失败反馈，断开委托 Privy logout，失败可重试，不承诺撤销扩展站点权限。
 
 ## Modal / Sheet
 
@@ -22,11 +24,11 @@
 | --- | --- |
 | Figma | `2003:2487` / `2003:2490` |
 | H5 呈现 | 底部 Sheet，宽 100%，顶部圆角 16 |
-| PC 呈现 | **Unknown**（Q-21）；最小改动方案为 500px 容器内仍用底部 Sheet |
+| PC 呈现 | **Confirmed**：同一底部 Sheet，最大 500px，与 ORI viewport 对齐；backdrop 也限制在该 viewport |
 | 遮罩 | `#000000` 65% |
 | 关闭 | ✕（Confirmed）；点遮罩（Inferred，I-11）；ESC（可访问性要求） |
 | 拖拽关闭 | **无证据，不实现** |
-| 实现 | accessible Dialog primitive（Portal、ESC、焦点管理、`aria-modal`）；打开状态归 Wallet Feature 本地 |
+| 实现 | Wallet-local 原生 `<dialog>.showModal()`（top layer、ESC、焦点隔离/恢复、`aria-modal`）；打开状态归 Wallet Feature 本地 |
 
 交易确认弹窗、结果弹窗、滑点设置弹窗均未在新版设计中出现（Q-12）。
 

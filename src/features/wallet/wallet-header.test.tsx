@@ -123,6 +123,12 @@ describe("wallet SDK wiring", () => {
     });
     expect(sdk.login).toHaveBeenCalledTimes(1);
   });
+  it("keeps identity available and reports unsuccessful logout for recoverable failure", async () => {
+    sdk.privy.authenticated = true;
+    sdk.logout.mockRejectedValueOnce(new Error("private SDK details"));
+    expect(await probe().disconnect()).toBe(false);
+    expect(sdk.privy.authenticated).toBe(true);
+  });
   it("delegates session logout to Privy and derives the next state from SDK facts", async () => {
     sdk.privy.authenticated = true;
     const address = "0x1111111111111111111111111111111111111111";
@@ -156,7 +162,7 @@ describe("Header accessibility", () => {
     expect(loading).toContain('aria-busy="true"');
     expect(loading).toContain("disabled");
   });
-  it("renders read-only identity and explicit mismatch without a fake button", () => {
+  it("renders a real Sheet trigger and preserves explicit mismatch", () => {
     const markup = renderToStaticMarkup(
       <WalletHeaderView
         identity={{
@@ -171,7 +177,9 @@ describe("Header accessibility", () => {
     expect(markup).toContain("Wallet chain 56");
     expect(markup).toContain("Testnet (97)");
     expect(markup).toContain('role="status"');
-    expect(markup).not.toContain("<button");
+    expect(markup).toContain("<button");
+    expect(markup).toContain('aria-haspopup="dialog"');
+    expect(markup).toContain('aria-expanded="false"');
   });
   it("announces cancellation separately from failures, with retry still available", () => {
     const cancelled = renderToStaticMarkup(

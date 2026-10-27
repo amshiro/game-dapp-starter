@@ -2,25 +2,15 @@
 
 本文件是 ORI 项目需求的 Source of Truth。
 
-- **Confirmed**：用户明确确认，或线上运行 / 线上源码 / Figma 明确且无歧义地表达。
+- **Confirmed**：区分新版需求与技术/历史事实；新版需求须由用户或当前 Figma 明确表达，旧运行/源码只确认对应技术或历史行为。
 - **Inferred**：从状态稿、按钮、数值或代码调用推断。实现可以作为工作假设，但相关行为必须易于修改。
 - **Unknown**：没有足够证据。实现被阻塞或必须留空，不得自行补默认值。详见 [open-questions.md](./open-questions.md)。
 
 ## 来源优先级
 
-```text
-1. 用户明确确认
-2. 当前线上真实行为（ori.supply）
-3. ori.supply 源码 ori-website（Runtime 与业务逻辑证据）
-4. ORI-AI测试 Figma（当前视觉设计）
-5. 线上 About 对外说明
-6. 颜色规范、Logo（品牌 / 资产参考，需与线上品牌核对）
-7. ORI · Design Specification
-8. BURY 历史稿；origin-website（前代 Origin.fun，仅历史证据）
-9. Agent 推断
-```
+新版需求以用户明确确认 → 当前 `ORI-AI测试` 为准。旧 ORI 源码/UI/线上文案仅提供历史或技术证据，不能自动形成新版 Scope；Figma 未设计且用户未确认时保持 OPEN。只有已确定需要某项能力时才从旧源码恢复 API、ABI、address 等技术事实，详见 [README](./README.md#source-of-truth-优先级)。
 
-分领域：视觉冲突以新版 Figma 为准；链、合约、API、Runtime 冲突以线上运行与代码为准；产品文案与玩法解释以线上 About 为重要证据，但需与代码一致。
+下表来自 Live/Source 的历史事实不自动授权新版功能；具体交付范围以当前用户决策、Figma 和对应 Feature Ticket 为准。
 
 来源缩写：`Live` = ori.supply 运行观察；`Live bundle` = 线上公开 JS；`Live About` = 线上 About / i18n 文案；`Source` = ori.supply 源码 `ori-website`；`Figma` = `ORI-AI测试`（`2003:178`）节点；`Legacy` = `origin-website`。详见 [legacy-runtime-audit.md](./legacy-runtime-audit.md)。
 
@@ -42,6 +32,9 @@
 | C-80 | 环境必须整体一致：禁止 Dev Privy + 主网合约、测试网 RPC + 主网链、Production Privy + 测试网合约等混用 | User Confirmed | 见 [ADR-001](./decisions/ADR-001-runtime-environments.md) |
 | C-81 | RPC endpoint 不得硬编码在 Feature / 业务代码中，由 Starter 配置层按环境提供 | User Confirmed | 见 ADR-001 |
 | C-82 | ORI 没有后端登录 / 会话，接口不需要 App ID、Secret 或后端签名；Starter 的可选认证 capability 在 ORI 中不启用 | Backend owner Confirmed；正式 Contract / F6.1，见 [api.md](./api.md#authentication--signing) | Q-13 / Q-44 / Q-46 已解决；不建立 Backend Auth |
+| C-83 | W2 保留 Figma 的单行 ORE balance visual slot；无已确认数据 owner 时显示 unavailable，不使用示例 48.60，不替换 BNB/ORI/起源或增加多资产 | User Confirmed | 真实数据 owner、资产定义与来源仍 OPEN |
+| C-84 | W2 保留 Export UI/位置样式，明确不可用；行为 OPEN，不导出密钥/助记词，不解释成复制地址或历史导出 | User Confirmed；Figma `2003:2528/2529` | external EVM wallet-only，embedded off |
+| C-85 | W2 不实现 Receive、QR、Privy fundWallet 或旧版 mining fund；Header identity 打开 Sheet，地址复制/断开沿用 SDK 身份 owner | User Confirmed | Receive 后续是否需要/具体语义须重新明确授权 |
 
 ### Responsive
 
@@ -57,11 +50,11 @@
 | --- | --- | --- | --- |
 | C-20 | 新版底部导航 5 项：Mine · Points · Stake · Explore · About | Figma `2003:2921`；Live i18n `Header` 键 `home / points / stake / explore / about` 与之一致 | 线上当前为 挖矿 · 起源 · 质押 · 探索 · 关于，见 Q-01 |
 | C-21 | Header：Logo + ORI 价格；未连接 `Connect`；已连接显示缩短地址 | Figma；Live | |
-| C-22 | My Wallet 以底部 Sheet 呈现 | Figma `2003:2487` | 线上钱包 UI 未验证（需连接钱包） |
+| C-22 | My Wallet 为 bottom sheet：H5 100%；PC 同形、max-500 居中且对齐 ORI viewport，backdrop 仅覆盖 ORI viewport；圆角 16、关闭与 safe-area | User Confirmed；Figma `2003:2487` | 不做 PC redesign，无拖拽关闭 |
 
 ### Mine（方块游戏）
 
-线上对应 `/mine` → "ORI 挖矿"。新版 Figma 是该功能的视觉重做；业务行为保留。
+线上对应 `/mine` → "ORI 挖矿"。下列旧业务证据仅供已确定的新版能力核对技术，不自动决定保留；Scope 以用户/当前 Figma 为准。
 
 | ID | Requirement | Source | Notes |
 | --- | --- | --- | --- |

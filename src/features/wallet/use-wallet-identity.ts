@@ -59,13 +59,15 @@ export function useWalletIdentity(targetChainId: number) {
     }
   }
 
-  // W1 exposes the SDK operation for isolated verification; W2 owns its product UI.
+  // Privy remains the owner; the caller may close its UI only after successful logout.
   async function disconnect() {
     try {
       await logout();
       setNotice(undefined);
+      return true;
     } catch (error) {
       onError(error);
+      return false;
     }
   }
 
