@@ -30,6 +30,7 @@ Figma 中的 SOL 图标、SOL 文案与 Solana 叙述是**设计占位**，不�
 - RPC endpoint 是环境配置，不得硬编码在 Feature / 业务代码中；由 Starter 配置层提供。开发 RPC 未来可替换为专用 provider。
 - 旧项目（`origin-website`、`ori-website`、线上 bundle）中的 QuickNode RPC URL 与凭据已泄露，**不得迁移或复用**。
 - 本文件记录事实，不代表 Provider、链注册表或 `.env` 已实现。
+- 环境变量名称、分类与 Secret 边界见 [environment.md](./environment.md)。
 
 ## Contracts
 
@@ -90,6 +91,8 @@ ABI 文件尚未进入本仓库。实现时以 `ori-website/constant/*.json`（�
 | Privy App ID | 开发：`cmkw81a5y00onkw0czubpy4hj`（Dev App，User Confirmed）；生产：线上证据为 `cmi70qts3005hl90c27u5uc75`，新项目是否沿用待确认（Q-04）。二者均为公开客户端配置，不是 App Secret | 开发 Confirmed |
 | 签名者 | Privy `useWallets()` 中的外部钱包 → EIP-1193 provider | Confirmed（线上） |
 | 后端身份 | 无后端登录会话；钱包地址作为请求参数 | Confirmed（线上） |
+
+新项目沿用该钱包模型（EVM 外部钱包、仅钱包登录、嵌入式钱包关闭）；具体 Privy / Wagmi / Viem 集成方式在 Implementation Foundation（F5）中确定。
 
 新项目按 Starter 规范：Privy 负责认证与钱包事实，Wagmi / Viem 负责 EVM 交互；不得复制线上 Zustand 地址副本、ethers 封装或 `estimateGas × 1.2` 约定。
 

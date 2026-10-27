@@ -53,6 +53,8 @@
 | Q-41 | 费率口径：About 的 1% 平台费、90% 奖池、6% / 10% / 4% 回购表述，与合约 `feeBps`、`vaultBps`、`claimFeeBps` 的对应关系；展示文案以哪个为准 | 文案与合约一致性 | Live About 自相矛盾 | About、Rules 展示 |
 | Q-42 | 奖励领取时限是多久？UI 是否提示即将过期？ | `ClaimWindowPassed` | OreProtocol | Rewards |
 | Q-43 | 上一轮结算（checkpoint）由 bot 完成，还是前端需要在部署前触发？ | `MustCheckpointPreviousRound` | OreProtocol | Deploy |
+| Q-44 | 哪些后端接口需要 `BACKEND_APP_SECRET`？签名算法与参数？ | 已确认为真实 Secret，但 ori.supply 源码中签名请求从未被调用 | `ori-website/service/tool.js` `_post` 调用 0 次 | Server / Worker 后端代理 |
+| Q-45 | ORI 哪些功能需要 IPFS 上传（`IPFS_JWT`）？ | 已确认为真实 Secret，但新版 Figma 与 ORI 源码中尚未确认上传功能 | — | IPFS 上传边界 |
 
 ## 安全（需要人工处理，非开发问题）
 

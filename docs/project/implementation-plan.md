@@ -8,8 +8,28 @@
 | --- | --- |
 | Real Project Intake | COMPLETE |
 | Product & Runtime Reconstruction | COMPLETE |
+| Environment Contract V1（[environment.md](./environment.md)） | COMPLETE |
 | Project Knowledge Lock | CURRENT |
-| Runtime Foundation（Stage 3：Privy + BSC，开发环境） | NEXT |
+| Implementation Foundation | NEXT |
+
+## Implementation Foundation task graph
+
+下一阶段不是大规模页面实现，而是按依赖拆分、可单独验证的基础任务：
+
+| # | Task | Depends on | Verifiable outcome |
+| --- | --- | --- | --- |
+| F1 | Environment Parser Alignment | Environment Contract V1 | public config parser 只读取契约变量；`APP_ENV` 仅 development / production；README 同步 |
+| F2 | `pnpm env:check` | F1 | 只输出变量名 + PASS / FAIL；Dev / Prod 一致性与 Secret 前缀校验 |
+| F3 | BSC Chain Registry | F1 | 97 / 56 链定义与浏览器信息由注册表提供，不来自 env |
+| F4 | Contract Registry / ABI integration | F3；Q-10 | `chainId → address + ABI`，ABI 来自 `ori-website/constant/*.json` |
+| F5 | Privy + Wagmi + Viem | F1、F3 | 开发环境（Privy Dev App + BSC 97）连接 / 断开；EVM capability gating 生效 |
+| F6 | API Transport / Server Secret Boundary | F1；Q-11、Q-44 | `shared/api` transport；`BACKEND_APP_SECRET` 仅在 Server / Worker |
+| F7 | Realtime Foundation | F1、F6 | `NEXT_PUBLIC_WS_URL` 连接与频道订阅的 owner 与生命周期 |
+| F8 | Design Foundation | Q-05 | Token、字体、全局样式（Stage 1） |
+| F9 | App Shell | F8 | 容器、Header、Bottom Navigation、路由（Stage 2） |
+| F10 | Feature Task Graph | F1–F9 | 按 Feature 拆分 Mine / Stake / Points / Explore / About / Wallet 的实现任务 |
+
+每个任务单独实现、单独 QA，不跨任务顺手实现。
 
 原则：
 
@@ -63,7 +83,7 @@ Stage 1–2 可以在 Stage 0 未完成时开始，但导航项与 Logo 位置�
 | --- | --- |
 | Scope | 根据后端 Contract 决定是否需要鉴权以及方式 |
 | Required facts | Q-13 |
-| Note | 线上无登录会话；不得复制 Origin.fun 的 md5 + `NEXT_PUBLIC_APP_SECRET` 签名。若确认无需鉴权，本阶段只记录结论 |
+| Note | 线上无登录会话；不得复制 Origin.fun 的 md5 + `NEXT_PUBLIC_APP_SECRET` 签名。`BACKEND_APP_SECRET` 已确认为真实 Secret，任何依赖它的后端调用必须经过 Server / Worker 边界（environment.md、Q-44） |
 
 ## Stage 5 — Read APIs 与链上读取
 

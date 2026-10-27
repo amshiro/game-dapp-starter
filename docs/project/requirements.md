@@ -11,12 +11,13 @@
 ```text
 1. 用户明确确认
 2. 当前线上真实行为（ori.supply）
-3. 当前线上源码 / 公开 bundle 中的 Runtime 与业务逻辑
-4. 当前 Figma（ORI-AI测试）新版 UI / 视觉
+3. ori.supply 源码 ori-website（Runtime 与业务逻辑证据）
+4. ORI-AI测试 Figma（当前视觉设计）
 5. 线上 About 对外说明
-6. ORI · Design Specification
-7. BURY / 历史稿
-8. Agent 推断
+6. 颜色规范、Logo（品牌 / 资产参考，需与线上品牌核对）
+7. ORI · Design Specification
+8. BURY 历史稿；origin-website（前代 Origin.fun，仅历史证据）
+9. Agent 推断
 ```
 
 分领域：视觉冲突以新版 Figma 为准；链、合约、API、Runtime 冲突以线上运行与代码为准；产品文案与玩法解释以线上 About 为重要证据，但需与代码一致。
@@ -34,7 +35,7 @@
 | C-03 | 部署 / 下注资产为原生 **BNB** | Live；Live bundle（`deployManual` payable）；Live About | |
 | C-04 | 钱包通过 Privy；线上为仅钱包登录、EVM 外部钱包（Binance / OKX / MetaMask）、无嵌入式钱包 | Source；Live | 新项目登录方式是否保持一致见 Q-04 |
 | C-05 | `ORI-AI测试` 是新版视觉 Source of Truth；`BURY` 为历史稿，不纳入实现 | User Confirmed | |
-| C-06 | 旧代码不迁移，只恢复事实（包括 `origin-website` 与线上 bundle） | User Confirmed | |
+| C-06 | 旧代码不迁移，只恢复事实：`ori-website`（ori.supply 源码）、`origin-website`（前代 Origin.fun）与线上 bundle | User Confirmed | |
 | C-07 | 必须使用真实品牌与代币资产，不得用 emoji、Lucide 或 CSS 临摹替代 | User Confirmed | 见 [assets.md](./assets.md) |
 | C-08 | **Development environment**：BSC Testnet，chainId **97**；Privy Dev App ID `cmkw81a5y00onkw0czubpy4hj`；RPC 为 BNB Chain 官方公开测试网 RPC `https://data-seed-prebsc-1-s1.bnbchain.org:8545`；BSC 97 测试网合约地址；开发后端配置 | User Confirmed | App ID 为公开客户端配置；RPC 为环境配置而非业务事实，可替换 |
 | C-09 | **Production environment**：BSC Mainnet，chainId **56**；Privy Production App；BSC 56 生产合约地址；生产后端配置；**Production RPC 待定** | User Confirmed | 不得沿用旧项目已泄露的 QuickNode URL / 凭据（Q-14） |

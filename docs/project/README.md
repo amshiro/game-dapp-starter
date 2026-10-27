@@ -42,14 +42,15 @@ docs/*.md       → Starter 全局工程规范（如何实现）
 
 冲突时按顺序，低优先级不得覆盖高优先级：
 
-1. 用户明确确认的当前项目要求
+1. 用户明确确认
 2. 当前线上真实行为（`ori.supply`）
-3. 线上源码 / 公开 bundle 中的 Runtime 与业务逻辑
-4. `ORI-AI测试` 新版 UI 与视觉设计
+3. ori.supply 源码 `ori-website`（Runtime 与业务逻辑证据）
+4. `ORI-AI测试` Figma（当前视觉设计）
 5. 线上 About 对外说明
-6. `ORI · Design Specification`
-7. `BURY` 与历史稿；`颜色规范、Logo` 中的资产需与线上品牌核对
-8. Agent 推断
+6. `颜色规范、Logo`（品牌 / 资产参考，需与线上品牌核对）
+7. `ORI · Design Specification`
+8. `BURY` 历史稿；`origin-website`（前代 Origin.fun，仅历史证据）
+9. Agent 推断
 
 分领域：视觉冲突以新版 Figma 为准；链、合约、API、Runtime 冲突以线上运行与代码为准；产品文案与玩法解释以线上 About 为重要证据。
 
@@ -68,6 +69,7 @@ docs/*.md       → Starter 全局工程规范（如何实现）
 | [web3.md](./web3.md) | BSC、合约地址与 ABI 事实、钱包模型、交易概念 |
 | [api.md](./api.md) | 后端 host、端点、实时频道 |
 | [legacy-runtime-audit.md](./legacy-runtime-audit.md) | 线上与旧代码的历史证据（不是实现规范） |
+| [environment.md](./environment.md) | Environment Contract V1：变量分类、Dev / Prod 矩阵、Secret 边界 |
 | [decisions/](./decisions/) | 架构决策记录（ADR），例如 [ADR-001 Runtime Environments](./decisions/ADR-001-runtime-environments.md) |
 | [open-questions.md](./open-questions.md) | 未确认问题：看到 Unknown 时停止猜测 |
 | [implementation-plan.md](./implementation-plan.md) | 实现顺序与每阶段阻塞项 |
@@ -77,10 +79,16 @@ docs/*.md       → Starter 全局工程规范（如何实现）
 ```text
 AGENTS.md
 → docs/project/README.md
+→ docs/project/overview.md
 → docs/project/requirements.md
+→ docs/project/environment.md
 → docs/project/design-system.md
-→ 当前 Feature 对应的项目文档（routes / components / ui-behavior / assets / figma-inventory / web3 / api）
+→ docs/project/web3.md
+→ docs/project/api.md
+→ docs/project/ui-behavior.md
+→ 当前 Feature 对应的项目文档（routes / components / assets / figma-inventory / decisions）
 → docs/project/open-questions.md（确认要做的事没有被 Unknown 阻塞）
+→ docs/project/implementation-plan.md（确认当前阶段与依赖）
 → 对应的全局 docs/*.md
 ```
 

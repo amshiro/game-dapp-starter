@@ -8,10 +8,11 @@
 
 | 项 | 值 | Status |
 | --- | --- | --- |
-| API base | `https://gate.game.com/v1`（公开配置） | 线上生产值；新项目是否沿用待确认（Q-11） |
+| API base | `https://gate.game.com/v1`（公开配置）；新项目变量 `NEXT_PUBLIC_API_BASE_URL` | 线上生产值；新项目是否沿用待确认（Q-11） |
 | 方法 | 全部 `POST` | Confirmed（线上） |
 | 鉴权 | **无登录会话**；用户相关请求以钱包地址作为参数；源码中签名 `_post` 调用 0 次 | Confirmed（源码 + 线上）；是否安全、是否需要新鉴权待确认（Q-13） |
-| 实时 | Pusher 协议 WebSocket：`wss://gate.game.com/app/<public app key>`（key 为公开客户端 key，不记录） | Confirmed（线上） |
+| 实时 | Pusher 协议 WebSocket：`wss://gate.game.com/app/<public app key>`（key 为公开客户端 key，不记录）；新项目变量 `NEXT_PUBLIC_WS_URL` | Confirmed（线上） |
+| 后端 Secret | `BACKEND_APP_SECRET` 仅在 Server / Worker 使用（见 [environment.md](./environment.md#secret-boundary)） | User Confirmed |
 
 同一后端还服务 Origin.fun 的 `/v1/originfun/*`（Legacy only）。
 
