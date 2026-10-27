@@ -74,6 +74,7 @@ describe("public config", () => {
         "NEXT_PUBLIC_EVM_RPC_URL",
         "NEXT_PUBLIC_IPFS_GATEWAY_URL",
         "NEXT_PUBLIC_PRIVY_APP_ID",
+        "NEXT_PUBLIC_PUSHER_APP_KEY",
         "NEXT_PUBLIC_REFERRAL_CODE",
         "NEXT_PUBLIC_SITE_URL",
         "NEXT_PUBLIC_WS_URL",

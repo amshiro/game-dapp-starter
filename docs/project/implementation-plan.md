@@ -22,9 +22,9 @@
 | F2 | （并入 F1） | — | — |
 | F3 | BSC Chain Registry — **COMPLETE** | F1 | 97 / 56 链定义与浏览器信息由注册表提供，不来自 env；environment → chain 映射只有注册表一个代码 owner |
 | F4 | Contract Registry / ABI integration — **COMPLETE** | F3；Q-10 | `chainId → address + ABI`，ABI 原样来自 `ori-website/constant/*.json`；56 / 97 合约集完整，BSC 97 缺 WBNB 价格查询地址 |
-| F5 | Privy + Wagmi + Viem Runtime Foundation（含 F5.1 Runtime Stabilization）— **COMPLETE（待审核）** | F1、F3 | Provider 组合与单链 Wagmi / Privy config；EVM capability 校验 Registry 链与环境一致；连接 / 断开 UI 属后续 Wallet 任务 |
-| F6 | API Transport（含 F6.1 Contract Reconciliation、F6.1a App ID audit、F6.2 Security Cleanup）— **COMPLETE（待审核）** | F1；Q-11 | `Browser → ORI API transport → Backend`；ORI 无后端登录 / 签名 / Secret；正式 Contract 对照与差异；Token 价格 DTO；Development 测试后端验证 |
-| F7 | Realtime Foundation | F1、F6 | `NEXT_PUBLIC_WS_URL` 连接与频道订阅的 owner 与生命周期 |
+| F5 | Privy + Wagmi + Viem Runtime Foundation（含 F5.1 Runtime Stabilization）— **COMPLETE** | F1、F3 | Provider 组合与单链 Wagmi / Privy config；EVM capability 校验 Registry 链与环境一致；连接 / 断开 UI 属后续 Wallet 任务 |
+| F6 | API Transport（含 F6.1 Contract Reconciliation、F6.1a App ID audit、F6.2 Security Cleanup）— **COMPLETE** | F1；Q-11 | `Browser → ORI API transport → Backend`；ORI 无后端登录 / 签名 / Secret；正式 Contract 对照与差异；Token 价格 DTO；Development 测试后端验证 |
+| F7 | Realtime Foundation — **COMPLETE（待审核）** | F1、F6；Q-47 | Pusher 协议客户端（`pusher-js`，懒加载）；`NEXT_PUBLIC_WS_URL` + `NEXT_PUBLIC_PUSHER_APP_KEY`；按需连接、引用计数订阅、去重、重连后 `resync`、空闲释放、payload 边界；realtime 只触发 Query invalidation，polling 保留（[api.md](./api.md#realtime)）；Development 实时服务 502，真实事件未观察到 |
 | F8 | Design Foundation | Q-05 | Token、字体、全局样式（Stage 1） |
 | F9 | App Shell | F8 | 容器、Header、Bottom Navigation、路由（Stage 2） |
 | F10 | Feature Task Graph | F1–F9 | 按 Feature 拆分 Mine / Stake / Points / Explore / About / Wallet 的实现任务 |

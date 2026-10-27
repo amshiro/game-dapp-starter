@@ -8,6 +8,7 @@ export const PUBLIC_CONFIG_KEYS = [
   "NEXT_PUBLIC_BACKEND_APP_ID",
   "NEXT_PUBLIC_PRIVY_APP_ID",
   "NEXT_PUBLIC_WS_URL",
+  "NEXT_PUBLIC_PUSHER_APP_KEY",
   "NEXT_PUBLIC_REFERRAL_CODE",
   "NEXT_PUBLIC_IPFS_GATEWAY_URL",
   "NEXT_PUBLIC_DEFAULT_EVM_CHAIN_ID",
@@ -28,6 +29,7 @@ export type PublicConfig = Readonly<{
   backendAppId: string | undefined;
   privyAppId: string | undefined;
   wsUrl: string | undefined;
+  pusherAppKey: string | undefined;
   referralCode: string | undefined;
   ipfsGatewayUrl: string | undefined;
   defaultEvmChainId: number | undefined;
@@ -145,6 +147,7 @@ export function parsePublicConfig(input: PublicConfigInput): PublicConfig {
     backendAppId: optionalText(input.NEXT_PUBLIC_BACKEND_APP_ID),
     privyAppId: optionalText(input.NEXT_PUBLIC_PRIVY_APP_ID),
     wsUrl: parseWsUrl(input.NEXT_PUBLIC_WS_URL),
+    pusherAppKey: optionalText(input.NEXT_PUBLIC_PUSHER_APP_KEY),
     referralCode: optionalText(input.NEXT_PUBLIC_REFERRAL_CODE),
     ipfsGatewayUrl: parseHttpUrl(
       "NEXT_PUBLIC_IPFS_GATEWAY_URL",
@@ -168,6 +171,7 @@ const FIELD_VALIDATORS: Readonly<
   NEXT_PUBLIC_BACKEND_APP_ID: optionalText,
   NEXT_PUBLIC_PRIVY_APP_ID: optionalText,
   NEXT_PUBLIC_WS_URL: parseWsUrl,
+  NEXT_PUBLIC_PUSHER_APP_KEY: optionalText,
   NEXT_PUBLIC_REFERRAL_CODE: optionalText,
   NEXT_PUBLIC_IPFS_GATEWAY_URL: (v) =>
     parseHttpUrl("NEXT_PUBLIC_IPFS_GATEWAY_URL", v),

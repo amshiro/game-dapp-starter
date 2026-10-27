@@ -105,15 +105,60 @@ ORI 后端接口的前端结论。后端正式 Contract 原文见 [api-reference
 
 ## Realtime
 
-| Channel | Event | 含义 | 类型 |
-| --- | --- | --- | --- |
-| `round.new_round` | `.round.data.started` | 新一轮开始 | 公共频道 |
-| `round.reset` | `.round.data.reset` | 本轮开奖（reset） | 公共频道 |
+### 旧 ORI（`ori-website`，全部分支相同）
 
-旧线上为 Pusher 协议 WebSocket；新项目变量 `NEXT_PUBLIC_WS_URL`。实时连接的 owner、断线重连与查询失效策略在 F7 按 `docs/state-management.md` 设计；不得复制模块级全局 Echo 单例。
+| 项 | 事实 | Status |
+| --- | --- | --- |
+| 协议 / 库 | Pusher 协议 WebSocket（Laravel broadcasting）；`laravel-echo ^2.2.6` + `pusher-js ^8.4.0`，模块级全局 Echo 单例（`utils/echo.ts`） | Source |
+| 配置 | `wsHost = NEXT_PUBLIC_WS`（仅 host），`key = NEXT_PUBLIC_REFERRAL_CODE`（**实为 Pusher app key**），`cluster: ""`，`wsPort 80` / `wssPort 443`，`forceTLS`，仅 `ws` / `wss` 传输 | Source |
+| 线上 | `wss://gate.game.com/app/<public app key>`（host 与 API 相同）；该 host 自 2026-10-27 起 404 | Live |
+| 订阅 | `hooks/useEchoChannel.ts`：mount 时 `channel.listen`，cleanup 时 `stopListening(event)`（移除该事件的**全部**监听，不离开频道）；只有 `pages/mine/index.tsx` 使用 | Source |
+| 重连 | 无应用层处理，完全依赖 pusher-js 内建重连 / 重新订阅；断线期间漏掉的事件不补偿 | Source |
+
+| Channel | Event（wire 名） | 旧前端读取的字段 | 旧前端动作 |
+| --- | --- | --- | --- |
+| `round.new_round` | `round.data.started`（Echo 写法 `.round.data.started`，前导点 = 无命名空间） | `data.timestamp`（`data` 可能是 JSON 字符串） | 清空选择 / 投注显示；invalidate `eventInfo`、`automation` |
+| `round.reset` | `round.data.reset` | `data.winning_square` | invalidate `roundWinInfo`、`eventInfo`、`automation`；播放开奖动画（3.6 s + 5 s），结束后再次 invalidate |
+
+Payload 字段只来自旧前端读取方式，**后端未提供 schema，Development 未观察到真实事件**（Q-47）。
+
+**Development 验证状态（F7）**：`<WS host>/app/<key>` 返回 Cloudflare 502（真实 key 与无效 key 相同，上游不可达），pusher-js `connecting → unavailable`；真实频道订阅与 payload schema **尚未验证**，polling fallback 仍有效。后端恢复实时服务后需要补一次真实 smoke（连接、两个频道订阅、事件 payload shape）。
+
+### 旧 ORI 为什么 realtime 与 polling 并存
+
+realtime 只在**轮次边界**（开始 / 开奖）推送，并且不可补偿；Mine 页的其余新鲜度全部来自 polling：
+
+| 数据 | 来源 | 刷新 | 有对应 realtime 事件？ |
+| --- | --- | --- | --- |
+| 当前轮次链上状态（`getTreasuryState` / `getGameState` / `getCurrentRoundInfo`） | 合约读 | 每 1 s | 否 |
+| `latest/events`（推导当前 `roundId`） | API | 每 3 s，并被两个事件 invalidate | 间接 |
+| 方块部署量（`round`，`components/matrix.tsx`） | API | **每 4 s** | **否**：轮次进行中其他用户的部署没有推送 |
+| `automation/user` | API | 每 10 s，并被两个事件 invalidate | 间接 |
+
+因此 polling 不是 realtime 的冗余：(1) 轮次内的变化没有事件；(2) 断线、页面后台、WS 不可用时 polling 是唯一来源；(3) 事件只作为"立刻刷新"的信号，数据始终重新从 API / 合约读取。新项目同样**不因 realtime 删除 polling**；具体间隔由各 Feature 按数据语义决定（`round` 端点本身不在正式 Contract 中，见 Q-11）。
+
+### 新 foundation（F7）
+
+| 层 | 位置 | 职责 |
+| --- | --- | --- |
+| Capability | `shared/config/realtime-capability.ts` | `NEXT_PUBLIC_WS_URL` + `NEXT_PUBLIC_PUSHER_APP_KEY` → endpoint；缺一即 `unavailable`（实时关闭，只靠 polling） |
+| Event catalog | `shared/config/ori-realtime-events.ts` | 两个 ORI 事件的 typed channel / event 名；payload 为 `unknown`。`domains/round` 建立后迁入（components.md） |
+| Client | `shared/realtime/realtime-client.ts` | 第一个监听者才连接，最后一个离开后空闲 1 s 释放频道与连接；每个频道只向 transport 订阅一次；同一 listener 去重；重连后重新确认订阅时发 `resync`；payload 由事件的 `parse` 校验，失败跳过该监听者并报告；单个 listener 抛错不影响其他 |
+| Transport | `shared/realtime/pusher-transport.ts` | `pusher-js@8.6.0`（不使用 Laravel Echo）按需 `import()`；仅 WebSocket、无 stats、无鉴权（公共频道）；重连、退避、ping / pong 与重连后重新订阅由 pusher-js 负责 |
+| React | `shared/realtime/realtime-provider.tsx` | `RealtimeProvider`（`app/providers.tsx`，位于 `QueryClientProvider` 内，不依赖 EVM）；`useRealtimeEvent(definition, listener)`、`useRealtimeStatus()` |
+
+问题报告只含 kind 与 channel / event 名，不含 payload 或连接参数。
+
+### TanStack Query integration
+
+- realtime 只发**新鲜度信号**；server state 只在 TanStack Query 中。不建立 `roundStore`，不把事件 payload 写入 Zustand 或手工 patch cache。
+- Feature 在 listener 中 `queryClient.invalidateQueries({ queryKey })`，只 invalidate 真正受影响的 owner Query；`event` 与 `resync` 通常同样处理（`resync` = 断线期间可能漏事件）。
+- polling 由 Query 的 `refetchInterval` 保留；Feature 可以根据 `useRealtimeStatus()`（`connected` 时）放宽间隔，但不得在 `disabled` / `unavailable` 时停止 polling。
+- 动画等纯 UI 反应（旧开奖动画）属于 Feature local state，不属于 realtime 层。
 
 ## 不迁移
 
 - axios 实例、`qs` 封装、md5 签名、cookie `login_token` / `login_secret`（Origin.fun）。
 - 浏览器可见的 `NEXT_PUBLIC_APP_SECRET` 签名方案。
 - 401 / 403 / 404 一律"去登录"的错误处理。
+- 模块级全局 Echo 单例、`stopListening(event)` 一次移除全部监听、`NEXT_PUBLIC_REFERRAL_CODE` 作为 Pusher key。

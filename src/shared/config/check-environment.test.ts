@@ -47,6 +47,11 @@ describe("env check", () => {
       name: "BACKEND_APP_SECRET",
       note: "not set",
     });
+    expect(results).toContainEqual({
+      status: "SKIP",
+      name: "NEXT_PUBLIC_PUSHER_APP_KEY",
+      note: "not set (optional)",
+    });
   });
 
   test("starter backend app id and secret stay optional for ORI", () => {

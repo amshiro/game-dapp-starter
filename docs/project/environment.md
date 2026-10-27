@@ -35,8 +35,9 @@
 | `NEXT_PUBLIC_API_BASE_URL` | Public | 是 | 是 | ORI 后端 origin（不含 `/v1`；`/v1/ori` 由 API 层拼接） |
 | `NEXT_PUBLIC_BACKEND_APP_ID` | Public | 是 | 可能 | **Starter capability — inactive in current ORI**：带后端登录 / 签名项目的公开应用标识（≠ Privy App ID）；可选，ORI transport 不发送 |
 | `NEXT_PUBLIC_PRIVY_APP_ID` | Public | 是 | 是 | Privy App ID（≠ App Secret） |
-| `NEXT_PUBLIC_WS_URL` | Public | 是 | 是 | 实时 / WebSocket 客户端 endpoint，仅限浏览器安全地址 |
-| `NEXT_PUBLIC_REFERRAL_CODE` | Public | 是 | 可能 | 公开邀请 / 长链接标识；若具备认证权限须重新分类 |
+| `NEXT_PUBLIC_WS_URL` | Public | 是 | 是 | 实时服务（Pusher 协议）地址：`ws` / `wss` + host[:port]，可带路径前缀，不含 `/app/<key>`、query、fragment；可选，见 [api.md](./api.md#realtime) |
+| `NEXT_PUBLIC_PUSHER_APP_KEY` | Public | 是 | 可能 | Pusher 协议公开 app key（≠ app secret，secret 不进入前端）；与 `WS_URL` 同时设置才启用实时 |
+| `NEXT_PUBLIC_REFERRAL_CODE` | Public | 是 | 可能 | 公开邀请 / 长链接标识（Starter capability，当前 ORI 未使用）；旧 `ori-website` 将 Pusher key 误放在此变量，ORI 实时不读取；若具备认证权限须重新分类 |
 | `NEXT_PUBLIC_IPFS_GATEWAY_URL` | Public | 是 | 可能 | 公开 IPFS Gateway Base URL |
 | `NEXT_PUBLIC_DEFAULT_EVM_CHAIN_ID` | Public | 是 | 是 | 97（Dev）/ 56（Prod） |
 | `NEXT_PUBLIC_EVM_RPC_URL` | Public | 是 | 是 | 浏览器安全 RPC，须与 chainId 同一网络 |
@@ -110,7 +111,7 @@ IPFS:     Browser → Server / Worker → IPFS_JWT → IPFS Provider
 | RPC | `https://data-seed-prebsc-1-s1.bnbchain.org:8545` | TBD（Q-14） |
 | Contracts | 测试网注册表（web3.md BSC 97 列） | 生产注册表（web3.md BSC 56 列） |
 | Backend | 开发 / 测试后端（待填，Q-11） | 生产后端（待填） |
-| WebSocket | 开发 / 测试（待填） | 生产（待填） |
+| Realtime（WS URL + Pusher key） | 开发 / 测试已配置 host；Pusher 路由当前返回 502（Q-47） | 生产（待填，Q-47） |
 | IPFS Gateway | 开发 / 测试（待填） | 生产（待填） |
 | Restricted Countries | `CN` | `CN` |
 | Backend Secret | 本机开发 Secret | Cloudflare Secret |
