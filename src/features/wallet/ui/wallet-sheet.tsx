@@ -11,9 +11,11 @@ import {
 } from "../model/wallet-identity";
 import { copyWalletAddress } from "../model/copy-wallet-address";
 import styles from "./wallet-sheet.module.css";
+import type { WalletBalance } from "../read/native-balance";
 
 type Props = Readonly<{
   identity: WalletIdentity;
+  balance?: WalletBalance;
   targetChain: EvmChain;
   actionFailed: boolean;
   onClose: () => void;
@@ -95,6 +97,7 @@ function AddressRow({
 /** Wallet content and SDK-owned identity; shared Modal owns overlay behavior. */
 export function WalletSheet({
   identity,
+  balance = { status: "unavailable" },
   targetChain,
   actionFailed,
   onClose,
@@ -121,13 +124,28 @@ export function WalletSheet({
         <div className={styles.balanceRow}>
           <div className={styles.balance}>
             <p>{text.balance}</p>
-            <div className={styles.amount} aria-describedby={balanceId}>
-              — ORE
+            <div
+              className={styles.amount}
+              aria-describedby={balanceId}
+              aria-busy={balance.status === "loading" || undefined}
+              title={
+                balance.status === "populated"
+                  ? `${balance.exact} BNB`
+                  : undefined
+              }
+            >
+              {balance.status === "populated" ? balance.text : "—"} BNB
             </div>
           </div>
           {/* W1 exposes external-wallet identities only. Export/Receive belong to embedded wallets and stay absent here. */}
           <span id={balanceId} className={styles.srOnly}>
-            {text.balanceUnavailable}
+            {balance.status === "loading"
+              ? text.balanceLoading
+              : balance.status === "error"
+                ? text.balanceFailed
+                : balance.status === "populated"
+                  ? `${balance.exact} BNB`
+                  : text.balanceUnavailable}
           </span>
         </div>
         {hasAddress ? (

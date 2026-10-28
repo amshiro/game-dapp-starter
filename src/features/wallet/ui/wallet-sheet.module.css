@@ -1,4 +1,8 @@
 .card {
+  letter-spacing: 0;
+  background: var(--ori-color-surface);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   border: 1px solid var(--ori-color-surface-raised);
   border-radius: var(--ori-radius-sheet-card);
   position: relative;
@@ -7,11 +11,15 @@
   position: relative;
   display: flex;
   align-items: center;
-  height: 82px;
+  height: 83px;
+  /* Figma overlays both inside strokes at the same card bounds. */
+  margin: -1px -1px 0;
+  border: 1px solid var(--ori-color-surface-raised);
+  backdrop-filter: blur(25.95px);
+  -webkit-backdrop-filter: blur(25.95px);
   padding: 15px;
   background: var(--ori-color-border);
-  border-radius: 11px 11px 0 0;
-  border-bottom: 1px solid var(--ori-color-surface-raised);
+  border-radius: var(--ori-radius-sheet-card) var(--ori-radius-sheet-card) 0 0;
 }
 .balance {
   min-width: 0;
@@ -23,22 +31,24 @@
   line-height: 15px;
 }
 .amount {
+  font-feature-settings: "ss02" 1;
   font-size: 24px;
   font-weight: 700;
-  line-height: 28px;
+  line-height: normal;
   white-space: nowrap;
 }
 .addressRow {
   display: flex;
   align-items: center;
   gap: 8px;
-  height: 39px;
+  height: 40px;
+  margin-bottom: -1px;
   padding-inline: 15px;
   color: var(--ori-color-text-secondary);
 }
 .address {
   font-size: 13px;
-  line-height: 15px;
+  line-height: normal;
 }
 .copy,
 .disconnect {

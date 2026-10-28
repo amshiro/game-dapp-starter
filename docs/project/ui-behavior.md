@@ -15,8 +15,8 @@
 - **Confirmed**：仅钱包登录（Privy，Binance / OKX / MetaMask），无嵌入式钱包（C-04）。
 - **Inferred**：`Connect` / `Connect wallet` 打开 Privy 钱包登录；已连接后 Header 显示缩短地址，点击打开 Wallet Sheet（I-10）。
 - **Inferred**：Sheet 内复制图标复制完整地址；退出图标断开连接；断开后回到未连接状态。复制成功反馈未设计。
-- **Confirmed（W2 Human Gate）**：ORE visual slot 暂无数据 owner，显示 `— ORE` 并声明 unavailable；不请求余额 API/contract，不替换 BNB 或加入旧 mining fund。
-- **User Confirmed（当前修正）**：external wallet 同时隐藏 Export / Receive。仅 Privy embedded wallet 才有这两项能力；当前 embedded off，不能创建新钱包来补按钮，不调用 key export / funding / deposit API。ORE owner 继续 Q-22。
+- **User Confirmed（余额修正）**：Wallet 单行余额改为目标 BSC 链 native BNB，设计稿 ORE 标注错误。弹层打开且 SDK identity / current chain 均 ready 时用 Wagmi useBalance（eth_getBalance）读取；错链/未连接显示 — BNB，不展示旧缓存；加载/失败有本地化状态，重开自动 refetch。bigint + formatUnits18，显示最多6位小数并保留 exact/raw；不读取旧 mining fund。
+- **User Confirmed（当前修正）**：external wallet 同时隐藏 Export / Receive。仅 Privy embedded wallet 才有这两项能力；当前 embedded off，不能创建新钱包来补按钮，不调用 key export / funding / deposit API。余额 owner 已按本轮人工确认；未来 embedded 模型仍需 Gate。
 - Sheet 显示 SDK 当前身份；同步/不可用时不保留旧地址动作；wrong/unknown network 与 target-ready 分开。复制有成功/失败反馈，断开委托 Privy logout，失败可重试，不承诺撤销扩展站点权限。
 
 ## Modal / Sheet

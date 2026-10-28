@@ -63,7 +63,8 @@ describe("request-owned locale boundary", () => {
       expect(html).toContain(text);
     expect(html).not.toMatch(/>Export<|>Receive<|>导出<|>接收<|48\.60/);
     expect(html).toContain("ORI");
-    expect(html).toContain("ORE");
+    expect(html).toContain("BNB");
+    expect(html).not.toContain("ORE");
   });
   it("does not leak a Chinese render into the next English render", () => {
     renderToStaticMarkup(

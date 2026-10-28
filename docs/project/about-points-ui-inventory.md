@@ -55,3 +55,7 @@ About 复用 feature-local AboutAccordion。Points card/table 均只具有本 Fe
 本轮实际验证：375px、500px viewport，以及 1280px PC 内 500px main 居中（left=390）；两页 document scrollWidth 均等于 viewport width。About 五项逐项展开均只有一个 visible region，Enter/Space 与 2px accent focus 正常；中英文长文滚动到底后最后内容与 Bottom Nav 保持 24px 间距。Points 四列/六行完整，40px 图标成功加载，computed HarmonyOS Sans SC 与 400/500/700 正常；两页导航 active 正确，locale 切换后无混合 UI 文案或 console warning/error。demo 时间仍为 Figma 字面样本，没有推断年份或真实事件时间。
 
 env:check、typecheck、lint、format:check、test、build、git diff --check 全部通过；38 files / 442 tests。build 保留已有 vinext/RSC sourcemap warnings，没有新的构建错误。无 commit/push/deploy，等已通过人工审核。
+
+## 后续强制 Property-Level Parity 复核
+
+本轮页面与 Wallet 已补做 [逐节点属性审计](./visual-property-audit.md)：补齐独立 surface fills、两层 Wallet backdrop blur、完整描边、文字角色和精确 divider；About 加入用户要求的双向过渡，保持单项 state 与立即 inert/aria-hidden。该报告包含 Figma / implementation / computed / result 对照和批准的差异，不能仅以本文件此前的 screenshot-level 记录代替属性验证。

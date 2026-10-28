@@ -1,11 +1,39 @@
 "use client";
 
-import { useContext, useState } from "react";
+import { useContext, useState, type ComponentProps } from "react";
+import { useBalance } from "wagmi";
+import {
+  nativeBalanceAccount,
+  nativeBalanceDisplay,
+} from "./read/native-balance";
 import { EvmTargetChainContext } from "../../shared/web3/evm/evm-target-chain-context";
 import type { EvmChain } from "../../shared/config/evm-chains";
 import { useWalletIdentity } from "./use-wallet-identity";
 import { WalletHeaderView } from "./ui/wallet-header-view";
 import { WalletSheet } from "./ui/wallet-sheet";
+
+function RuntimeWalletSheet(
+  props: Omit<ComponentProps<typeof WalletSheet>, "balance">,
+) {
+  const address = nativeBalanceAccount(props.identity, props.targetChain);
+  // Native BNB uses eth_getBalance; no ERC20/ORE contract or Figma sample amount is involved.
+  const balance = useBalance({
+    address,
+    chainId: props.targetChain.id,
+    query: {
+      enabled: address !== undefined,
+      staleTime: 30_000,
+      retry: 1,
+      refetchOnMount: "always",
+    },
+  });
+  return (
+    <WalletSheet
+      {...props}
+      balance={nativeBalanceDisplay(balance, props.identity, props.targetChain)}
+    />
+  );
+}
 
 function ConfiguredWalletHeader({
   targetChain,
@@ -25,7 +53,7 @@ function ConfiguredWalletHeader({
         walletOpen={sheetOpen}
       />
       {sheetOpen && (
-        <WalletSheet
+        <RuntimeWalletSheet
           identity={identity}
           targetChain={targetChain}
           actionFailed={notice === "failed"}

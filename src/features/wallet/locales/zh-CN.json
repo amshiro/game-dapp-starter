@@ -2,7 +2,7 @@
   "title": "我的钱包",
   "close": "关闭钱包",
   "balance": "余额",
-  "balanceUnavailable": "ORE 余额暂不可用",
+  "balanceUnavailable": "BNB 余额暂不可用",
   "copyAddress": "复制钱包地址",
   "copied": "地址已复制",
   "copyFailed": "地址复制失败，请重试。",
@@ -23,5 +23,7 @@
   "wallet": "钱包",
   "connectedTo": "已连接至",
   "walletChain": "钱包网络",
-  "unknown": "未知"
+  "unknown": "未知",
+  "balanceLoading": "正在读取 BNB 余额",
+  "balanceFailed": "BNB 余额读取失败，请重新打开钱包重试。"
 }

@@ -268,6 +268,14 @@ page shell
 
 app/globals.css 仍是唯一 global style entry；src/styles/ 用于组织真正的全局样式模块。业务专属样式继续靠近所属 Domain 或 Feature。
 
+## Screenshot-level 与 Property-level Parity
+
+Figma 实现必须同时满足 screenshot-level visual parity 和 property-level parity。核对关键节点的 geometry、surface、effects、typography、icon 与 state；明确存在的 property 不得因父层看起来已产生相同结果、token 化或抽象而省略。不同设计 surface 即使颜色相同，也必须保留各自的背景、描边、圆角与效果表达；不得静默合并视觉层级。
+
+Token 可替代原始值，但最终 computed / rendered value 必须等于对应 Figma 值。验收时使用浏览器 computed style，而非仅看截图；保存 Node / Figma / Implementation / Computed / Result 的最小证据表。检查初始值和所有已实现状态，区分 text AUTO line-height 与固定值、paint alpha 与整个节点 opacity、background blur 与普通 filter blur。设计工具 effect radius 与导出 CSS blur 的单位语义应由实际 design context 核对，不能直接猜换算。
+
+仅在浏览器不支持、存在明确性能/兼容问题、或与用户确认的新产品规则冲突时，可以不直接照搬；必须报告节点、差异、原因与替代实现，不能静默省略。用户明确批准的内容、responsive 或交互覆盖应单独列明，不伪装成原设计事实。
+
 ## Phase 7：Feature / Page Implementation
 
 实现某个页面前，必须先扫描当前设计中该页面的全部相关 frame / state，并读取完整 frame 与直接子节点；形成最小 Page State Inventory，区分固定模块、同模块状态与独立页面。不得只读取一个 frame 或局部 row 就宣布页面完成。验收时逐项核对 inventory；没有 runtime owner 的设计状态应明确标记为 presentation / fixture，而非伪造业务能力。

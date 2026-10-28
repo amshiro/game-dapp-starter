@@ -32,9 +32,9 @@
 | C-80 | 环境必须整体一致：禁止 Dev Privy + 主网合约、测试网 RPC + 主网链、Production Privy + 测试网合约等混用 | User Confirmed | 见 [ADR-001](./decisions/ADR-001-runtime-environments.md) |
 | C-81 | RPC endpoint 不得硬编码在 Feature / 业务代码中，由 Starter 配置层按环境提供 | User Confirmed | 见 ADR-001 |
 | C-82 | ORI 没有后端登录 / 会话，接口不需要 App ID、Secret 或后端签名；Starter 的可选认证 capability 在 ORI 中不启用 | Backend owner Confirmed；正式 Contract / F6.1，见 [api.md](./api.md#authentication--signing) | Q-13 / Q-44 / Q-46 已解决；不建立 Backend Auth |
-| C-83 | W2 保留 Figma 的单行 ORE balance visual slot；无已确认数据 owner 时显示 unavailable，不使用示例 48.60，不替换 BNB/ORI/起源或增加多资产 | User Confirmed | 真实数据 owner、资产定义与来源仍 OPEN |
+| C-83 | Wallet 单行余额为当前目标 BSC 链的 native BNB，使用 eth_getBalance(account)，18 decimals | User Confirmed：人工修正设计稿资产名 | Figma ORE 标注错误；不使用示例48.60，不增加多资产；97为测试网原生币 |
 | C-84 | Export（Privy 私钥导出）与 Receive（Privy 二维码入口）仅属于 Privy embedded wallet；external wallet 两个按钮都隐藏 | User Confirmed（本次修正覆盖旧 Export inert UI 决策）；Figma `2003:2526–2529` 两入口已复核 | 当前仍 external-only / embedded off，不创建钱包或调用导出/充值接口 |
-| C-85 | 当前 external Wallet 保留身份、地址复制、断开及 unavailable ORE；不显示 Export / Receive，不引入旧 mining fund | User Confirmed | 若未来启用 embedded，需单独通过身份/资产归属 Gate，不能仅为按钮改模型 |
+| C-85 | 当前 external Wallet 保留身份、地址复制、断开及 BNB 余额；不显示 Export / Receive，不引入旧 mining fund | User Confirmed | 若未来启用 embedded，需单独通过身份/资产归属 Gate，不能仅为按钮改模型 |
 | C-86 | A1 UI 子集：最多一项展开，打开另一项关闭上一项；无初始默认项证据则全部 collapsed，展开稿仅证明状态视觉 | User Confirmed；Figma 2003:2235 / 2359 无 prototype 起点 | 不预开 Intro；正文/外链已获本轮恢复授权，Q-41/Q-30 生产 Gate 保留；240ms 展开收起、180ms fade、箭头过渡为已验收 Human-approved interaction override |
 
 ### Responsive

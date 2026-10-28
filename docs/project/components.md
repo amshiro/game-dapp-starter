@@ -39,7 +39,7 @@ Figma 中没有 Component，以下候选全部从重复视觉中识别。
 | --- | --- | --- |
 | ConnectButton | Header `Connect`、部署面板 `Connect wallet` | 两处样式不同，共享连接行为 |
 | WalletButton（缩短地址） | `2003:999` | 打开 WalletSheet |
-| WalletSheet | `2003:2490` | ORE unavailable visual slot、external-only：隐藏 Export / Receive、地址复制/断开；SDK 身份唯一 owner；Receive 排除；真实 ORE owner 见 Q-22；未来 embedded 另过 Gate |
+| WalletSheet | `2003:2490` | native BNB balance、external-only：隐藏 Export / Receive、地址复制/断开；SDK 身份唯一 owner；Receive 排除；余额 owner 为 Wagmi eth_getBalance，见 Q-22；未来 embedded 另过 Gate |
 | AddressDisplay + Copy | Wallet Sheet、Miners 列表、Explore 表格 | 缩短规则：设计为 `0x12…3456` / `0xAB…CDEF`（EVM 地址）；格式化 primitive 可放 `shared/web3`，复制交互可共享 |
 
 ## Mining Feature（`features/mining`）

@@ -2,7 +2,7 @@
   "title": "My Wallet",
   "close": "Close wallet",
   "balance": "Balance",
-  "balanceUnavailable": "ORE balance unavailable",
+  "balanceUnavailable": "BNB balance unavailable",
   "copyAddress": "Copy wallet address",
   "copied": "Address copied",
   "copyFailed": "Could not copy address. Try again.",
@@ -23,5 +23,7 @@
   "wallet": "Wallet",
   "connectedTo": "Connected to",
   "walletChain": "Wallet chain",
-  "unknown": "unknown"
+  "unknown": "unknown",
+  "balanceLoading": "Loading BNB balance",
+  "balanceFailed": "Could not load BNB balance. Reopen the wallet to retry."
 }

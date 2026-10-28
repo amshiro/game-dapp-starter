@@ -25,7 +25,7 @@
 | R0 | 只读数据与合约证据核对（支撑票据） | READY | 限定静态审计已完成，见 R0 报告；Q-10/Q-11 未关闭，链上与新服务验证尚未执行 |
 | W1 | Development 钱包连接与 identity | READY | 已完成限定行为、QA、人工审核及 commit/push；不包含余额、Sheet 或交易 |
 | A1 | About accordion 与正式内容 | PARTIALLY BLOCKED | Accordion 已审核；本轮获授权恢复当前源码正文/链接，正式 /about 完整 UI 已实现，已通过人工审核；生产 Q-41/Q-30 保留 |
-| W2 | Wallet Sheet Core：身份、复制/断开、ORE visual slot | READY | 限定 Core 已完成、人工审核并 push。无真实余额、Receive 或 Export 行为 |
+| W2 | Wallet Sheet Core：身份、复制/断开、BNB native balance | READY | 限定 Core 已完成、人工审核并 push。本轮增补按人工确认的 BNB native read，QA 已通过；无 Receive 或 Export 行为 |
 | W3 | Wallet export / receive | BLOCKED | W2、Q-22；不能把外部钱包解释成可导出私钥 |
 | H1 | Header ORI price | PARTIALLY BLOCKED | 已有 transport/mapper；旧 ORI/getPrice 来源已确认，97 数据集/价格单位与 Q-11 字段语义待确认 |
 | E1 | Explore read/UI | PARTIALLY BLOCKED | 用户已批准 E1 Core UI 正式接入 /explore；四卡/三表、受控分页与中性读取状态已完成并通过人工审核；真实数据仍受 Q-27/Q-11 阻塞 |
@@ -132,18 +132,18 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 
 | Field | Ticket |
 | --- | --- |
-| Goal | Header connected identity 打开/关闭/重开 Sheet；当前身份、地址复制/断开、ORE balance visual slot；external 钱包不显示 Export / Receive |
+| Goal | Header connected identity 打开/关闭/重开 Sheet；当前身份、地址复制/断开、BNB native balance；external 钱包不显示 Export / Receive |
 | Route | 全局 overlay，无新 Route |
 | Owner / Dependencies | 现有 `features/wallet`，依赖 W1/F8/F9；开关与交互反馈为 React local state，不新增 Provider/store/dependency |
 | Source of Truth | User Confirmed W2 Human Gate → 当前 Figma；C-22/C-83–C-85。旧 Wallet 不作为新版需求来源 |
-| API dependencies | 无。没有已确认 ORE 数据 owner，不猜端点或读取 backend mining fund |
-| Web3 dependencies | 直接消费 W1 的 Privy/Wagmi identity/chain；复制当前地址、Privy logout；不请求余额或 contract |
+| API dependencies | 无 Backend API；余额使用 environment-selected BSC RPC 的 eth_getBalance，不读取 backend mining fund |
+| Web3 dependencies | 直接消费 W1 的 Privy/Wagmi identity/chain；复制当前地址、Privy logout；Wagmi native balance query，不读取 ERC20/ORE contract |
 | Realtime dependencies | 无 |
 | UI/Figma dependencies | `2003:2487/2490`：H5 bottom sheet，top radius 16；PC center Modal（当前用户修正），内容面板 PC 400px 居中，backdrop 全屏；四个局部原始 SVG；不画系统 Home Indicator |
-| Open Questions / Blockers | 限定 Scope READY：Q-21 已解决；ORE 数据 owner 仍 Q-22；Export / Receive 已确认仅 embedded wallet，external 隐藏，不阻塞 unavailable visual slot / 不可用控件；字体 fallback、Q-03 最终品牌不升级 |
-| Acceptance Criteria | Header open/close/reopen；刷新后可打开；账户/链切换即时使用 SDK 新事实，无旧地址/余额；`— ORE` 明示 unavailable，不用 48.60；external Wallet 不渲染 Export / Receive；不为两按钮创建 embedded wallet；复制失败可重试，logout 失败不伪装成功；ESC、焦点隔离/恢复、backdrop、safe-area、375/500 无 overflow |
+| Open Questions / Blockers | 限定 Scope READY：Q-21 已解决；BNB native owner 已由用户确认（Q-22）；Export / Receive 已确认仅 embedded wallet，external 隐藏，不阻塞 unavailable visual slot / 不可用控件；字体 fallback、Q-03 最终品牌不升级 |
+| Acceptance Criteria | Header open/close/reopen；刷新后可打开；账户/链切换即时使用 SDK 新事实，无旧地址/余额；BNB 余额正确读取；不可用显示 — BNB，不用48.60；external Wallet 不渲染 Export / Receive；不为两按钮创建 embedded wallet；复制失败可重试，logout 失败不伪装成功；ESC、焦点隔离/恢复、backdrop、safe-area、375/500 无 overflow |
 | QA | 全部项目 QA；真实 Header/Sheet、刷新、账户/链往返；keyboard/close/copy/disconnect；375px 与 PC 500 居中，mock 与真实证据分开报告 |
-| Non-goals | Receive/QR/fundWallet、真实 Export/私钥/助记词、真实余额/多资产、旧 mining fund、Backend session、交易或其他 Feature |
+| Non-goals | Receive/QR/fundWallet、真实 Export/私钥/助记词、多资产、旧 mining fund、Backend session、交易或其他 Feature |
 
 ### W3 — Export / Receive decision and implementation
 
