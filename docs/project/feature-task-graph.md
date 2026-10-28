@@ -34,7 +34,7 @@
 | S2 | Stake deposit / withdraw | BLOCKED | S1/W1；Q-10、Q-12、金额/allowance/完成契约与安全 Gate |
 | S3 | Stake yield / claim-and-deposit | BLOCKED | S1/W1；先确认 Q-26，再决定是否存在该票据的正式 Scope |
 | M1 | Mine read models / owner Queries | PARTIALLY BLOCKED | Read/Data Gate 证据审计已完成并通过人工审核；97 原始读子集供 M2 使用，完整状态/Miners/单位契约仍未解锁 |
-| M2 | Mine read-only UI / selection | PARTIALLY BLOCKED | Mine Read-only Board 子集已完成并通过人工审核；完整 selection、Miners、timing 与未确认资产仍 gated |
+| M2 | Mine read-only UI / selection | PARTIALLY BLOCKED | 此前仅棋盘的 checkpoint 不代表整页 UI 完成；Full Mine read-only UI correction 已完成并通过人工审核，覆盖 1–6 全状态展示；业务 selection、Miners 数据、timing 与未确认资产仍 gated |
 | M3 | Mine Manual transaction | BLOCKED | W1/M1/M2/M7；Q-12、Q-16、Q-17、Q-43 |
 | M4 | Mine Auto mining start / stop | BLOCKED | W1/M1/M2/M7；Q-15、Q-12、Q-17、Q-43 与执行器联调 |
 | M5 | Mine Rewards read/UI | PARTIALLY BLOCKED | W1/M1；Q-10、Q-25、Q-42 与资产/状态待确认 |
@@ -288,7 +288,7 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 
 | Field | Ticket |
 | --- | --- |
-| Goal | 当前用户授权 M2 Mine Read-only Board 子集：正式 /mine 展示 97 存储轮、总部署、25 格 amount/count、Miners unavailable 容器；不实现 selection interaction、资金动作或未签收状态 |
+| Goal | 当前用户授权 M2 Full Mine UI correction：正式 /mine 完整 Metrics/board/Manual–Auto/结果列表结构，全部 1–6 的局部状态视觉；仅已确认 97 public read，不实现 selection interaction、资金动作或未签收业务映射 |
 | Route | `/mine` |
 | Owner / Dependencies | `features/mine` 持有页面、cells、display 和 public Query；app/mine 组合 W1 的错链事实；F8/F9、Registry、M1 已确认的 97 read 子集 |
 | Source of Truth | C-43/C-45/C-49、ui-behavior Mine；金额显示仅消费 M1 model |
@@ -296,7 +296,7 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 | Web3 dependencies | Registry/Viem：board、getCurrentRoundInfo、getRoundData 固定同一 latest blockTag，验证 identity/total/25 项，保留 bigint；仅 Development 97，不启动 simulation/write |
 | Realtime dependencies | 初期不直接订阅；M7 负责新鲜度，M8 后续接入 |
 | UI/Figma dependencies | `2003:182`、`2003:629`、`2003:1009`、`2003:1038`；状态/图标精确重读，真实 BNB/ORI/起源资产 |
-| Open Questions / Blockers | PARTIALLY BLOCKED：用户已批准限定 Read-only Board，已实现并通过人工审核。stored round 不推导 +1；已结束/fulfilled 仅 Waiting · Read-only；不显示 winning visual。Q-18/Q-19 仅有 isolated presentation 测试，不开放 runtime 选择；Miners、精确 countdown、Motherlode、个人部署、USD/reward/起源继续 unavailable；完整 M2 与 M1 Gate 未解锁 |
+| Open Questions / Blockers | PARTIALLY BLOCKED：用户本轮指出旧交付只覆盖棋盘，不能认定整页完成；Full Mine read-only UI correction 已完成并通过人工审核，完整 [state inventory](./mine-page-state-inventory.md) 覆盖七个 frame。stored round 不推导 +1；已结束/fulfilled 仅 Waiting · Read-only；不显示 winning visual。Q-18/Q-19 仅有 isolated presentation 测试，不开放 runtime 选择；Miners、精确 countdown、Motherlode、个人部署、USD/reward/起源继续 unavailable；完整 M2 与 M1 Gate 未解锁 |
 | Acceptance Criteria | 当前子集：公共 Query key 仅 chain/deployments，无 account；错链隐藏缓存，错误不冒充零，refresh/invalidation 可恢复；25 格 index→#1–#25、BNB18 与 bigint count 正确；正式 route 无 cell/button selection 或资金入口。完整 M2 的交互与 Miners 另过 G-P/G-D/G-V；旧清空描述不是产品事实 |
 | QA | 通用 QA；mask/选择规则测试、所有已确认状态 fixture、账户/round 切换、375/500 对照 |
 | Non-goals | Manual/Auto 表单资金动作、完整动画、设计外 trade-to-mine 标签或起源 swap |

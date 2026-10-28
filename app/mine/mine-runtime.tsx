@@ -11,6 +11,12 @@ function DevelopmentMine() {
   const { identity } = useWalletIdentity(target.id);
   return (
     <MineReadPage
+      betting={{
+        appearance:
+          identity.status === "unauthenticated"
+            ? "disconnected"
+            : "unavailable",
+      }}
       context={{
         targetChainId: target.id,
         wrongChain:

@@ -10,7 +10,7 @@ Frame 名称中的数字前缀是设计师排序，不代表路由。分类与�
 
 | Name | Node ID | Kind | Meaning | Status |
 | --- | --- | --- | --- | --- |
-| 1-Mine | `2003:182` | Route view | Mine 默认：未连接、Manual、未选区块；含 Miners 列表 | Current |
+| 1-Mine | `2003:182` | Route view | Mine 基准：Connect、Manual；截图含白框格子/示例 count，不据此确认默认 selection；含 Miners 列表 | Current |
 | 2-Mine2-有我的投注 | `2003:629` | View state | Mine 已连接：钱包按钮、用户已部署金额（绿）、选中 #7 #8、可部署 `Deploy 0.84 SOL` | Current |
 | 3-Mine2-数据状态2 | `2003:1009` | Component state | 数据卡切换后的展示（`≈$` 美金值、`Round #`） | Current |
 | 4-区块状态 | `2003:1038` | Component state sheet | 区块全部状态 + Waiting 卡 + 结果动画说明与示意 | Current |
@@ -94,3 +94,7 @@ Frame 名称中的数字前缀是设计师排序，不代表路由。分类与�
 | Pc-Explore | `1:3973` |
 
 BURY PC 稿为顶部导航 + 左右双栏布局，与已确认的 PC 规则（500px 居中、保持移动端结构）冲突，**不采用**。
+
+## M2 Full Mine UI scan
+
+用户确认 1–6（含两个同名4）是同一个 Mine 页的完整模块/状态。最新完整扫描与直接子节点对照见 [Mine Page State Inventory](./mine-page-state-inventory.md)，不是只以 frame182 决定 Scope。Frame4b 包含 Autominer/Rewards 静态设计；实现其视觉不自动批准 Auto execution、奖励资产/可领取语义或 M5/M6。

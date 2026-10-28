@@ -26,7 +26,9 @@ describe("Mine read-only page", () => {
       />,
     );
     expect(html.match(/<li /g)).toHaveLength(25);
-    expect(html.match(/<button /g)).toHaveLength(1);
+    expect(html).toContain('role="tablist"');
+    expect(html).toContain('aria-selected="true"');
+    expect(html).toContain('readOnly=""');
     expect(html).toContain("Stored round");
     expect(html).toContain("9007199254740993");
     expect(html).toContain("Waiting");
@@ -35,7 +37,7 @@ describe("Mine read-only page", () => {
     );
     expect(html.match(/data-visual="default"/g)).toHaveLength(25);
     expect(html).not.toMatch(
-      /aria-selected|aria-pressed|<form|Deploy<|Claim<|Auto<|SOL|32,578|2896\.32|256\.3|00:48|326/,
+      /<form|Claim<|SOL|32,578|2896\.32|256\.3|00:48|326/,
     );
     expect(html).toContain("Data unavailable");
   });
@@ -66,6 +68,25 @@ describe("Mine read-only page", () => {
         expect(html).toContain("0.28");
     },
   );
+  it("composes the second frame-4 state only from explicit presentation props, never from selecting Auto", () => {
+    const html = renderToStaticMarkup(
+      <MinePage
+        display={{ status: "populated", snapshot }}
+        actionPresentation={{ kind: "autominer", automation: {}, rewards: {} }}
+        cellPresentation={{ 13: { visual: "winning" } }}
+      />,
+    );
+    expect(html).toContain("Stop autominer");
+    expect(html).toContain("Rewards");
+    expect(html).toContain('data-visual="winning"');
+    expect(html).not.toContain('role="tablist"');
+    expect(html).toContain('disabled=""');
+    const runtime = renderToStaticMarkup(
+      <MinePage display={{ status: "populated", snapshot }} />,
+    );
+    expect(runtime).not.toContain("Stop autominer");
+    expect(runtime).not.toContain("Rewards");
+  });
   it("uses the request locale without changing blockchain identity", () => {
     const html = renderToStaticMarkup(
       <LocaleProvider locale="zh-CN">

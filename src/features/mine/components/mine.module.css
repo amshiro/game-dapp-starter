@@ -180,12 +180,432 @@
   color: var(--ori-color-text-secondary);
   overflow-wrap: anywhere;
 }
-.minersUnavailable {
-  margin-top: 12px;
-  min-height: 90px;
+
+/* Frame 3 toggles labels only; quote ownership remains outside this presentation. */
+.metric {
+  position: relative;
+}
+.metric dt button {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.metric dt button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+.metric:has(:focus-visible) {
+  outline: 2px solid var(--ori-color-accent);
+  outline-offset: 2px;
+}
+.cell[data-visual="auto-selected"],
+.cell[data-visual="auto-muted"] {
+  border-color: var(--ori-color-success);
+  background: var(--ori-color-surface);
+}
+.cell[data-visual="auto-selected"] .ownAmount,
+.cell[data-visual="auto-muted"] .ownAmount {
+  color: var(--ori-color-success);
+}
+.cell[data-visual="auto-muted"],
+.cell[data-visual="lost"] {
+  opacity: 0.25;
+}
+.cell[data-visual="winning"] {
+  border-width: 3px;
+  border-color: var(--ori-color-accent);
+  background: #23211c;
+  padding: 5px 3px;
+}
+.cell[data-visual="waiting"] .cellAmount {
+  display: none;
+}
+
+.betting,
+.autominer {
+  margin-top: 24px;
+  padding: 12px;
+  min-width: 0;
+  border-radius: var(--ori-radius-card);
+  background: var(--ori-color-surface);
+}
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-height: 32px;
+  border-radius: var(--ori-radius-control);
+  background: var(--ori-color-border);
+}
+.tabs button {
+  min-height: 32px;
+  border: 0;
+  border-radius: var(--ori-radius-control);
+  background: transparent;
+  color: var(--ori-color-text-secondary);
+  font-size: 13px;
+  line-height: 15px;
+  cursor: pointer;
+}
+.tabs button[aria-selected="true"] {
+  background: var(--ori-color-surface-raised);
+  color: var(--ori-color-text-primary);
+  font-weight: 500;
+}
+.tabs button:focus-visible,
+.betting [role="tabpanel"]:focus-visible,
+.resultsScroll:focus-visible {
+  outline: 2px solid var(--ori-color-accent);
+  outline-offset: 2px;
+}
+.betAmount {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 8px;
+  height: 56px;
+  padding: 0 16px;
+  margin-top: 12px;
+  border: 1.5px solid var(--ori-color-border);
+  border-radius: var(--ori-radius-control);
+  background: rgb(13 15 19 / 65%);
+}
+.betAsset {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  font-size: 16px;
+  line-height: 19px;
+  font-weight: 500;
+}
+.assetSlot {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+}
+.betAmount input {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--ori-color-text-primary);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 28px;
+  text-align: right;
+}
+.betAmount input::placeholder {
+  color: var(--ori-color-text-muted);
+  opacity: 1;
+}
+.betAmount:has(input:focus-visible) {
+  outline: 2px solid var(--ori-color-accent);
+  outline-offset: 2px;
+}
+.balanceRow {
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 12px 0;
   font-size: 12px;
+  line-height: 14px;
   color: var(--ori-color-text-secondary);
+}
+.balanceRow > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.shortcuts {
+  display: flex;
+  gap: 6px;
+  flex: none;
+}
+.shortcuts button {
+  width: 52px;
+  height: 24px;
+  border: 0;
+  border-radius: var(--ori-radius-control);
+  font-size: 12px;
+  line-height: 14px;
+  color: var(--ori-color-text-secondary);
+  background: var(--ori-color-border);
+}
+.insufficient {
+  color: var(--ori-color-error);
+}
+.betSummary {
+  padding-top: 11px;
+  border-top: 1px dashed var(--ori-color-border);
+  display: grid;
+  gap: 8px;
+}
+.betSummary > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 15px;
+}
+.betSummary dt {
+  color: var(--ori-color-text-secondary);
+}
+.betSummary dd {
+  text-align: right;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: 500;
+}
+.deployAction {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 16px;
+  border: 0;
+  border-radius: var(--ori-radius-pill);
+  padding: 10px 16px;
+  background: var(--ori-color-surface-raised);
+  color: var(--ori-color-text-secondary);
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 500;
+}
+.deployAction[data-appearance="ready"] {
+  background: var(--ori-color-text-primary);
+  color: var(--ori-color-background);
+}
+.deployAction[data-appearance="disconnected"] {
+  color: var(--ori-color-text-primary);
+}
+.boundary {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.autoConfiguration {
+  display: grid;
+  gap: 6px;
+  padding: 12px 0;
+  border-top: 1px dashed var(--ori-color-border);
+}
+.configRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+}
+.configRow > span:last-child {
+  color: var(--ori-color-text-secondary);
+  font-size: 16px;
+  font-weight: 500;
+}
+.configLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 16px;
+  font-weight: 500;
+}
+.configLabel img {
+  display: block;
+  flex: none;
+}
+/* Original frame 1844 is four basic rounded rectangles, not a substituted library icon. */
+.blocksIcon {
+  width: 16px;
+  height: 16px;
+  padding: 1.875px;
+  display: grid;
+  grid-template-columns: repeat(2, 5.25px);
+  grid-template-rows: repeat(2, 5.25px);
+  gap: 1.75px;
+  flex: none;
+}
+.blocksIcon i {
+  border-radius: 1.75px;
+  background: var(--ori-color-text-secondary);
+}
+.blocksIcon i:last-child {
+  background: #b89e60;
+}
+.roundStepper {
+  display: grid;
+  grid-template-columns: 32px 38px 32px;
+  width: 102px;
+  height: 32px;
+  background: var(--ori-color-border);
+  border-radius: 6px;
+  align-items: center;
+}
+.roundStepper button {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.roundStepper input {
+  width: 38px;
+  height: 28px;
+  border: 0;
+  border-radius: 6px;
+  color: var(--ori-color-text-secondary);
+  background: var(--ori-color-surface);
+  text-align: center;
+  font-size: 16px;
+  font-weight: 500;
+}
+.resultsScroll {
+  margin-top: 12px;
+  max-height: 300px;
+  min-height: 300px;
+  overflow: auto;
+}
+.resultsTable {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 12px;
+  line-height: 15px;
+}
+.addressColumn {
+  width: 40%;
+}
+.resultsTable th,
+.resultsTable td {
+  height: 30px;
+  padding: 7px 0 8px;
+  vertical-align: middle;
+}
+.resultsTable th {
+  text-align: left;
+  font-weight: 400;
+  color: var(--ori-color-text-secondary);
+  overflow-wrap: anywhere;
+}
+.resultsTable td {
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.resultAmounts {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.resultAmount {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.resultUnit,
+.amountSeparator {
+  color: var(--ori-color-text-secondary);
+}
+.resultUnit {
+  font-size: 10px;
+}
+.resultsTable .resultsMessage {
+  height: 300px;
+  text-align: center;
+  color: var(--ori-color-text-secondary);
+}
+.autominer h2 {
+  min-height: 32px;
+  display: grid;
+  place-items: center;
+  background: var(--ori-color-surface-raised);
+  border-radius: var(--ori-radius-control);
+  font-size: 13px;
+  font-weight: 500;
+}
+.autominer .betSummary {
+  margin-top: 12px;
+}
+.rewardState {
+  margin-top: 24px;
+}
+.rewardState h2 {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 23px;
+}
+.rewardCard {
+  margin-top: 16px;
+  min-height: 188px;
+  padding: 12px;
+  border: 1px dashed var(--ori-color-border);
+  border-radius: var(--ori-radius-card);
+}
+.rewardCard dl {
+  display: grid;
+  gap: 12px;
+}
+.rewardCard dl > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 15px;
+}
+.rewardCard dt {
+  color: var(--ori-color-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.rewardCard dd {
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.claimVisual {
+  display: block;
+  width: 100%;
+  height: 44px;
+  margin-top: 15px;
+  border: 1px solid var(--ori-color-accent);
+  border-radius: var(--ori-radius-pill);
+  color: var(--ori-color-accent);
+  font-size: 15px;
+  font-weight: 500;
+  background: transparent;
+}
+.claimSecondary {
+  display: block;
+  margin: 16px auto 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ori-color-text-secondary);
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.betting {
+  min-height: 282px;
+}
+.betting[data-mode="auto"] {
+  min-height: 393px;
+}
+
+.betting[data-appearance="disconnected"] .betAmount input,
+.betting[data-appearance="no-selection"] .betAmount input {
+  color: var(--ori-color-text-muted);
 }

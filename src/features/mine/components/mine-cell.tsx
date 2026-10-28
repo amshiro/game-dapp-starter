@@ -1,4 +1,5 @@
 "use client";
+import type { MineCellVisual } from "../model/mine-presentation";
 import { useMineCopy } from "../copy";
 import { mineAmount, mineCount } from "../read/mine-display";
 import styles from "./mine.module.css";
@@ -12,7 +13,7 @@ export type MineCellProps = Readonly<{
   /** Per-square participation count; never a round-wide unique miner count. */
   miners?: bigint;
   /** Isolated presentation capability; the formal route currently supplies only default. */
-  visual?: "default" | "selected" | "deployed" | "combined";
+  visual?: MineCellVisual;
   ownAmount?: bigint;
 }>;
 export function MineCell({
@@ -24,8 +25,13 @@ export function MineCell({
 }: MineCellProps) {
   const copy = useMineCopy();
   const value = amount === undefined ? undefined : mineAmount(amount);
-  const own = ownAmount === undefined ? undefined : mineAmount(ownAmount);
-  const exact = value ? `${value.exact} BNB` : copy.unavailable;
+  const own =
+    ownAmount === undefined ||
+    !["deployed", "combined", "auto-selected", "auto-muted"].includes(visual)
+      ? undefined
+      : mineAmount(ownAmount);
+  const exact =
+    visual !== "waiting" && value ? `${value.exact} BNB` : copy.unavailable;
   const count = miners?.toString() ?? copy.unavailable;
   return (
     <li
@@ -42,18 +48,23 @@ export function MineCell({
           <img src="/ori/mine/participants.svg" width={8} height={8} alt="" />
         </span>
       </div>
-      {own && (visual === "deployed" || visual === "combined") && (
-        <span
-          className={styles.ownAmount}
-          title={`${own.exact} BNB`}
-          aria-hidden="true"
-        >
-          {own.text}
+      {own &&
+        ["deployed", "combined", "auto-selected", "auto-muted"].includes(
+          visual,
+        ) && (
+          <span
+            className={styles.ownAmount}
+            title={`${own.exact} BNB`}
+            aria-hidden="true"
+          >
+            {own.text}
+          </span>
+        )}
+      {visual !== "waiting" && (
+        <span className={styles.cellAmount} title={exact} aria-hidden="true">
+          {value?.text ?? "—"}
         </span>
       )}
-      <span className={styles.cellAmount} title={exact} aria-hidden="true">
-        {value?.text ?? "—"}
-      </span>
     </li>
   );
 }

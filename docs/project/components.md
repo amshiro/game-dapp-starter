@@ -93,3 +93,7 @@ The current Figma Header artwork is replaceable pending Q-03. Header price data 
 ## M2 Read-only Board ownership
 
 `features/mine` 持有 MinePage、MineCell、metrics/Miners composition、typed display 与单区块 public Query。25 格 amount/count 不属于 Shared GameBoard/Card/Table；本轮不新增 Shared UI。MineCell 的 default/selected/deployed/combined 是 Figma presentation capability，正式路由仅使用 default，个人部署不读、不推导。唯一新增资产为 Figma 原始 8×8 participation icon；BNB 使用明确文本单位，未确认的 Motherlode/奖励与 SOL 占位图标不导入。
+
+## M2 Full Mine UI correction
+
+同一 `features/mine` 内增加 MineMetrics（仅本地 secondary label 切换）、MineBettingPanel（Manual/Auto）、MineResults（typed table/rows/empty/error/unavailable）、MineAutominerState/MineRewardState（第二张4的静态展示分支）。MinePage 用 feature-local presentation union 组合这些状态；正式 read owner 只传 form 与 W1 的 disconnected/unavailable 投影，不传 running/reward/selection/results fixture。没有新 Shared primitive、API 或 transaction owner。完整状态见 [inventory](./mine-page-state-inventory.md)。

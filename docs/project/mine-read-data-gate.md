@@ -143,3 +143,7 @@ Refresh Strategy 只分类，不决定 polling 频率或实现；所有 contract
 当前实现 owner 为 `features/mine`：Registry → Viem 固定单区块快照 → TanStack Query → typed display → 页面。Query key 包含链与 Protocol/View 部署、不含 account；无全局 store、API、polling/realtime。缺省/未初始化/错误/错链数据不补零；个人部署、Miners 列表、Motherlode、USD、精确 countdown、奖励/起源 unavailable。winning visual 暂不显示，避免把历史结果呈现成当前可参与轮。cell 的 selected/deployed/combined 仅是局部 presentation 与测试能力，runtime 不可选择。
 
 Q-18/Q-19、Miners 与 timing 的完整产品 Gate 保留；56 继续 Release Gate。
+
+## 后续用户纠正：完整 Mine UI
+
+此前 checkpoint 仅完成棋盘及部分只读区域，不能代表 Mine 全页面 UI 已完成。用户现要求重读全部 1–6（两个4同页），补齐 Manual/Auto、结果 row renderer 与全部局部视觉状态；[完整 inventory](./mine-page-state-inventory.md) 是本轮覆盖索引。新 UI 不改变本文件的原始 read 来源、不新增 current/next round 推导；form/amount/balance/shortcut/selection/Automation/Rewards 的业务语义未获批准，actions 仍 disabled/read-only，未知 data unavailable。Miners/results 的 round 不再复用当前 stored round；旧 API 冲突和各 Gate 仍保留。
