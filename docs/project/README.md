@@ -101,3 +101,7 @@ AGENTS.md
 - 重要事实带来源：`User Confirmed`、`Figma: <page> / <node>`、`Inferred`。
 - 设计变化时更新事实本身，不追加历史描述。
 - 问题被确认后，从 `open-questions.md` 移到 `requirements.md` 并注明来源。
+
+## 当前限定授权：About + Points 页面完整 UI
+
+用户明确授权本项目作为工程流程验证项目：About 视觉仍以当前 ORI-AI测试为准，仅对应五项的正文、标题与链接可从当前 `ori-website/pages/about/index.tsx` 实际引用的 en/zh 资源恢复。不得继承旧布局或额外栏目；文案中的费率不成为合约规则。Points 当前没有匹配新版的可用数据 owner，允许集中使用 Figma 静态 demo model，并明确显示演示标记。该授权不推广到其他 Feature，也不关闭生产规则/数据 Gate。参见 [页面 inventory 与来源](./about-points-ui-inventory.md)。M7 polling/freshness 按人工优先级暂缓。

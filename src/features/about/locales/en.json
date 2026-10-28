@@ -1,0 +1,235 @@
+{
+  "title": "About",
+  "subtitle": "Learn about the ORI",
+  "sections": {
+    "intro": {
+      "title": "What Is ORI?",
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "ORI is a new-generation Proof-of-Work (PoW) value-storage asset designed to solve the inherent \"value leakage\" problem in the Bitcoin model. Through an innovative on-chain reverse-inflow mechanism, ORI redirects miner costs back into the system, achieving a fully closed, self-sustaining loop of on-chain value circulation."
+        },
+        {
+          "type": "paragraph",
+          "text": "The token starts mining from 0 with no premine, no VC, and no team allocation. Everything is decentralized and de-organizationalized. ORI is the on-chain native <0>BTC 2.0</0>."
+        }
+      ]
+    },
+    "mining": {
+      "title": "Mining — How It Works",
+      "blocks": [
+        {
+          "type": "heading",
+          "text": "Mining Mechanism"
+        },
+        {
+          "type": "paragraph",
+          "text": "Each round lasts 1 minute. The system randomly selects 1 winning cell from a <0>5×5 grid</0>:"
+        },
+        {
+          "type": "paragraph",
+          "text": "Users deposit <0>BNB</0> into any cells (single, multiple, or all);"
+        },
+        {
+          "type": "paragraph",
+          "text": "Users may choose <0>Manual Mode</0> (one round) or <1>Auto Mode</1> (multiple rounds, BNB collected upfront);"
+        },
+        {
+          "type": "paragraph",
+          "text": "The platform charges <0>1%</0> of the mining amount as a platform fee."
+        },
+        {
+          "type": "heading",
+          "text": "Draw & Distribution"
+        },
+        {
+          "type": "paragraph",
+          "text": "A draw occurs automatically every minute, determined by an <0>on-chain random number</0>;"
+        },
+        {
+          "type": "paragraph",
+          "text": "If no one participates or no one stakes the winning cell, the round is <0>void</0> with no distribution."
+        },
+        {
+          "type": "heading",
+          "text": "Outcomes"
+        },
+        {
+          "type": "heading",
+          "text": "Not Winning"
+        },
+        {
+          "type": "paragraph",
+          "text": "All deposited <0>BNB</0> is lost."
+        },
+        {
+          "type": "heading",
+          "text": "Normal Win"
+        },
+        {
+          "type": "paragraph",
+          "text": "Receives <0>90%</0> of all BNB in the round's prize pool, distributed proportionally to the winning cell's deposits;"
+        },
+        {
+          "type": "paragraph",
+          "text": "Simultaneously generates <0>1 ORI reward</0>, with:"
+        },
+        {
+          "type": "paragraph",
+          "text": "<0>50% probability</0>: awarded to one random winner;"
+        },
+        {
+          "type": "paragraph",
+          "text": "<0>50% probability</0>: distributed proportionally to all winners."
+        },
+        {
+          "type": "heading",
+          "text": "Motherlode Jackpot"
+        },
+        {
+          "type": "paragraph",
+          "text": "Additional <0>+0.2 ORI</0> is minted into the Motherlode Pool each round;"
+        },
+        {
+          "type": "paragraph",
+          "text": "Trigger probability is <0>1/625</0>;"
+        },
+        {
+          "type": "paragraph",
+          "text": "If not triggered, it accumulates until the trigger occurs and is then fully distributed;"
+        },
+        {
+          "type": "paragraph",
+          "text": "Distribution rules follow the same logic as a normal round."
+        }
+      ]
+    },
+    "staking": {
+      "title": "Staking Mechanism",
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "ORI holders can stake tokens to earn protocol revenue shares:"
+        },
+        {
+          "type": "paragraph",
+          "text": "<0>6%</0> of BNB from every mining round (after deducting the platform's 1% fee) is used for protocol-level ORI buybacks;"
+        },
+        {
+          "type": "paragraph",
+          "text": "Bought-back ORI is allocated:"
+        },
+        {
+          "type": "paragraph",
+          "text": "<0>5/6</0> → ORI Pool for future redistribution;"
+        },
+        {
+          "type": "paragraph",
+          "text": "<0>1/6</0> → Staking Pool for stakers;"
+        },
+        {
+          "type": "paragraph",
+          "text": "Stakers earn real-time rewards based on their share of the staked ORI supply;"
+        },
+        {
+          "type": "paragraph",
+          "text": "No fees are charged upon unstaking."
+        },
+        {
+          "type": "paragraph",
+          "text": "This mechanism gives stakers a dual benefit — <0>token appreciation from buybacks</0> + <1>staking rewards</1>."
+        }
+      ]
+    },
+    "tokenomics": {
+      "title": "Tokenomics",
+      "blocks": [
+        {
+          "type": "heading",
+          "text": "Basic Information"
+        },
+        {
+          "type": "paragraph",
+          "text": "Max supply: <0>4,200,000 ORI</0>"
+        },
+        {
+          "type": "paragraph",
+          "text": "Issuance: Fair mining, no team or reserved allocation"
+        },
+        {
+          "type": "paragraph",
+          "text": "Mint rate: <0>1 + 0.2 ORI</0> per minute"
+        },
+        {
+          "type": "paragraph",
+          "text": "Void-round protection: No issuance if no participation or no stake in the winning cell"
+        },
+        {
+          "type": "heading",
+          "text": "Buyback & Redistribution"
+        },
+        {
+          "type": "paragraph",
+          "text": "<0>10%</0> of BNB from each mining round is automatically used by the protocol to buy back ORI and the 起源 Token;"
+        },
+        {
+          "type": "paragraph",
+          "text": "Buyback slippage is set at <0>60%</0>;"
+        },
+        {
+          "type": "paragraph",
+          "text": "The purchased tokens are distributed proportionally as follows:"
+        },
+        {
+          "type": "paragraph",
+          "text": "<0>50%</0> → Bury Pool (ORI Pool)"
+        },
+        {
+          "type": "paragraph",
+          "text": "<0>10%</0> → Staking Pool"
+        },
+        {
+          "type": "paragraph",
+          "text": "<0>40%</0> → Bury Pool (起源 Pool)"
+        },
+        {
+          "type": "heading",
+          "text": "Refinement & Fees"
+        },
+        {
+          "type": "paragraph",
+          "text": "Mining reward claims incur a <0>10%</0> refinement fee;"
+        },
+        {
+          "type": "paragraph",
+          "text": "Platform mining fee is <0>1%</0>, used for protocol maintenance;"
+        },
+        {
+          "type": "paragraph",
+          "text": "All flows are executed on-chain, fully transparent and verifiable."
+        }
+      ]
+    },
+    "links": {
+      "title": "Links",
+      "items": [
+        {
+          "label": "Website: ",
+          "href": "https://ori.supply"
+        },
+        {
+          "label": "X: ",
+          "href": "https://x.com/refinORI"
+        },
+        {
+          "label": "Telegram: ",
+          "href": "https://t.me/refinORI"
+        },
+        {
+          "label": "Whitepaper: ",
+          "href": "https://whitepaper.ori.supply/en"
+        }
+      ]
+    }
+  }
+}

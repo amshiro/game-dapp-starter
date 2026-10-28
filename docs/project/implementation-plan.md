@@ -10,7 +10,7 @@
 | Product & Runtime Reconstruction | COMPLETE |
 | Environment Contract V1（[environment.md](./environment.md)） | COMPLETE |
 | Project Knowledge Lock | COMPLETE（对应 Feature Unknown 继续保留） |
-| Implementation Foundation | F1–F10 COMPLETE；W1/W2、A1 Accordion 子集、Typography 已审核并 push；完整 A1 仍阻塞 |
+| Implementation Foundation | F1–F10 COMPLETE；W1/W2、A1 Accordion 子集、Typography 已审核并 push；A1/Points 完整工程演示 UI 本轮实现待审核，生产 Gate 保留 |
 
 ## Implementation Foundation task graph
 
@@ -27,7 +27,7 @@
 | F7 | Realtime Foundation — **COMPLETE** | F1、F6；Q-47 | Pusher 协议客户端（`pusher-js`，懒加载）；`NEXT_PUBLIC_WS_URL` + `NEXT_PUBLIC_PUSHER_APP_KEY`；按需连接、引用计数订阅、去重、重连后 `resync`、空闲释放、payload 边界；realtime 只触发 Query invalidation，polling 保留（[api.md](./api.md#realtime)）；Development 实时服务 502，真实事件未观察到 |
 | F8 | Design Foundation — **COMPLETE** | Q-05 继续保留许可条款审定/发布边界 | Semantic tokens、global styles、ORI viewport；Typography Foundation 已接入用户提供的 HarmonyOS Sans SC variable，全局单一字体 owner，CSS 400/500/700，fallback 保留 |
 | F9 | App Shell — **COMPLETE** | F8 | ORI viewport、sticky Header、fixed Bottom Navigation、safe-area、pathname active state；五个标题占位页，用户确认 URL 映射与根路径跳转见 routes.md；Wallet / Header price data 待后续接入 |
-| F10 | Feature Task Graph — **COMPLETE** | F1–F9 | [逐票据 Scope、READY / PARTIALLY BLOCKED / BLOCKED、依赖与 Human Gates](./feature-task-graph.md)；W1 已审核并 push；[R0 静态证据审计](./r0-evidence-audit.md) 已完成，W2 已审核并 push；A1 Accordion 子集已审核并 push，正式正文仍 OPEN；E1 Core UI 已完成并通过人工审核，数据 Gate 未通过 |
+| F10 | Feature Task Graph — **COMPLETE** | F1–F9 | [逐票据 Scope、READY / PARTIALLY BLOCKED / BLOCKED、依赖与 Human Gates](./feature-task-graph.md)；W1 已审核并 push；[R0 静态证据审计](./r0-evidence-audit.md) 已完成，W2 已审核并 push；A1 Accordion 子集已审核并 push，本轮已授权恢复对应当前源码正文/链接，生产文案 Gate 保留；E1 Core UI 已完成并通过人工审核，数据 Gate 未通过 |
 
 Typography Foundation 已完成、审核并 push：Starter 单一 HarmonyOS Sans SC Variable WOFF2，完整 wght 40–900，许可文件保留。E1 Core UI 只交付正式 /explore 的展示结构，真实数据接入仍为 PARTIALLY BLOCKED（Q-27/Q-11）。
 
@@ -132,7 +132,7 @@ Stage 1–2 可以在 Stage 0 未完成时开始，但导航项与 Logo 位置�
 | 项 | 内容 |
 | --- | --- |
 | Scope | 我的积分、记录 |
-| Blockers | **Q-20（规则冲突与数据接口）**：确认前不实现数据部分 |
+| Blockers | Q-20/Q-11 继续阻塞真实积分；用户授权 Figma static demo，正式 /points 完整 UI 本轮已实现待审核 |
 
 ## Stage 10 — Explore
 
@@ -146,7 +146,7 @@ Stage 1–2 可以在 Stage 0 未完成时开始，但导航项与 Logo 位置�
 | 项 | 内容 |
 | --- | --- |
 | Scope | 手风琴；内容使用线上 About 的 en / zh 文案 |
-| Blockers | Q-41（费率口径一致性）；文案需产品确认后定稿 |
+| Blockers | Q-41/Q-30 保留为生产 Gate；本轮用户授权恢复当前源码对应正文和链接，正式 /about 完整 UI 已实现待审核 |
 | Note | 无链、无后端依赖，如需更早验证壳层与 i18n，可提前到 Stage 2 之后 |
 
 ## Stage 12 — Wallet Sheet 完整功能
@@ -160,3 +160,7 @@ Stage 1–2 可以在 Stage 0 未完成时开始，但导航项与 Logo 位置�
 | 项 | 内容 |
 | --- | --- |
 | Scope | 全视图视觉验证（375 / 常见手机 / PC 500）；长数字、长地址；Workers 部署验证；Privy Allowed Origins；地区限制（Q-35） |
+
+## 当前页面优先级
+
+About + Points 完整 UI 本轮已通过人工审核；M7 polling/freshness 暂缓，不随页面开发实现。来源与全部设计状态见 [About / Points inventory](./about-points-ui-inventory.md)。

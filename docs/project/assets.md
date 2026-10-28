@@ -114,3 +114,7 @@ Replace with real project asset during implementation.
 `public/ori/mine/participants.svg`：当前 ORI-AI测试 `2003:1078 / 2003:1084` 导出的原始 8×8 人数图标，MineCell 以原始尺寸复用。它表示每格 participation count，不表示全轮 unique miners。未引入 SOL 占位、未确认 Motherlode 或额外奖励资产。
 
 M2 Full Mine UI correction 另导出当前 Auto frame1833 的 rounds/plus/minus 原始 16×16 SVG，以及 frame4b node1691 的 info 原始12×12 SVG，位于 `public/ori/mine/`。Blocks 图形 node1844 是四个基础 rounded rectangles，按精确尺寸用 CSS 实现；不替换为其他图标。未导入 SOL 或不明奖励 token 占位资产。
+
+## Points 本轮资产
+
+`public/ori/points/points.svg`：当前 Figma `2003:2117` 原始 40×40 金色积分图标，供 My Points 卡使用；MCP asset 原样下载，无截图裁剪。没有导入 SOL placeholder、手机 chrome 或其他 Feature 资产。

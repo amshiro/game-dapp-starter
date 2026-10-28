@@ -1,0 +1,235 @@
+{
+  "title": "关于",
+  "subtitle": "了解 ORI",
+  "sections": {
+    "intro": {
+      "title": "ORI 是什么？",
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "ORI 是新一代工作量证明（PoW）价值存储资产，旨在解决比特币模型中固有的\"价值泄漏\"问题。通过创新的链上反向引流机制，ORI 将矿工成本重定向回系统内部，实现价值在链上的完全闭环与自我繁荣。"
+        },
+        {
+          "type": "paragraph",
+          "text": "代币从 0 开始公平挖矿，无预挖、无 VC、无项目方分配，一切去中心化、去组织化。ORI 是链上原生的 <0>BTC 2.0</0>。"
+        }
+      ]
+    },
+    "mining": {
+      "title": "Mining 如何挖矿",
+      "blocks": [
+        {
+          "type": "heading",
+          "text": "挖矿机制"
+        },
+        {
+          "type": "paragraph",
+          "text": "每轮持续 1 分钟，系统会在 <0>5×5 格子</0> 中随机选出 1 个中奖格："
+        },
+        {
+          "type": "paragraph",
+          "text": "用户使用 <0>BNB</0> 投入格子，可单选、多选或全选；"
+        },
+        {
+          "type": "paragraph",
+          "text": "可选择 <0>手动模式</0>（仅挖矿一轮）或 <1>自动模式</1>（自动连续挖矿多轮，系统一次性收取对应 BNB 数量）；"
+        },
+        {
+          "type": "paragraph",
+          "text": "平台收取挖矿金额的 <0>1%</0> 作为平台手续费收入。"
+        },
+        {
+          "type": "heading",
+          "text": "开奖与分配"
+        },
+        {
+          "type": "paragraph",
+          "text": "每分钟自动开奖一次，中奖格由<0>链上随机数</0>决定；"
+        },
+        {
+          "type": "paragraph",
+          "text": "若无人参与或中奖格无人质押，该轮<0>轮空</0>，不产生分发。"
+        },
+        {
+          "type": "heading",
+          "text": "中奖情况"
+        },
+        {
+          "type": "heading",
+          "text": "未中奖"
+        },
+        {
+          "type": "paragraph",
+          "text": "失去所有投入的 <0>BNB</0>"
+        },
+        {
+          "type": "heading",
+          "text": "普通中奖"
+        },
+        {
+          "type": "paragraph",
+          "text": "获得当轮所有 BNB 的 <0>90% 奖池</0>（按中奖格投入比例分配）"
+        },
+        {
+          "type": "paragraph",
+          "text": "同时生成 <0>1 枚 ORI 奖励</0>，其中："
+        },
+        {
+          "type": "paragraph",
+          "text": "<0>50% 概率</0> 由一位中奖用户独得；"
+        },
+        {
+          "type": "paragraph",
+          "text": "<0>50% 概率</0> 由所有中奖者按投入比例平分。"
+        },
+        {
+          "type": "heading",
+          "text": "母池大奖（Motherlode）"
+        },
+        {
+          "type": "paragraph",
+          "text": "每轮额外铸造 <0>+0.2 ORI</0> 进入母池；"
+        },
+        {
+          "type": "paragraph",
+          "text": "触发概率 <0>1/625</0>；"
+        },
+        {
+          "type": "paragraph",
+          "text": "若未触发则累积，直至被触发时一次性全部发放；"
+        },
+        {
+          "type": "paragraph",
+          "text": "分配逻辑与普通轮相同。"
+        }
+      ]
+    },
+    "staking": {
+      "title": "质押机制（Staking）",
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "ORI 持有者可质押代币以获取协议收入分成："
+        },
+        {
+          "type": "paragraph",
+          "text": "每轮用户挖矿的 BNB 的 <0>6%</0> 自动收集（扣除平台 1% 手续费），用于协议层回购 ORI；"
+        },
+        {
+          "type": "paragraph",
+          "text": "回购所得 ORI 中："
+        },
+        {
+          "type": "paragraph",
+          "text": "<0>5/6</0> → 埋藏池（ORI Pool），用于未来再分发；"
+        },
+        {
+          "type": "paragraph",
+          "text": "<0>1/6</0> → 质押池（Staking Pool），分配给质押者；"
+        },
+        {
+          "type": "paragraph",
+          "text": "用户质押后可根据其 ORI 占比实时获得质押奖励；"
+        },
+        {
+          "type": "paragraph",
+          "text": "赎回质押时不收取任何费用。"
+        },
+        {
+          "type": "paragraph",
+          "text": "该机制让质押者同时受益于 <0>协议回购带来的升值</0> 与 <1>质押奖励收益</1>，实现\"双重收益\"。"
+        }
+      ]
+    },
+    "tokenomics": {
+      "title": "代币经济模型（Tokenomics）",
+      "blocks": [
+        {
+          "type": "heading",
+          "text": "基本信息"
+        },
+        {
+          "type": "paragraph",
+          "text": "总量上限：<0>4,200,000 ORI</0>"
+        },
+        {
+          "type": "paragraph",
+          "text": "发行方式：公平挖矿，无团队或预留份额"
+        },
+        {
+          "type": "paragraph",
+          "text": "铸造速率：每分钟产出 <0>1 + 0.2 ORI</0>"
+        },
+        {
+          "type": "paragraph",
+          "text": "轮空保护：若当轮无人参与或中奖格无人质押，则不产出"
+        },
+        {
+          "type": "heading",
+          "text": "回购与再分配机制"
+        },
+        {
+          "type": "paragraph",
+          "text": "每轮挖矿的 <0>10% BNB</0> 用于协议自动回购 ORI 和 起源币；"
+        },
+        {
+          "type": "paragraph",
+          "text": "回购滑点设定为 <0>60%</0>；"
+        },
+        {
+          "type": "paragraph",
+          "text": "回购代币按比例分配："
+        },
+        {
+          "type": "paragraph",
+          "text": "<0>50%</0> → 埋藏池（ORI Pool）"
+        },
+        {
+          "type": "paragraph",
+          "text": "<0>10%</0> → 质押池（Staking Pool）"
+        },
+        {
+          "type": "paragraph",
+          "text": "<0>40%</0> → 埋藏池（起源 Pool）"
+        },
+        {
+          "type": "heading",
+          "text": "精炼与手续费分配"
+        },
+        {
+          "type": "paragraph",
+          "text": "挖矿奖励领取时收取 <0>10%</0> 精炼费；"
+        },
+        {
+          "type": "paragraph",
+          "text": "平台挖矿手续费为 <0>1%</0>，用于协议维护；"
+        },
+        {
+          "type": "paragraph",
+          "text": "所有费用链上自动化分配，完全透明可验证。"
+        }
+      ]
+    },
+    "links": {
+      "title": "链接",
+      "items": [
+        {
+          "label": "官网：",
+          "href": "https://ori.supply"
+        },
+        {
+          "label": "X：",
+          "href": "https://x.com/refinORI"
+        },
+        {
+          "label": "Telegram：",
+          "href": "https://t.me/refinORI"
+        },
+        {
+          "label": "白皮书：",
+          "href": "https://whitepaper.ori.supply"
+        }
+      ]
+    }
+  }
+}

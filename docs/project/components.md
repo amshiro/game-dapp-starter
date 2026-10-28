@@ -66,7 +66,7 @@ Figma 中没有 Component，以下候选全部从重复视觉中识别。
 | `features/points` | PointsBalanceCard（金色六边形图标）、PointsRecordsTable | `2003:2113`、`2003:2123` 等 |
 | `features/stake` | StakeForm（Deposit / Withdraw）、StakeSummary | `2003:1961`、`2003:2078` |
 | `features/explore` | ExploreStats、MiningTable、MotherlodesTable、BuybacksTable | `2003:2534` |
-| About（页面局部） | AboutAccordion 内容 | `2003:2235`、`2003:2359`；仅 Accordion UI 子集，正文与外链 OPEN（C-61/C-86），测试 fixture 不接正式路由 |
+| About（页面局部） | AboutAccordion 内容 | `2003:2235`、`2003:2359`；复用原 Accordion；正式 /about 对应正文/链接按本轮授权从当前源码恢复，默认全收起（C-61/C-86） |
 
 ## 需要统一行为的元素
 

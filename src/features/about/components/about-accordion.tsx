@@ -50,14 +50,19 @@ export function AboutAccordion({
                 />
               </button>
             </h2>
+            {/* Keep content mounted for height motion; inert/aria-hidden exclude it immediately when collapsed. */}
             <div
               id={panelId}
               role="region"
               aria-labelledby={triggerId}
-              hidden={!expanded}
+              aria-hidden={!expanded || undefined}
+              inert={!expanded}
+              data-expanded={expanded}
               className={styles.panel}
             >
-              {item.content}
+              <div className={styles.panelContent}>
+                <div className={styles.panelBody}>{item.content}</div>
+              </div>
             </div>
           </section>
         );

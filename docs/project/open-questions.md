@@ -66,3 +66,10 @@ R0 逐项结论与来源见 [r0-evidence-audit.md](./r0-evidence-audit.md)。`PA
 | S-04 | 轮换曾写在 `api-reference/user-api.md` 中的后台管理系统凭据（已从文档移除，backend / admin owner 负责） |
 | S-05 | Backend currently exposes internal stack traces for some error paths; backend owner should disable detailed exception output outside controlled debugging |
 | S-06 | 轮换曾在对话中暴露的 `BACKEND_APP_SECRET` 值（属于其他带登录能力的项目，由该项目 backend / admin owner 负责；ORI 不使用，仓库不存储任何值） |
+
+## About + Points UI 本轮限定授权（不关闭生产问题）
+
+- Q-20 / Q-01 / Q-11：仍阻塞真实 Points 规则与接口。当前 /points 按用户批准的 Figma static demo 完整呈现；旧源码的 PointsRewards 是起源奖励，OriPointsTable 是游戏记录，不映射成新版积分。未调用 points wrappers。
+- Q-41：当前 About 对应文案由用户明确授权从实际挂载源码恢复。Staking 的 6% 与 Tokenomics 的 10%/50/10/40 等历史口径原样保留；不据此推导合约、交易或修改既有 read owner。
+- Q-30：沿用 en / zh-CN 和当前语言切换。恢复的双语 copy 可用于本工程演示，生产发布语言和费率真实性不因此被认证。
+- 当前 UI 不等待这些生产 Gate；来源与 frame/state 覆盖见 [inventory](./about-points-ui-inventory.md)。

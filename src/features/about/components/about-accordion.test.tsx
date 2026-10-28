@@ -13,7 +13,9 @@ describe("About accordion presentation contract", () => {
     const html = renderToStaticMarkup(<AboutAccordion items={items} />);
     expect(html.match(/aria-expanded="false"/g)).toHaveLength(2);
     expect(html).not.toContain('aria-expanded="true"');
-    expect(html.match(/hidden=""/g)).toHaveLength(2);
+    expect(html.match(/inert=""/g)).toHaveLength(2);
+    expect(html.match(/aria-hidden="true"/g)).toHaveLength(2);
+    expect(html).not.toContain(" hidden=");
     expect(html.match(/type="button"/g)).toHaveLength(2);
     const controls = [...html.matchAll(/aria-controls="([^"]+)"/g)].map(
       (match) => match[1],

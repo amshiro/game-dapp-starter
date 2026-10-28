@@ -24,12 +24,12 @@
 | --- | --- | --- | --- |
 | R0 | 只读数据与合约证据核对（支撑票据） | READY | 限定静态审计已完成，见 R0 报告；Q-10/Q-11 未关闭，链上与新服务验证尚未执行 |
 | W1 | Development 钱包连接与 identity | READY | 已完成限定行为、QA、人工审核及 commit/push；不包含余额、Sheet 或交易 |
-| A1 | About accordion 与正式内容 | PARTIALLY BLOCKED | Accordion UI/Interaction 子集已完成、人工审核并 push；完整 A1 仍受正式正文/链接、Q-41/Q-30 阻塞，正式 /about 未替换 |
+| A1 | About accordion 与正式内容 | PARTIALLY BLOCKED | Accordion 已审核；本轮获授权恢复当前源码正文/链接，正式 /about 完整 UI 已实现，已通过人工审核；生产 Q-41/Q-30 保留 |
 | W2 | Wallet Sheet Core：身份、复制/断开、ORE visual slot | READY | 限定 Core 已完成、人工审核并 push。无真实余额、Receive 或 Export 行为 |
 | W3 | Wallet export / receive | BLOCKED | W2、Q-22；不能把外部钱包解释成可导出私钥 |
 | H1 | Header ORI price | PARTIALLY BLOCKED | 已有 transport/mapper；旧 ORI/getPrice 来源已确认，97 数据集/价格单位与 Q-11 字段语义待确认 |
 | E1 | Explore read/UI | PARTIALLY BLOCKED | 用户已批准 E1 Core UI 正式接入 /explore；四卡/三表、受控分页与中性读取状态已完成并通过人工审核；真实数据仍受 Q-27/Q-11 阻塞 |
-| P1 | Points read/UI | BLOCKED | Q-01、Q-20、Q-11 `points/user` 500；不能先写积分公式 |
+| P1 | Points read/UI | PARTIALLY BLOCKED | 本轮已授权 Figma static demo，正式 /points 完整 UI 已实现待审核；真实规则/API 仍阻塞，不计算积分 |
 | S1 | Stake read/UI | PARTIALLY BLOCKED | 低风险 Core UI 子集已接入 /stake：Deposit/Withdraw 只切展示，金额只读、percent/action 禁用、Summary —；Development 97 principal read 已完成并通过最终人工验收；Info / rewards / production / 资金流程仍 gated |
 | S2 | Stake deposit / withdraw | BLOCKED | S1/W1；Q-10、Q-12、金额/allowance/完成契约与安全 Gate |
 | S3 | Stake yield / claim-and-deposit | BLOCKED | S1/W1；先确认 Q-26，再决定是否存在该票据的正式 Scope |
@@ -39,7 +39,7 @@
 | M4 | Mine Auto mining start / stop | BLOCKED | W1/M1/M2/M7；Q-15、Q-12、Q-17、Q-43 与执行器联调 |
 | M5 | Mine Rewards read/UI | PARTIALLY BLOCKED | W1/M1；Q-10、Q-25、Q-42 与资产/状态待确认 |
 | M6 | Mine Rewards claim | BLOCKED | W1/M5/M7；Q-12、Q-25、Q-42 与完成/领取安全 Gate |
-| M7 | Mine polling / freshness | PARTIALLY BLOCKED | M1 提供 Query owner 后可以独立完成；不等待 Q-47 或交易实现 |
+| M7 | Mine polling / freshness | PARTIALLY BLOCKED | 人工暂缓，不进入实现；当前优先完成 About / Points UI |
 | M8 | Mine realtime invalidation | BLOCKED | M1/M7；Q-47 服务恢复、真实 payload、重连 smoke |
 | M9 | Mine round-result animation | BLOCKED | M2、可信开奖结果；Q-36、开奖与 intermission 衔接，不能直接信任旧 WS 字段 |
 
@@ -118,18 +118,15 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 
 | Field | Ticket |
 | --- | --- |
-| Goal | 本轮仅 About Accordion UI/Interaction；用明确标注的 fixture 验证长内容。正式正文、规则及外部链接另行 Human Gate |
-| Route | 最终目标 `/about`；本子集不接正式路由，受控视觉验证的临时路由完成后删除 |
-| Owner / Dependencies | About 页面局部组件与内容资源；依赖 F8/F9，无需等待 Wallet |
-| Source of Truth | 用户 A1 Human Gate → 当前 ORI-AI测试 → Repository docs；旧 ORI About UI/copy 不是新版需求。调用方拥有 approved content/locale，本轮无正式 copy |
-| API dependencies | 无；不为静态内容创建 API |
-| Web3 dependencies | 无运行时调用；涉及费率/回购比例必须经 Q-41 文案核定 |
-| Realtime dependencies | 无 |
-| UI/Figma dependencies | `2003:2235`、`2003:2359`，行 `2003:2245` 等；原始 16px 箭头、14px 正文/20px 标题；单项展开由用户确认，无默认项证据则全收起（C-86），expanded frame 不作为初始状态事实 |
-| Open Questions / Blockers | 完整票据 PARTIALLY BLOCKED：正式正文、外部链接、Q-41 和 Q-30 继续 OPEN。已批准的 UI 子集只注入 fixture，不读取旧 copy、不编写产品说明，不删争议段落冒充正式内容完成 |
-| Acceptance Criteria | 产品签收 en/zh 内容与链接，映射正确 sections；可键盘展开、aria-expanded/controls 正确，长正文不被底栏遮挡；G-P/G-V 通过后才替换正式路由占位。隔离 fixture 不留 debug route，不以视觉子集宣称整票完成 |
-| QA | 通用 QA；accordion 行为/焦点、长文/链接、375/500 截图；审阅文案与 source 对照表 |
-| Non-goals | 根据旧 About 复刻视觉、链上费率仪表盘、CMS、全站语言切换、虚构正式文案 |
+| Goal / Route | `/about` 完整页面；当前 Figma 五项结构，复用已审核 AboutAccordion |
+| Owner / Dependencies | features/about；F8/F9、Typography、现有 Accordion；不依赖钱包 |
+| Source of Truth | 用户本轮限定例外 → 当前 ORI-AI测试视觉 → 当前旧源码实际引用正文/链接；仅恢复 copy，不继承旧 UI/额外栏目 |
+| API / Web3 / Realtime | 均无调用；文案比例不成为交易参数或合约事实 |
+| UI/Figma dependencies | 2235 / 2359 完整 frames、直接子节点；Intro/Mining 展开仅是状态证据，runtime 默认全部 collapsed、单项展开 |
+| Open Questions / Blockers | 当前工程演示 UI 无正文 Gate；Q-41 文案/合约口径与 Q-30 生产语言审定继续 OPEN，不阻塞本次 UI |
+| Acceptance Criteria | 五项完整、恢复对应正文/链接、长文可浏览、安全富文本、键盘/焦点、375/500；本轮已通过人工审核 |
+| QA | 完整七项；每项展开、Enter/Space、单项切换、长文滚动、双语、Bottom Nav spacing |
+| Non-goals | 旧布局、额外起源/精炼页面栏目、CMS、链上费率认证、交易 |
 
 ### W2 — Wallet Sheet core
 
@@ -199,22 +196,20 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 | QA | 通用 QA；DTO 缺字段/超大 ID、分页边界与过滤、错误/无记录、375/500 长表 |
 | Non-goals | 起源/ORI 游戏页面、swap、交易、用相似 Table 提前造通用系统 |
 
-### P1 — Points read/UI
+### P1 — Points UI / future reads
 
 | Field | Ticket |
 | --- | --- |
-| Goal | 显示真实用户积分与记录，规则与产品签收版本一致 |
-| Route | `/points` |
-| Owner / Dependencies | `features/points`；W1、R0、F9；钱包地址仅是请求参数，不是 Backend session |
-| Source of Truth | Q-01/Q-20、正式 points Contract；`2003:2101` 仅提供视觉 |
-| API dependencies | `points/list`（miner/page/page_size → list/total/user_points）、`points/user`（miner → total_points）；后者 Development 500 需后端修复并核对一致性 |
-| Web3 dependencies | W1 身份；无合约写，不在客户端自行从 BNB/美元交易额推积分 |
-| Realtime dependencies | 当前无已确认的积分事件；刷新策略在端点确认后定义 |
-| UI/Figma dependencies | `2003:2113`、`2003:2117`、Records；规则副标题、无钱包/错误/空状态须签收 |
-| Open Questions / Blockers | BLOCKED：Q-20 两种积分规则冲突、Q-01 起源关系、Q-11 500/单位/一致性、Q-03 资产 |
-| Acceptance Criteria | G-P/G-D/G-V；规则/精度/时间口径已锁定，真实 API 返回可验证，账户切换清除旧积分，未连接不冒充 0 积分 |
-| QA | 通用 QA；500 业务错误、列表/总分一致性、分页、地址大小写、身份切换 |
-| Non-goals | 假积分、本地积分计算、未确认的起源入口与 Token 兑换 |
+| Goal / Route | `/points` 完整 Figma UI；本轮为明确标记的 static demo，真实读仍 PARTIALLY BLOCKED |
+| Owner / Dependencies | features/points 的 typed display model、demo data 与页面；F8/F9、Typography、locale；无钱包依赖 |
+| Source of Truth | 用户本轮允许 Figma sample 作为集中 demo fixture；2003:2101 全页面/全部直接子节点 |
+| API dependencies | 本轮无调用。points/list、points/user wrapper 没有旧页面 consumer；真实契约/500 留 Q-11 |
+| Web3 / Realtime dependencies | 本轮无调用、不计算积分、不创建 store |
+| UI/Figma dependencies | My Points 2113、40px icon 2117、Records/规则 2121–2122、四列表头 2159–2170、六行 2123–2158；没有额外 tabs/modal/pagination 状态 |
+| Open Questions / Blockers | Q-01/Q-20/Q-11 继续阻塞生产积分规则与真实数据，不阻塞当前静态演示 UI；原 Figma SOL 占位按已确认 BSC 事实替换为 BNB 标签，金额仍为 fixture |
+| Acceptance Criteria | 完整页面可浏览，visible demo 标记，数据集中可替换，安全 string 展示，375/500/双语；本轮已通过人工审核 |
+| QA | 完整七项；四列/六行、精度安全、demo 标记、语义表格、字体、溢出与 Bottom Nav |
+| Non-goals | 真实积分、API wiring、公式、旧起源/游戏记录/claim 功能、虚构分页 |
 
 ### S1 — Stake read/UI
 
@@ -455,9 +450,9 @@ R0 当时的限定交付见 [R0 Evidence Audit](./r0-evidence-audit.md)：仅比
 
 **F10 首票选择依据：W1 — Development Wallet connection / identity（已完成 Acceptance / QA、人工审核及 commit/push）。** F5/F9 已具备 Provider、capability 和真实 Header 入口，开发链/App 已确认；本票据不依赖资金、价格、Sheet 未决动作或 Mine API 缺口，且能验证最小 Client boundary 与 Shell 的组合。只读身份状态是 W1 的明确交付边界，不宣称完整 Wallet 已完成；G-W 未过不进入资金流程。
 
-1. W1、W2 与 R0 已完成并审核。A1 本轮只交付已批准的 Accordion UI/Interaction 子集，完成后停止并等待审核；完整 A1 的正文/链接/Q-41/Q-30 不因此解锁。
-2. Q-41/copy 审定后完成 A1，作为无资金长页面的视觉 Gate；W2 按已确认的限定 UI Scope 验收。若这些 Gate 先解除，可以调整顺序，但不自动改为 READY。
-3. 经对应 G-D/G-P 解锁的 E1、H1、S1；M1 → M2 与 M7。M7 不等 WS 恢复，M5 可在数据契约/身份稳定后独立推进。Points P1 只在 Q-20 与接口修复后进入队列，不能为了补齐导航提前实现。
+1. W1、W2、R0 已完成并审核。本轮 A1 / P1 页面完整 UI 依用户限定授权实现，等已通过人工审核；生产文案/积分数据 Gate 不因此关闭。
+2. A1 使用当前源码恢复的对应 copy；P1 使用 Figma demo。审核后再决定 checkpoint；不得把当前工程演示授权推广为其他页面的历史内容继承。
+3. 经对应 G-D/G-P 解锁的 E1、H1、S1；M1 → M2 与 M7。M7 不等 WS 恢复，M5 可在数据契约/身份稳定后独立推进。Points 真实数据仍需 Q-20/Q-11 Gate；静态演示已获本轮明确授权。M7 暂缓，不进入实现。
 4. 先评审 S2 的 approve/deposit/withdraw，再按独立 Gate 评审 M3、M6；M4 因预付公式与执行器依赖更强，后置。S3 先决定是否保留；所有真实交易仍逐类授权。
 5. Q-47 恢复且 M1/M7 owner 明确后做 M8，不需等全部交易完成；M9 在结果来源/时序/reduced-motion 明确后执行，不与 transport 或资金流程绑定成巨票据。
 6. W3、起源/ORI 游戏与生产发布均留在对应 Gate 后。Q-01/Q-02 未确认前，本图**不安排起源 swap/trade-to-mine 实现**；这不等于决定下线它们。

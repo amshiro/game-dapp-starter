@@ -270,6 +270,8 @@ app/globals.css 仍是唯一 global style entry；src/styles/ 用于组织真正
 
 ## Phase 7：Feature / Page Implementation
 
+实现某个页面前，必须先扫描当前设计中该页面的全部相关 frame / state，并读取完整 frame 与直接子节点；形成最小 Page State Inventory，区分固定模块、同模块状态与独立页面。不得只读取一个 frame 或局部 row 就宣布页面完成。验收时逐项核对 inventory；没有 runtime owner 的设计状态应明确标记为 presentation / fixture，而非伪造业务能力。
+
 实现某个具体页面或 Feature 前，应重新读取目标 Frame / Component 的最新精确设计上下文，而不是依赖数小时前扫描的记忆。至少重新确认：
 
 ~~~text

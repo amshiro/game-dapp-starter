@@ -1,0 +1,136 @@
+.page {
+  min-width: 0;
+  background: var(--ori-color-background);
+  letter-spacing: 0;
+}
+.subtitle {
+  margin-top: 8px;
+  color: var(--ori-color-text-secondary);
+  font-size: 14px;
+  line-height: normal;
+}
+.balance {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 88px;
+  margin-top: 24px;
+  padding: 16px 14px;
+  background: var(--ori-color-background);
+  border: 2px solid var(--ori-color-border);
+  border-radius: var(--ori-radius-control);
+}
+.balance img {
+  flex: none;
+}
+.balance dt {
+  color: var(--ori-color-text-secondary);
+  font-size: 12px;
+  line-height: normal;
+}
+.balance dd {
+  margin: 6px 0 0;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: normal;
+}
+.demo {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  color: var(--ori-color-text-secondary);
+  font-size: 10px;
+}
+.records {
+  margin-top: 24px;
+}
+.records h2 {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: normal;
+}
+.records > p {
+  margin-top: 8px;
+  color: var(--ori-color-text-secondary);
+  font-size: 12px;
+  line-height: normal;
+}
+.table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  background: var(--ori-color-background);
+  margin-top: 12px;
+  font-size: 12px;
+  line-height: normal;
+}
+.table col:nth-child(1) {
+  width: 31.7%;
+}
+.table col:nth-child(2) {
+  width: 28.8%;
+}
+.table col:nth-child(3) {
+  width: 22.8%;
+}
+.table col:nth-child(4) {
+  width: 16.7%;
+}
+.table th,
+.table td {
+  height: 38px;
+  padding: 8px 0;
+  text-align: left;
+  overflow-wrap: anywhere;
+  vertical-align: middle;
+}
+.table th {
+  color: var(--ori-color-text-secondary);
+  font-weight: 500;
+}
+.table th:last-child,
+.table td:last-child {
+  text-align: right;
+}
+.page h1 {
+  line-height: normal;
+}
+
+.table thead,
+.table tbody,
+.table tr,
+.table th,
+.table td {
+  background: var(--ori-color-background);
+}
+.table tr {
+  position: relative;
+}
+.table tr::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -14px;
+  width: 14px;
+  background: var(--ori-color-background);
+  pointer-events: none;
+}
+.table thead {
+  position: relative;
+}
+.table thead::after {
+  content: "";
+  position: absolute;
+  height: 1px;
+  bottom: 0.5px;
+  left: 0;
+  right: 0;
+  background: repeating-linear-gradient(
+    to right,
+    var(--ori-color-surface) 0 4px,
+    transparent 4px 8px
+  );
+  pointer-events: none;
+}

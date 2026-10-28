@@ -1,6 +1,5 @@
+import { AboutPage } from "../../src/features/about/about-page";
 import { getRequestLocale } from "../request-locale";
-import { getShellCopy } from "../_shell/copy";
 export default async function Page() {
-  const copy = getShellCopy(await getRequestLocale());
-  return <h1 className="text-page-title font-bold">{copy.about}</h1>;
+  return <AboutPage locale={await getRequestLocale()} />;
 }

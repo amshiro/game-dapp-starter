@@ -1,0 +1,39 @@
+.page {
+  min-width: 0;
+  background: var(--ori-color-background);
+  letter-spacing: 0;
+}
+.subtitle {
+  margin-top: 8px;
+  color: var(--ori-color-text-secondary);
+  font-size: 14px;
+  line-height: normal;
+}
+.accordion {
+  margin-top: 24px;
+}
+.accordion strong {
+  color: var(--ori-color-text-primary);
+  font-weight: 500;
+}
+.accordion a {
+  color: var(--ori-color-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.accordion a:focus-visible {
+  outline: 2px solid var(--ori-color-accent);
+  outline-offset: 3px;
+}
+.page h1 {
+  line-height: normal;
+}
+
+.lead {
+  font-weight: 500;
+  line-height: 22px;
+}
+
+.brand {
+  color: var(--ori-color-accent);
+}

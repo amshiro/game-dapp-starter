@@ -61,3 +61,7 @@ F9 uses the user-confirmed `/mine`, `/points`, `/stake`, `/explore`, `/about` ma
 ## M2 Mine Read-only Board
 
 `/mine` 已正式替换 F9 标题占位，由 `app/mine/mine-runtime.tsx` 组合 W1 错链事实与 `features/mine` 的公共只读 Query/page。仅 Development 97 读取存储轮和每格 amount/count；无 selection interaction、交易或 Miners 数据。F9 的标题占位描述为历史交付范围，不再代表当前 Mine。
+
+## About / Points 当前正式页面
+
+`/about` 已组合 features/about/AboutPage，复用 AboutAccordion，默认全收起；`/points` 已组合 features/points/PointsPage，使用明确标记的 Figma static demo model。两者由 request locale 服务端生成，导航 active 沿用唯一 registry；不创建 debug / locale / modal routes。F9 的 destination heading 描述仅为历史阶段，不代表当前页面状态。

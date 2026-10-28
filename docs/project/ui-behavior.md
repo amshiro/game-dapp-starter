@@ -134,10 +134,12 @@ Step3  获胜方块保持点亮 10s
 
 ## About
 
-- **Confirmed（A1 Human Gate）**：本轮只批准 Accordion UI/Interaction；最多一项展开，打开另一项关闭上一项。当前 Figma 无初始默认项证据，runtime 默认全部 collapsed；展开稿不是默认状态事实（C-86）。
+- **Confirmed（A1 Human Gate）**：正式页面复用已审核 Accordion UI/Interaction；最多一项展开，打开另一项关闭上一项。当前 Figma 无初始默认项证据，runtime 默认全部 collapsed；展开稿不是默认状态事实（C-86）。
 - 使用 heading 内原生 button、aria-expanded/controls、关联的 region；隐藏 panel 不参与可见/键盘内容。Enter/Space 使用按钮原生行为，不实现无设计依据的额外快捷键。
 - 长内容使用自然文档流，允许长词换行；不固定展开高度、不增加内部滚动容器。继续由 App Shell 负责底栏避让。
-- **Unknown**：正式 About 正文、外部链接、Q-41 费率/回购比例、Q-30 发布语言。旧 About UI/copy 不是新版需求；仅测试 fixture 可用于当前视觉/长内容验证，正式 /about 保持占位。
+- **Confirmed（本轮限定例外）**：正式 /about 使用当前源码实际引用的对应正文与链接，视觉仍为 Figma 五项。Q-41 合约口径、Q-30 生产发布审定保留；不继承旧 UI/额外栏目。
+
+- **Human-approved interaction override**：用户明确要求并已人工验收 240ms expand/collapse、180ms content fade 与 arrow transition；这是允许的交互覆盖，不是 blocker，不移除。reduced-motion 保留即时切换。
 
 ## Loading / Error / Disabled / Success
 

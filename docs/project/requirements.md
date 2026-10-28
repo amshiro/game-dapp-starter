@@ -35,7 +35,7 @@
 | C-83 | W2 保留 Figma 的单行 ORE balance visual slot；无已确认数据 owner 时显示 unavailable，不使用示例 48.60，不替换 BNB/ORI/起源或增加多资产 | User Confirmed | 真实数据 owner、资产定义与来源仍 OPEN |
 | C-84 | Export（Privy 私钥导出）与 Receive（Privy 二维码入口）仅属于 Privy embedded wallet；external wallet 两个按钮都隐藏 | User Confirmed（本次修正覆盖旧 Export inert UI 决策）；Figma `2003:2526–2529` 两入口已复核 | 当前仍 external-only / embedded off，不创建钱包或调用导出/充值接口 |
 | C-85 | 当前 external Wallet 保留身份、地址复制、断开及 unavailable ORE；不显示 Export / Receive，不引入旧 mining fund | User Confirmed | 若未来启用 embedded，需单独通过身份/资产归属 Gate，不能仅为按钮改模型 |
-| C-86 | A1 UI 子集：最多一项展开，打开另一项关闭上一项；无初始默认项证据则全部 collapsed，展开稿仅证明状态视觉 | User Confirmed；Figma 2003:2235 / 2359 无 prototype 起点 | 本轮不预开 Intro；正文/外链/Q-41/Q-30 继续 OPEN |
+| C-86 | A1 UI 子集：最多一项展开，打开另一项关闭上一项；无初始默认项证据则全部 collapsed，展开稿仅证明状态视觉 | User Confirmed；Figma 2003:2235 / 2359 无 prototype 起点 | 不预开 Intro；正文/外链已获本轮恢复授权，Q-41/Q-30 生产 Gate 保留；240ms 展开收起、180ms fade、箭头过渡为已验收 Human-approved interaction override |
 
 ### Responsive
 
@@ -94,9 +94,9 @@
 | ID | Requirement | Source | Notes |
 | --- | --- | --- | --- |
 | C-60 | Explore 展示挖矿、母矿、回购三类记录，分页 | Figma；Live | Live 字段：回合 / 玩家 / 交易量 / 总分配；回购：时间 / 已花费 BNB / 已销毁 |
-| C-61 | About 正式正文、规则与链接必须另经产品审定；本轮只批准 Accordion UI/Interaction 子集 | User Confirmed：A1 Human Gate | 当前 Figma 文案是视觉占位；不复制旧 ORI copy，不替换正式 /about |
-| C-62 | 历史产品链接：`https://ori.supply`、X `https://x.com/refinORI`、Telegram `https://t.me/refinORI`、白皮书 `https://whitepaper.ori.supply` | Live About | 仅历史证据，新版外部链接保持 OPEN，不自动继承 |
-| C-63 | 历史 About 文案称 ORI 最大供应 4,200,000；无预挖、无团队分配 | Live About | 非新版 approved copy；本轮不填入 Accordion |
+| C-61 | 本轮允许正式 /about 完整 UI，从当前旧源码恢复对应正文和链接 | User Confirmed：Complete About + Points UI 限定例外 | 视觉按 Figma 五项；不继承旧布局/额外栏目，不认证文案费率 |
+| C-62 | 当前 About 链接：`https://ori.supply`、X `https://x.com/refinORI`、Telegram `https://t.me/refinORI`、白皮书 `https://whitepaper.ori.supply` | 当前源码实际引用；本轮用户授权 | 置于 Figma Links 项；英文白皮书 /en，中文根路径 |
+| C-63 | 当前 About 文案称 ORI 最大供应 4,200,000；无预挖、无团队分配 | 当前源码实际引用；本轮用户授权 | 允许作为恢复 copy 展示，不据此改变合约/资产事实 |
 
 ### 多语言
 
