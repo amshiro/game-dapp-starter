@@ -1,0 +1,19 @@
+.loading {
+  display: inline-flex;
+  flex: none;
+  vertical-align: middle;
+  color: inherit;
+}
+.loading svg {
+  animation: rotate 1s linear infinite;
+}
+@keyframes rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .loading svg {
+    animation: none;
+  }
+}

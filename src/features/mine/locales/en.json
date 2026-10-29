@@ -36,7 +36,7 @@
   "betAmount": "Deploy amount per cell (BNB)",
   "balance": "Bal:",
   "shortcuts": "Per-cell amount shortcuts",
-  "blocks": "Blocks",
+  "blocks": "Cells",
   "rounds": "Rounds",
   "decreaseRounds": "Decrease rounds",
   "increaseRounds": "Increase rounds",
@@ -81,8 +81,8 @@
       "wrong-chain": "Switch to BNB Smart Chain Testnet (97).",
       "account-changed": "Wallet account changed. Review your selection and try again.",
       "no-selection": "Select at least one cell.",
-      "invalid-amount": "Enter a positive per-cell BNB amount with up to 18 decimals.",
-      "insufficient-native": "Insufficient BNB for deployment and gas.",
+      "invalid-amount": "Enter a positive per-cell BNB amount with up to 6 decimals",
+      "insufficient-native": "Insufficient BNB for deployment and Gas",
       "invalid-mask": "Review the selected cells.",
       "duplicate-cell": "This round already contains your deployment. Refresh before continuing.",
       "already-deployed-round": "Already deployed this round. A second Manual deploy is not allowed.",
@@ -112,7 +112,7 @@
   "autoFlow": {
     "executorFee": "Executor fee / round",
     "random": "Random",
-    "funding": "Per-cell BNB. Totals show principal; wallet funding also includes executor fees and gas.",
+    "funding": "Per-cell BNB. Totals show principal; wallet funding also includes executor fees and Gas",
     "errors": {
       "invalid-blocks": "Enter 1–25 cells per round.",
       "invalid-rounds": "Enter 1–9999 rounds.",

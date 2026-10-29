@@ -307,3 +307,36 @@ describe("matching AutomationUpdated", () => {
     expect(() => verifyAutomation(operation, duplicate)).toThrow();
   });
 });
+
+describe("Auto buffered native budget", () => {
+  it.each([44099, 44100])(
+    "includes executor fee and buffered gas at %s",
+    async (remaining) => {
+      const h = harness();
+      h.raw.balance = intent.value + BigInt(remaining);
+      if (remaining === 44099)
+        await expect(h.deps.prepare(operation)).rejects.toThrow(
+          "insufficient-native",
+        );
+      else {
+        await h.deps.prepare(operation);
+        await h.deps.send(operation);
+        expect(writeContract).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.objectContaining({
+            value: intent.value,
+            gas: BigInt(22050),
+            gasPrice: BigInt(2),
+          }),
+        );
+      }
+    },
+  );
+  it("stops if native balance falls before the wallet call", async () => {
+    const h = harness();
+    await h.deps.prepare(operation);
+    h.raw.balance = intent.value;
+    await expect(h.deps.send(operation)).rejects.toThrow("insufficient-native");
+    expect(writeContract).not.toHaveBeenCalled();
+  });
+});

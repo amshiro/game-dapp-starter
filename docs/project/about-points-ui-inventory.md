@@ -1,6 +1,15 @@
 # About + Points — Full Page State Inventory
 
-## 本轮边界
+## 当前 Points 数据（User Confirmed）
+
+正式 `/points` 已替换静态演示，复用当前钱包 identity 与 ORI transport，在 Development 97 下按账户和 API base 隔离 TanStack Query。读取 `/v1/ori/points/user` 的 `total_points` 与 `/v1/ori/points/list` 的真实记录；列表按当前页读取，每页20条，总数超过20才显示分页（User Confirmed），切页使用区域内圆环 Spinner；成功空记录显示“暂无数据”，失败显示读取错误。未连接/加载/失败不使用演示数据；已成功返回空账户显示0积分和空记录。业务错误不会转换成成功的零积分。`points/user` 失败时可用同一账户的列表响应 `user_points.total_points`；两个来源均不可用显示 `—`。Development 实查 `points/list` 空记录成功，`points/user` 返回业务500（后端查询引用不存在的 points_reward 列），需后端修复；前端不展示后端内部错误文本。
+
+用户确认：`bet_amount` 为 wei（允许数据库 `.000...` 尾缀，拒绝非零小数 wei），按18位转完整 BNB，不截断或使用小额阈值；`total_points` / `points_reward` 是积分原值，不做倍率换算。我的积分使用千分位，获得积分向下截取并补足2位小数。美元价值暂无字段，保留原列显示 `—`，不按积分反推美元。日期使用接口 timestamp，按当前语言及浏览器时区显示。大数保留字符串/BigInt；拒绝不安全 JSON number，后端应以字符串返回精确大数。
+
+
+原静态演示交付与 Figma 取证如下，仅作为历史记录，不代表当前 Points runtime。
+
+## 原交付边界
 
 本轮只交付正式 `/about`、`/points` 的完整工程演示 UI，已通过人工审核；不做 M7 polling、realtime、交易、积分 API 或新钱包能力。用户明确允许 About 从当前旧源码恢复 copy，Points 在没有匹配新版数据 owner 时使用 Figma demo。此例外不改变其他 Feature 的 source priority。
 

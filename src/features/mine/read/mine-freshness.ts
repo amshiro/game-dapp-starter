@@ -1,6 +1,7 @@
 /** Mine route read budgets, not protocol clocks or transaction/retry permissions. */
 const intervals = {
   board: 15_000,
+  motherlode: 30_000,
   account: 30_000,
   automation: 30_000,
   executorFee: 60_000,

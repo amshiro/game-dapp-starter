@@ -1,3 +1,4 @@
+import { formatDecimal } from "../../../shared/lib/number/format-decimal";
 import { formatUnits } from "viem";
 import type { StakeReadValue } from "../model/stake-display";
 import type { StakeReadContext } from "./stake-read-context";
@@ -34,16 +35,13 @@ export function principalDisplay(
   if (query.isError) return { status: "error" };
   if (query.isPending || query.data === undefined) return { status: "loading" };
   const exact = formatUnits(query.data, VERIFIED_ORI_DECIMALS);
-  const [whole, fraction] = exact.split(".");
-  // Truncate display only. Keep the original bigint and full decimal string for exact inspection.
-  const shortFraction = fraction?.slice(0, 6).replace(/0+$/, "");
   return {
     status: "populated",
-    text: shortFraction
-      ? `${whole}.${shortFraction}`
-      : whole === "0" && query.data > BigInt(0)
-        ? "<0.000001"
-        : whole,
+    text: formatDecimal(exact, {
+      decimals: 6,
+      smallThreshold: true,
+      group: true,
+    }),
     exact,
     raw: query.data,
   };

@@ -402,3 +402,9 @@ State 的物理位置必须服从 `docs/architecture.md`。不得重新建立顶
 12. 状态的物理位置、依赖与 Public API 是否符合 `docs/architecture.md`？
 
 若不能清楚回答这些问题，不得为了尽快开发先创建 Store；应先重新判断 owner 与状态类型。
+
+## Loading 状态与视觉分层
+
+Loading UI 按 Action、Inline / Data、Section、Page / Route 分类，视觉及复用规则见 [Design System 的 Loading UI 规范](./design-system.md#loading-ui-的范围与复用)。Feature 从其 Query、Mutation 或交易生命周期派生局部状态，Shared Spinner/Skeleton 不持有业务判断，不新增全局 loading store，也不合并不同请求的 loading 成一个全局开关。
+
+表格分页属于 Section Loading；请求参数和 Query key 必须包含当前页及所属账户/数据集。切页显示该区域加载状态，响应成功后再判断空态或渲染记录；账户/数据集变化时回到首屏分页上下文，禁止显示旧账户的记录。错误与未启用请求不等于成功空数据。

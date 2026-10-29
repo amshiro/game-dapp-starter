@@ -1,4 +1,6 @@
 "use client";
+import { mineRecoveryAction } from "../transaction/feedback";
+import { mineAmount } from "../read/mine-display";
 import { useId } from "react";
 import { useMineCopy } from "../copy";
 import type { MineRewardsDisplay } from "../model/mine-rewards";
@@ -15,6 +17,32 @@ export function MineRewardState({
 }>) {
   const copy = useMineCopy(),
     id = useId();
+  const recovery = claim?.stateVisible
+    ? mineRecoveryAction(claim.state)
+    : undefined;
+  const pendingKind =
+    claim?.stateVisible && claim.busy ? claim.state.operation?.kind : undefined;
+  // Keep the original action reachable even when confirmed claims have already zeroed reward reads.
+  if (claim && pendingKind && (!display || display.status !== "populated")) {
+    return (
+      <section className={styles.rewardState} aria-labelledby={`${id}-title`}>
+        <h2 id={`${id}-title`}>{copy.rewards}</h2>
+        <div className={styles.rewardCard} data-layout="compact">
+          <button
+            type="button"
+            className={styles.claimVisual}
+            data-claim-method={pendingKind}
+            disabled={!recovery}
+            onClick={() => void claim?.retry()}
+          >
+            {recovery
+              ? copy.transaction[recovery]
+              : copy.claimFlow.phases[claim.state.phase]}
+          </button>
+        </div>
+      </section>
+    );
+  }
   if (
     !display ||
     display.status === "empty" ||
@@ -65,7 +93,7 @@ export function MineRewardState({
               </dt>
               <dd
                 className={styles.rewardValue}
-                title={`${row.exact} ${row.asset}`}
+                aria-label={`${row.exact} ${row.asset}`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -78,44 +106,56 @@ export function MineRewardState({
                   height={14}
                   alt=""
                 />
-                <span>{row.exact}</span>
+                <span>{mineAmount(row.raw, 6).text}</span>
               </dd>
             </div>
           ))}
         </dl>
         {/* Eligibility never replaces the runtime fresh read + simulation before signing. */}
-        {display.showClaimAll && (
+        {(display.showClaimAll || pendingKind === "claimAll") && (
           <button
             type="button"
             className={styles.claimVisual}
             data-claim-method="claimAll"
-            disabled={!claim?.canClaimAll}
-            onClick={() => claim?.submit("claimAll")}
+            disabled={
+              !(recovery && pendingKind === "claimAll") && !claim?.canClaimAll
+            }
+            onClick={() =>
+              recovery ? void claim?.retry() : claim?.submit("claimAll")
+            }
             aria-describedby={!claim ? `${id}-readonly` : undefined}
             title={!claim ? copy.rewardsReadOnly : undefined}
           >
-            {claim?.busy &&
-            claim.stateVisible &&
-            claim.state.operation?.kind === "claimAll"
-              ? copy.claimFlow.phases[claim.state.phase]
-              : copy.claim}
+            {recovery && pendingKind === "claimAll"
+              ? copy.transaction[recovery]
+              : claim?.busy &&
+                  claim.stateVisible &&
+                  claim.state.operation?.kind === "claimAll"
+                ? copy.claimFlow.phases[claim.state.phase]
+                : copy.claim}
           </button>
         )}
-        {display.showClaimEth && (
+        {(display.showClaimEth || pendingKind === "claimEth") && (
           <button
             type="button"
             className={styles.claimSecondary}
             data-claim-method="claimEth"
-            disabled={!claim?.canClaimEth}
-            onClick={() => claim?.submit("claimEth")}
+            disabled={
+              !(recovery && pendingKind === "claimEth") && !claim?.canClaimEth
+            }
+            onClick={() =>
+              recovery ? void claim?.retry() : claim?.submit("claimEth")
+            }
             aria-describedby={!claim ? `${id}-readonly` : undefined}
             title={!claim ? copy.rewardsReadOnly : undefined}
           >
-            {claim?.busy &&
-            claim.stateVisible &&
-            claim.state.operation?.kind === "claimEth"
-              ? copy.claimFlow.phases[claim.state.phase]
-              : copy.claimOnly}
+            {recovery && pendingKind === "claimEth"
+              ? copy.transaction[recovery]
+              : claim?.busy &&
+                  claim.stateVisible &&
+                  claim.state.operation?.kind === "claimEth"
+                ? copy.claimFlow.phases[claim.state.phase]
+                : copy.claimOnly}
           </button>
         )}
         {!claim && (

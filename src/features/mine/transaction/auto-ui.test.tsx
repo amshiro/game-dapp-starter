@@ -1,3 +1,4 @@
+import { useToastFeedback } from "../../../shared/ui/toast/use-toast-feedback";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import { MinePage } from "../mine-page";
@@ -7,6 +8,9 @@ import type { AutoError } from "./auto-model";
 import { MineAutominerState } from "../components/mine-automation-state";
 import { LocaleProvider } from "../../../shared/i18n/locale-provider";
 import type { MineAutoUI } from "./use-mine-auto";
+vi.mock("../../../shared/ui/toast/use-toast-feedback", () => ({
+  useToastFeedback: vi.fn(),
+}));
 function model(overrides: Partial<MineAutoUI> = {}): MineAutoUI {
   return {
     state: { phase: "idle", chainConfirmed: false },
@@ -53,7 +57,7 @@ describe("Auto configuration and Running Card composition", () => {
     );
     expect(html).toContain('value="0.02"');
     expect(html).toMatch(
-      /<input[^>]*aria-label="Blocks"[^>]*readOnly=""[^>]*value="2"/,
+      /<input[^>]*aria-label="Cells"[^>]*readOnly=""[^>]*value="2"/,
     );
     expect(html).toContain('value="3"');
     expect(html).toContain("Executor fee / round");
@@ -79,7 +83,7 @@ describe("Auto configuration and Running Card composition", () => {
     const html = renderToStaticMarkup(
       <MineBettingPanel initialMode="auto" auto={a} />,
     );
-    expect(html).not.toMatch(/<input[^>]*aria-label="Blocks"[^>]*readOnly=""/);
+    expect(html).not.toMatch(/<input[^>]*aria-label="Cells"[^>]*readOnly=""/);
     expect(html).toContain('disabled=""');
     expect(html).toContain("Insufficient BNB");
   });
@@ -139,7 +143,13 @@ describe("Auto public failure messages", () => {
       },
     });
     const html = renderToStaticMarkup(<MineAutoStatus auto={a} />);
-    expect(html).toContain("Operation failed. Please try again.");
+    expect(html).toBe("");
+    expect(useToastFeedback).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        type: "error",
+        message: "Operation failed. Please try again.",
+      }),
+    );
     expect(a.state.error).toBe(error);
     expect(html).not.toContain(error);
   });
@@ -151,8 +161,18 @@ describe("Auto public failure messages", () => {
         busy: true,
       });
       const html = renderToStaticMarkup(<MineAutoStatus auto={a} />);
-      expect(html).toContain("Chain confirmed (1 confirmation)");
-      expect(html).toContain("Retry verification / refresh");
+      expect(useToastFeedback).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          type: "error",
+          message: expect.stringContaining("Chain confirmed"),
+        }),
+      );
+      expect(html).not.toContain("Chain confirmed (1 confirmation)");
+      expect(
+        renderToStaticMarkup(<MineBettingPanel initialMode="auto" auto={a} />),
+      ).toContain(
+        error === "refresh-failed" ? "Retry Refresh" : "Retry verification",
+      );
       expect(html).not.toContain("Operation failed. Please try again.");
     },
   );
@@ -167,7 +187,49 @@ describe("Auto public failure messages", () => {
       busy: true,
     });
     const html = renderToStaticMarkup(<MineAutoStatus auto={a} />);
-    expect(html).toContain("Check confirmation");
+    expect(
+      renderToStaticMarkup(<MineBettingPanel initialMode="auto" auto={a} />),
+    ).toContain("Check confirmation");
+    expect(useToastFeedback).toHaveBeenLastCalledWith(
+      expect.objectContaining({ type: "error" }),
+    );
     expect(html).not.toContain("Operation failed. Please try again.");
   });
 });
+
+it.each([
+  "preparing",
+  "awaiting-signature",
+  "submitted",
+  "confirming",
+  "refreshing",
+  "success",
+] as const)("hides extra Auto %s status", (phase) => {
+  expect(
+    renderToStaticMarkup(
+      <MineAutoStatus
+        auto={model({
+          state: { phase, chainConfirmed: phase === "success" },
+          stateVisible: true,
+        })}
+      />,
+    ),
+  ).toBe("");
+});
+
+it.each(["confirming", "refreshing"] as const)(
+  "locks the original Auto action during %s recovery",
+  (phase) => {
+    const a = model({
+      state: { phase, chainConfirmed: false, confirmationUnknown: true },
+      busy: true,
+      canSubmit: false,
+    });
+    const html = renderToStaticMarkup(
+      <MineBettingPanel initialMode="auto" auto={a} />,
+    );
+    expect(html).not.toContain("Check confirmation");
+    expect(html).not.toContain("Retry Refresh");
+    expect(html).toMatch(/class="[^"]*deployAction[^"]*"[^>]*disabled=""/);
+  },
+);

@@ -21,6 +21,7 @@ PC:
 
 具体 CSS（`max-width`、media query、容器组件）属于实现决策，不是设计事实。实现时注意：
 
+- User Confirmed：所有页面 PC 最外层内容不加左右 padding，与 500px Bottom Navigation 两侧对齐；H5 保留 14px 页面左右边距。卡片内部 padding 不受影响。
 - 375px 稿中的固定数值（14px 边距、65px 区块等）在其他宽度下如何伸缩，设计未定义。合理做法是保持边距固定，让内容宽度与网格列宽随容器伸缩。这是 implementation decision，需在视觉验证时与设计确认。
 - User Confirmed（本次 PC 布局修正）：ORI viewport 全宽；Header 全宽，PC 左右 padding 120px；Main 与 Bottom Navigation 保持 max-width 500px 居中。H5 Header 维持 14px inset。沿用现有 500px desktop 分界是 implementation decision，不是 Figma PC 稿。
 
@@ -37,8 +38,8 @@ PC:
 | 卡片 / 面板内边距 | 12px | 部署面板 `2003:456` |
 | 数据卡网格 | 2 列，169–170 × 61px，间距 8px | `2003:485` 等 |
 | 区块网格 | 5 × 5；列宽 65 / 65 / 65 / 64 / 64px，行高 65px，间距 6px | `2003:206` 等 |
-| 表格行高 | 38px | Points / Explore |
-| 表格宽度 | 行宽 361–378px，超出 347px 内容区，横向滚动 | Explore `2003:2534` |
+| 表格行高 | 基础38px；Explore 内容超出列宽自动折行，行高随内容撑开，不裁切省略（User Confirmed） | Points / Explore |
+| 表格宽度 | Explore 最小行宽 361–378px，窄屏横向滚动；宽屏铺满容器，挖矿/母矿五列各20%，回购四列各25% | Explore `2003:2534`；User Confirmed 响应式修正 |
 | Wallet Sheet 内卡片 | 左右 16px（**与页面 14px 不同**） | `2003:2505` |
 
 Safe area：设计以 34px Home Indicator 区表达底部安全区（User / Figma 事实）。实现应使用 `env(safe-area-inset-bottom)` 而不是写死 34px，这是 implementation decision。
@@ -205,3 +206,22 @@ Safe area：设计以 34px Home Indicator 区表达底部安全区（User / Figm
 ## 资产
 
 使用 Figma 原始资产，详见 [assets.md](./assets.md)。
+
+
+## 金额展示（User Confirmed）
+
+Mine 统计与棋盘最多4位小数；个人余额与奖励最多6位，均向下截断、去尾零。非零且小于显示单位时用 `<0.0001` / `<0.000001`，只有真实零显示0。完整值与计算一直保留raw bigint或exact decimal，不使用展示字符串计算或提交；输入框、Max和交易确认金额不截断。Mine 手动/自动投注输入按用户确认的 `/^\d*\.?\d{0,6}$/` 限制最多6位小数，允许清空，以小数点开头时补0；非法字符及超位输入保留原值。输入中的末尾小数点允许保留；提交仍要求金额大于0，链上金额继续按18位精度解析。输入提示对应6位规则，居中、错误色 #FF3C4C、句末不加句号。
+
+中英文金额均用逗号千分位。Mine卡片/棋盘从1,000,000起使用M、B、T缩写，最多2位小数向下截断；个人余额/奖励保留千分位不缩写。统计/余额/奖励金额保持原设计文字样式，不加下划线，不提供完整金额入口、tooltip或详情弹层；溢出仅截断展示，raw/exact继续保留供计算与无障碍读取。
+
+## UI 变更边界（User Confirmed）
+
+不得自行增加设计稿以外的可见内容、入口、装饰或交互；认为有必要添加时，必须先说明并询问用户，获得确认后再实现。用户本轮明确要求的修正可直接执行。
+
+Mine 四卡 PC 鼠标移入切换 secondary 文案、移出恢复，H5 点击切换；键盘可激活原按钮。投注输入为空时，总计/每轮总计显示0 BNB；非空无效输入或数据不可用不伪造零。Auto 摘要未选格子显示“随机”，选中后显示真实格子ID，随机格子数量仍由上方输入控制。中文统一“格子”，英文Cells。
+
+## 数据区域状态（User Confirmed）
+
+积分记录和 Explore 三张表采用 Section Loading：容器内居中圆环 Spinner，成功无记录显示“暂无数据”，成功有记录渲染数据，失败独立显示错误；未接入/读取条件不足不伪装为空数据。积分每页20条，Explore 每页10条（User Confirmed），超过每页条数显示圆形上一页/下一页受控分页。Explore 三张表独立页码，每10秒刷新当前页，后台刷新保留已有记录，不切回第一页或用 Spinner 替换已有内容。
+
+圆环参考 `wu-website/src/components/common/LoadingSpinner.tsx`（用户指定 `src/styles/loading.module.css` 实为三圆点动画，按用户明确要求采用转圈圆环）；Shared 的 SectionLoading 与 DataLoading 为独立组件，拥有各自 SVG 和样式，不通过 variant 共用。SectionLoading 默认采用 ORI 品牌色 #EFC462 和较粗圆环；DataLoading 大段圆环使用 text-muted 灰色，旋转小段继承当前文字颜色，采用很细的圆环（24px viewBox 中 strokeWidth=2.5，默认13px），不复用 Section 的粗实心弧。两个公共组件均支持 size（px）和 color（CSS 颜色）参数；未传 color 时保留各自默认颜色。区域默认20px、Explore 顶部四个单值16px（仅替换金额及币种图标，不替换卡片），尊重 reduced-motion。积分/Explore 数据读取失败文字使用错误色 #FF3C4C。高度由页面及 Feature 容器决定，Spinner/EmptyState 本身不固定区域高度，不增加插图。积分页最小高度覆盖扣除 Header、底部导航、安全区与主内容上下间距后的可用视口；记录区 flex: 1，Loading/空态占满剩余空间并居中。有记录时自然撑高、整页滚动，不固定页面高度或新增表格内部滚动。Explore 三张表各自保留152px最小状态区域，避免单一区域占满整屏。

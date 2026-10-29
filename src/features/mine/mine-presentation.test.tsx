@@ -38,7 +38,11 @@ describe("Mine Manual / Auto presentation boundary", () => {
     const controls = html.match(/<button[^>]*>/g)!;
     expect(
       controls
-        .filter((button) => !button.includes('role="tab"'))
+        .filter(
+          (button) =>
+            !button.includes('role="tab"') &&
+            !button.includes('aria-haspopup="dialog"'),
+        )
         .every((button) => button.includes('disabled=""')),
     ).toBe(true);
     if (appearance === "insufficient")
@@ -176,5 +180,44 @@ describe("Frame 4 static visual variants", () => {
     expect(waiting).not.toContain("00:48");
     const fixture = renderToStaticMarkup(<MineMetrics countdown="TEST-TIME" />);
     expect(fixture).toContain("TEST-TIME");
+  });
+});
+
+describe("Mine metric assets and canonical values", () => {
+  it("renders ORI Motherlode and BNB deployment icons before numeric values", () => {
+    const html = renderToStaticMarkup(
+      <MineMetrics
+        motherlodeOre={BigInt("600000000000000000")}
+        totalDeployed={BigInt("2")}
+        personalDeployed={BigInt("0")}
+      />,
+    );
+    expect(html).toContain('aria-label="Motherlode: 0.6 ORI"');
+    expect(html).toContain('aria-label="You deployed: 0 BNB"');
+    expect(html).toMatch(/ori-token.png[^>]*\/><span>0.6<\/span>/);
+    expect(html).toMatch(/reward-bnb.svg[^>]*\/><span>0<\/span>/);
+    expect(html).not.toContain("<small>BNB</small>");
+  });
+});
+
+describe("Empty betting summaries", () => {
+  it.each(["manual", "auto"] as const)(
+    "shows zero totals for empty %s input",
+    (mode) => {
+      const html = renderToStaticMarkup(
+        <MineBettingPanel initialMode={mode} />,
+      );
+      expect(html).toContain("0 BNB");
+      expect(html).toContain("<dt>Total</dt><dd>0 BNB</dd>");
+      if (mode === "auto") expect(html).toContain("Random");
+    },
+  );
+  it("keeps invalid nonempty input totals unavailable", () => {
+    const html = renderToStaticMarkup(
+      <MineBettingPanel
+        display={{ appearance: "unavailable", amount: "abc" }}
+      />,
+    );
+    expect(html).toContain("— BNB");
   });
 });

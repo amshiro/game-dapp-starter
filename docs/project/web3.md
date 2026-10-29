@@ -198,11 +198,11 @@ Backend reconciliation：线上 UI 在交易确认后刷新查询（`invalidateQ
 
 Runtime evidence（前置只读验证，block 139267238）：97 的 ORI / View / Protocol 均有 bytecode；`symbol() = ORI`、`decimals() = 18`，View `protocol()` 与 Registry Protocol 一致，Protocol `ORI_TOKEN()` 与 Registry Token 一致。三条本金读取均成功；公共 totalStaked 原始值 `1000999800000000000000`，格式化为 `1000.9998 ORI`。不据此宣称五份完整 ABI 或所有 proxy 当前实现均已验证。公开 Protocol 地址仅作为前置验证的 account input，正式页面始终使用 W1 SDK 当前身份。
 
-Read owner：`features/stake/read`；`app/stake` 组合 W1 SDK 身份与 Stake props，不建立 wallet/auth/address store，也不让 Stake 依赖 Wallet Feature。金额缓存保存 bigint，使用 Viem `formatUnits`；视觉最多截取 6 位小数，非零微量显示 `<0.000001`，完整 decimal string 通过 title / accessible label 保留。原始 bigint / exact string 同时保留在 display model，不使用 floating point。
+Read owner：`features/stake/read`；`app/stake` 组合 W1 SDK 身份与 Stake props，不建立 wallet/auth/address store，也不让 Stake 依赖 Wallet Feature。金额缓存保存 bigint，使用 Viem `formatUnits`；视觉最多截取 6 位小数，非零微量显示 `<0.000001`，中英文均使用逗号千分位，完整 decimal string 通过 accessible label 保留，不增加 title / tooltip；长金额仅视觉省略。原始 bigint / exact string 同时保留在 display model，不使用 floating point。
 
-Query key 包含目标链、token/View 部署地址及个人 account；无 previous-account placeholder。身份恢复中不读个人数据，断开后个人值立即隐藏；wrong/unknown chain 隐藏全部三项并禁用读取；切回正确链、账户变化由 Query 生命周期收敛。实际 RPC chain ID 在每次读取前校验。取消过时 query 时不接纳迟到结果。每项独立 loading/error，error 不回显旧值；Query staleTime 30s、retry 1，无 interval polling，支持窗口重新聚焦、Refresh 与 `stakeReadKeys.all` invalidation。
+Query key 包含目标链、token/View 部署地址及个人 account；无 previous-account placeholder。身份恢复中不读个人数据，断开后个人值立即隐藏；wrong/unknown chain 隐藏全部三项并禁用读取；切回正确链、账户变化由 Query 生命周期收敛。实际 RPC chain ID 在每次读取前校验。取消过时 query 时不接纳迟到结果。每项独立 loading/error，error 不回显旧值；Query staleTime 30s、retry 1，无 interval polling，支持窗口重新聚焦与 `stakeReadKeys.all` invalidation；按用户要求不显示普通 Refresh 入口，交易失败恢复控件独立保留。
 
-Rewards 继续 **PARTIALLY CONFIRMED**：`pendingRewards` 可读不等于已证明 immediately claimable ORI；`rewardDebt`、`stakeRewardsFactor` 单位 UNKNOWN，不作为本金或 ORI amount。当前页面没有新增 Claimable Rewards slot；APR / TVL 维持 `—`，无 API 或价格推导。native BNB 仅 gas，与 Stake principal balance 无关。Q-24、Q-26 继续 OPEN；S1 只读阶段的禁用表单已由上述 S2 的 Development 97 存取授权覆盖，其金额、allowance 与 completion 策略已人工签收。Claim 与 Production 不因本授权解锁。
+Rewards 继续 **PARTIALLY CONFIRMED**：`pendingRewards` 可读不等于已证明 immediately claimable ORI；`rewardDebt`、`stakeRewardsFactor` 单位 UNKNOWN，不作为本金或 ORI amount。当前页面没有新增 Claimable Rewards slot；APR / TVL 未接入时按用户确认的展示默认值显示 `0%` / `$0.00`，内部仍为 unavailable，无 API 或价格推导，不代表真实读取结果。native BNB 仅 gas，与 Stake principal balance 无关。Q-24 的 Stake 提示文案/交互已由用户确认（预计年化基于过去7天、ORI计价、不保证回报），不等于 APR API 映射已验证；Q-26 继续 OPEN；S1 只读阶段的禁用表单已由上述 S2 的 Development 97 存取授权覆盖，其金额、allowance 与 completion 策略已人工签收。Claim 与 Production 不因本授权解锁。
 
 User Confirmed：Development 97 Read Integration 已通过最终人工验收。账户切换、wrong chain → 97、断开、刷新恢复均 PASS；Deposit Balance / Withdraw Staked Balance / Total deposit 正常恢复，无旧账户缓存残留。此结论仅覆盖当前限定 Development Read Scope，不关闭 Production 56、Reward Semantics 或任何交易 Gate。
 

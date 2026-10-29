@@ -57,6 +57,7 @@
   flex: none;
 }
 .asset {
+  line-height: normal;
   font-size: 16px;
   font-weight: 500;
 }
@@ -69,12 +70,15 @@
   background: transparent;
   color: var(--ori-color-text-primary);
   font-size: 24px;
-  line-height: 28px;
+  line-height: normal;
   font-weight: 500;
   text-align: right;
 }
+.amount:focus {
+  outline: none;
+}
 .amount::placeholder {
-  color: var(--ori-color-text-primary);
+  color: var(--ori-color-text-muted);
   opacity: 1;
 }
 .balanceRow {
@@ -87,10 +91,22 @@
 }
 .balanceRow p {
   min-width: 0;
-  overflow-wrap: anywhere;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
   font-size: 12px;
   line-height: 14px;
   color: var(--ori-color-text-secondary);
+}
+.balanceValue {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.balanceValue[data-status="error"],
+.summaryRow dd[data-status="error"] {
+  color: var(--ori-color-error);
 }
 .presets {
   flex-shrink: 0;
@@ -112,6 +128,10 @@
   cursor: not-allowed;
 }
 .action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   width: 100%;
   height: 44px;
   margin-top: 16px;
@@ -126,11 +146,7 @@
   opacity: 0.45;
 }
 .state {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 8px;
-  margin-top: 8px;
+  margin-top: 12px;
   color: var(--ori-color-text-secondary);
   font-size: 12px;
   line-height: 16px;
@@ -160,12 +176,53 @@
   gap: 12px;
 }
 .summaryRow {
+  position: relative;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
   font-size: 13px;
   line-height: 15px;
+}
+.infoButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.infoButton:focus-visible {
+  outline: 2px solid var(--ori-color-accent);
+  outline-offset: 2px;
+}
+.infoTooltip {
+  position: absolute;
+  z-index: 1;
+  bottom: calc(100% + 8px);
+  left: 0;
+  width: max-content;
+  max-width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--ori-color-border);
+  border-radius: var(--ori-radius-control);
+  background: var(--ori-color-surface-raised);
+  color: var(--ori-color-text-primary);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.infoTooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 9px;
 }
 .summaryRow dt {
   display: flex;
@@ -177,11 +234,12 @@
 .summaryRow dd {
   min-width: 0;
   text-align: right;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .state button:focus-visible,
 .tabs button:focus-visible,
-.amount:focus-visible,
 .content:focus-visible {
   outline: 2px solid var(--ori-color-accent);
   outline-offset: 2px;
@@ -215,4 +273,9 @@
 .state a:focus-visible {
   outline: 2px solid var(--ori-color-accent);
   outline-offset: 2px;
+}
+
+.amountError {
+  text-align: center;
+  color: var(--ori-color-error);
 }

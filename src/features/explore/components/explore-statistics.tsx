@@ -1,5 +1,6 @@
 "use client";
 
+import { DataLoading } from "../../../shared/ui/data-loading/data-loading";
 import type { ExploreDisplay, StatisticId } from "../model/explore-display";
 import { useExploreCopy } from "../copy";
 import styles from "./explore.module.css";
@@ -31,7 +32,7 @@ export function ExploreStatistics({
                   state.status === "populated" ? undefined : copy[state.status]
                 }
               >
-                {id === "maxSupply" && (
+                {id === "maxSupply" && state.status !== "loading" && (
                   <>
                     {/* Current Figma 16px raster, not a final Q-03 brand decision. */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -43,7 +44,13 @@ export function ExploreStatistics({
                     />
                   </>
                 )}
-                <span>{state.status === "populated" ? state.value : "—"}</span>
+                {state.status === "loading" ? (
+                  <DataLoading label={copy.loading} size={16} />
+                ) : (
+                  <span>
+                    {state.status === "populated" ? state.value : "—"}
+                  </span>
+                )}
               </dd>
             </div>
           );

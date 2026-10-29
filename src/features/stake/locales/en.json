@@ -22,6 +22,10 @@
   "availableBalance": "Available ORI balance",
   "stakedBalance": "Staked ORI balance",
   "transaction": {
+    "success": {
+      "deposit": "Deposit successful",
+      "withdraw": "Withdrawal successful"
+    },
     "phases": {
       "idle": "Ready",
       "preparing": "Preparing",
@@ -36,22 +40,22 @@
       "refresh-failed": "Status refresh failed"
     },
     "errors": {
-      "invalid-amount": "Enter a decimal amount with at most 18 decimal places.",
-      "zero-amount": "Amount must be greater than zero.",
-      "insufficient-ori": "Insufficient ORI balance.",
-      "insufficient-staked": "Amount exceeds your staked ORI.",
-      "disconnected": "Connect your wallet to continue.",
-      "wrong-chain": "Switch to BSC Testnet (97).",
-      "account-changed": "Wallet account changed. The operation stopped.",
-      "insufficient-gas": "Insufficient BNB for gas.",
-      "insufficient-allowance": "Allowance is still insufficient. Deposit was not sent.",
-      "simulation-reverted": "Contract preflight reverted. Transaction was not sent.",
-      "rpc-error": "Network request failed. Check wallet/explorer before retrying.",
-      "user-rejected": "Wallet request cancelled.",
-      "receipt-reverted": "Transaction reverted on-chain.",
-      "confirmation-unknown": "Confirmation is unresolved. Check the existing transaction; do not resend.",
-      "replaced": "Transaction replaced or cancelled; Stake action not completed.",
-      "refresh-failed": "Transaction confirmed, status refresh failed."
+      "invalid-amount": "Enter an ORI amount greater than zero, with at most 6 decimal places",
+      "zero-amount": "Enter an ORI amount greater than zero, with at most 6 decimal places",
+      "insufficient-ori": "Insufficient ORI balance",
+      "insufficient-staked": "Amount exceeds your staked ORI",
+      "disconnected": "Connect your wallet to continue",
+      "wrong-chain": "Switch to BSC Testnet (97)",
+      "account-changed": "Wallet account changed. The operation stopped",
+      "insufficient-gas": "Insufficient BNB for Gas",
+      "insufficient-allowance": "Allowance is still insufficient. Deposit was not sent",
+      "simulation-reverted": "Contract preflight reverted. Transaction was not sent",
+      "rpc-error": "Network request failed. Check wallet/explorer before retrying",
+      "user-rejected": "Wallet request cancelled",
+      "receipt-reverted": "Transaction reverted on-chain",
+      "confirmation-unknown": "Confirmation is unresolved. Check the existing transaction; do not resend",
+      "replaced": "Transaction replaced or cancelled; Stake action not completed",
+      "refresh-failed": "Transaction confirmed, status refresh failed"
     },
     "steps": {
       "approve": "Approve",
@@ -65,5 +69,10 @@
     "viewTransaction": "View transaction",
     "allowanceError": "Allowance unavailable. Refresh to retry.",
     "enterAmount": "Enter an amount to continue."
+  },
+  "hints": {
+    "totalDeposit": "The total amount of ORI currently deposited in the protocol.",
+    "apr": "The estimated annual yield on deposited tokens, denominated in ORI. This estimate is based on historical yields over the past 7 days and does not guarantee future earnings or returns.",
+    "tvl": "The total estimated value of tokens locked in the protocol."
   }
 }

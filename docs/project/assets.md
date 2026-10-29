@@ -19,7 +19,7 @@
 - **ORI Logo 与 ORI 代币图标**使用线上正在使用的"轨道圆"标志与粗体 ORI 字标；新版 Figma Header 与之同形，可视为该标志的单色版本。证据：线上实际运行 + 新版 Figma 一致。
 - **品牌页 `确认` 中的像素 O 币**对应线上的**起源代币图标**，而不是 ORI Logo。证据：线上起源代币处显示的就是该像素 O 币。
 - 品牌页 `废弃` 中的探索稿与线上标志相似但不完全相同，不作为资产来源。
-- 实现时需向设计索取线上标志的正式矢量文件（彩色与单色）；Figma 中 ORI 代币图标是 16px raster，不能放大使用。
+- 最终品牌仍需正式矢量文件（彩色与单色）；Figma 中 ORI 代币节点显示尺寸为16×16，原始 PNG 为300×300透明图。当前使用从资产节点重新导出的60×60透明 PNG，按实际最大展示尺寸20px × 3准备，覆盖14／16／20px使用；不能将节点显示尺寸当作源文件像素尺寸。
 
 ## 设计占位资产（User Confirmed）
 
@@ -74,7 +74,7 @@ Replace with real project asset during implementation.
 ## 导出注意事项
 
 - 定位真实资产节点导出，不截取父 Frame（`docs/figma-workflow.md`）。
-- 矢量保持 SVG；Raster 代币图标按 DPR 选择倍率，保持透明背景与圆形裁切效果。
+- User Confirmed：本项目采用 [Figma 资源导出规则](../figma-workflow.md#vectorraster-与命名) 的资源分类、默认倍率和三条执行细则。新增或重新导出资产时记录来源节点、源像素尺寸、实际最大展示尺寸、输出尺寸及需要保留的节点处理，保持透明背景与圆形裁切效果；既有资产的来源和尺寸记录继续保留，不能将原图下载记录改写为按倍率导出。
 - 单色图标（导航、复制、关闭等）优先导出为可用 `currentColor` 的 SVG。
 - 运行时不得 fetch SVG 再注入 HTML（旧项目反模式）。
 - 设计稿中的 iOS 状态栏、Home Indicator 是系统 UI 模拟，不导出、不实现。
@@ -98,7 +98,7 @@ Replace with real project asset during implementation.
 ## Explore Core UI assets
 
 - `public/ori/explore/page-next.svg`、`page-previous.svg`：来自当前 `2003:2883/2886`，28×28，previous 依原父层水平翻转；同组其他分页节点已复核。仅本 Feature 使用。
-- `public/ori/explore/ori-token.png`：当前 Max Supply `2003:2663` 的原始 raster，以 16×16 渲染，不升级为最终 Q-03 品牌决定。
+- `public/ori/explore/ori-token.png`：来源为当前 Max Supply 的真实资产节点 `2003:2663`（16×16 image fill，原图300×300）。2026-10-29按实际最大展示尺寸20px × 3重新 Export 为60×60、RGBA透明 PNG，1167 bytes；对应16px节点的导出倍率为3.75，未截取父 Frame，未放大源位图。仅导出节点内容（`contentsOnly: true`），保留完整节点边界（`useAbsoluteBounds: true`），按宽度60px导出；已逐像素核验实际透明区域与半透明抗锯齿边缘，不能仅凭PNG带Alpha通道认定透明。已核对节点：FILL、恒等 imageTransform、无旋转／调色／遮罩／描边／额外效果。Explore以16×16渲染，Mine复用14／16px，Stake复用20px。此前曾直接下载300×300、4908 bytes原图，现已替换为此次节点导出；不升级为最终 Q-03 品牌决定。
 - Buried/Protocol Rev 的 SOL 图标不导入；对应真实资产仍待 Q-03，当前 unavailable 数值位不使用猜测图标。无数据行时不渲染行内 token 资产。
 
 ## Shared Modal close asset
@@ -107,7 +107,7 @@ Replace with real project asset during implementation.
 
 ## Stake Core UI assets
 
-`public/ori/stake/info.svg` 来自当前 `2003:1988` 的 12×12 原始矢量，同一来源用于 Summary 三项，仅装饰用途，不定义 Q-24 提示内容。SOL token 占位不导入；资产文字按已锁定的 ORI，20px 图标槽保持空白，不把其他 Feature 的 16px 图标放大或擅定 Q-03 最终品牌。
+`public/ori/stake/info.svg` 来自当前 `2003:1988` 的 12×12 原始矢量，同一来源用于 Summary 三项；用户已确认提示内容及 PC 悬停 / H5 点击行为，原12px资产作为说明按钮图标复用。SOL token 占位不导入；资产文字按已锁定的 ORI，用户明确要求恢复输入 ORI 图标，复用现有 Figma ORI raster `/ori/explore/ori-token.png`，按20×20槽位显示，不另定最终品牌资产。
 
 ## M2 本轮资产
 
@@ -121,4 +121,4 @@ M2 Full Mine UI correction 另导出当前 Auto frame1833 的 rounds/plus/minus 
 
 ## M5 Rewards assets
 
-当前Figma frame1413的info1691复用 `/ori/mine/info.svg`（12px）；ORI1713原始资源sha256 `c4321bde352af8dd735743ea6d00446dc83123e37ba4f67f905b14aea6e7de77` 与既有 `/ori/explore/ori-token.png` 完全一致，直接复用14px，不重复保存或替Q-03决定品牌。首行Figma仍为占位ORE图标，按人工BNB资产映射替换为 `/ori/mine/reward-bnb.svg`：从historical `ori-website/components/icons.tsx` 的标准BNBIcon恢复，仅符号path/颜色，未复制旧UI布局。BNB原生18decimals，ORI97 metadata18；图标不决定金额或claim语义。
+当前Figma frame1413的info1691复用 `/ori/mine/info.svg`（12px）；ORI1713原始资源sha256 `c4321bde352af8dd735743ea6d00446dc83123e37ba4f67f905b14aea6e7de77` 与Explore此前下载的300×300原图一致。当前复用 `/ori/explore/ori-token.png` 的60×60节点导出，以14px显示，不重复保存或替Q-03决定品牌；该原图hash不代表重新导出的文件hash。首行Figma仍为占位ORE图标，按人工BNB资产映射替换为 `/ori/mine/reward-bnb.svg`：从historical `ori-website/components/icons.tsx` 的标准BNBIcon恢复，仅符号path/颜色，未复制旧UI布局。BNB原生18decimals，ORI97 metadata18；图标不决定金额或claim语义。

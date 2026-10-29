@@ -126,10 +126,10 @@ Countdown classification：
 
 | Card / label | Value owner | Optional secondary / alternate | 无 owner 时 |
 | --- | --- | --- | --- |
-| Motherlode | 单卡 Scope confirmed；ORI treasury.motherlodeOre 是候选，不代表双资产都批准 | 与已确认资产一致的 USD quote；不是把 ORI+Origin直接相加 | —；不导入旧双资产行 |
+| Motherlode | User Confirmed：单卡只显示 treasury.motherlodeOre，ORI18 | 与已确认资产一致的 USD quote；不是把 ORI+Origin直接相加 | —；不导入旧双资产行 |
 | Time remaining | M9 future canonical lifecycle/deadline | Round #，绑定同一被展示 round；当前仅 stored round 技术标签 | Waiting / —，不假60s |
 | Total deployed | 现有 public round totalDeployed，BNB18 | USD 必须 price owner+链/资产/时效；不能从交易额推币价 | — 或明确 read error |
-| You deployed | 对应展示 round/account 的 miner principal | 同资产 USD quote；disconnect为 unavailable，不残留旧账户 | —；account owner完成后接入 |
+| You deployed | 对应展示 round/account 的 miner principal | 同资产 USD quote；disconnect为 unavailable，不残留旧账户 | 当前已接入account info owner；缺失/错误为 — |
 
 Figma `2003:1037` 是“点击数据块切换展示美金价值、当前轮次”，不证明四卡联动。当前组件每卡独立 alternate state 与此相容；不新增全局 toggle state。美元值本轮仍无已签收报价数据，不将示例美元数作为 runtime。
 
@@ -137,7 +137,7 @@ Figma `2003:1037` 是“点击数据块切换展示美金价值、当前轮次�
 
 | 项 | Classification | 边界 |
 | --- | --- | --- |
-| ORI motherlode 原始候选字段 | CONFIRMED（技术存在） | Registry/View treasury.motherlodeOre 可读，ORI97 decimals18；单卡最终资产显示与 payout 仍需 Q-31/Q-25；不是“可领取余额已确认” |
+| ORI motherlode | User Confirmed；Q-31 CLOSED | 单卡显示 Registry/View treasury.motherlodeOre，ORI97 decimals18；不等于个人可领取余额，不推导 payout |
 | Origin motherlode | HISTORICAL ONLY | 旧 origin_info.global.mother_lodes / Overview 双母矿，当前 Figma 一张单值卡，不增加第二资产或将两资产直接求和 |
 | every 3–6 rounds trigger | HISTORICAL ONLY | 当前旧 locale Game.rule5/rule8 有此说法；没有当前部署规则证明，不写成未来 cadence/倒计时 |
 | payout / recipient / timing | OPEN | round.motherlodePayout、motherlode flag 是技术候选，实际收益分配、触发概率与领取路径未签收；不借此开启 Claim |
@@ -151,7 +151,7 @@ Figma `2003:1037` 是“点击数据块切换展示美金价值、当前轮次�
 | refined ORI | Refined BURY 占位 | oriRefined；旧使用 formatUnits18 | Human Confirmed：oriRefined→已精炼ORI；raw>0显示此行及领取→claimAll入口；不是Origin |
 | claim all | Claim 按钮 | P.claimAll(to)；旧 Rewards 真有调用 | Human Confirmed：任一ORI>0显示领取→claimAll；后续人工已批准并实现97 self-recipient Claim，fresh simulation+receipt+相关reads完成；不承诺每次Deploy即有奖励 |
 | claim BNB only | Claim only ORE 按钮 | P.claimEth(to)；旧 BNB-only | Human Confirmed：BNB>0显示仅领取BNB→claimEth；BNB-only仅此入口。后续人工已批准recipient=currentAccount、1确认及相关reads成功；不做fee/净额推导，真实Claim QA PENDING |
-| Origin Rewards | 无可识别的独立 backend+AssetManager 新版流程 | origin_info + OriginClaimCard 的 AssetManager.deposit(orderId,'claim',...,nativeAmount)，混合链下分配与链上付款 | **FUTURE GATE / M11**；不与 ORI claimAll 合并，不从占位 BURY 两行补此功能，不沿用 Date.now orderId、旧10位金额转换或旧收费算法 |
+| Origin Rewards | 无可识别的独立 backend+AssetManager 新版流程 | origin_info + OriginClaimCard 的 AssetManager.deposit(orderId,'claim',...,nativeAmount)，混合链下分配与链上付款 | **OUT OF SCOPE / M11 — Human Confirmed**：新版不做起源奖励领取；历史路径仅证据，不合并至ORI claimAll，不新增卡片/付款/后台发放流程 |
 
 人工确认三项raw全零时整区隐藏；读取失败不当作零。Development97 Protocol getUserRewards为M5唯一canonical read owner，账户/链query隔离，无polling。
 
@@ -184,7 +184,7 @@ A=可能需要链上不能完整提供的 enrichment；B=已有或可用的链�
 | /round | B + D | HTTP200，data={round_id:string,global,user,last_updated}；此前未登记于正式API Contract，不再表述为“已证明不可达” | 不接入：public board/account principal 使用链读；非空字段、单位及链关联仍需Contract，旧8 decimals不继承 |
 | /automation/user | B（链上配置）+ A（remaining等enrichment）+ D | 零地址 data=null；正式文档有 extend_data，但本次未验证活动配置 | 先用经验证的 Protocol配置真相；当前人工已锁定extend_data.round_remaining为remaining display owner，原样显示、缺失留空，不推算；非空runtime样本未验证不改变产品决定 |
 | /round_winners/round | A候选（payout/排序）+ D | data={round_id:string,total,list:[],reset_event}；非空行未验证 | 与正式API reference的endpoint内容错位问题仍在；不自动交换两个endpoint，不把投注amount当payout |
-| /activity/origin_info | C（当前Origin流程）+ A + D | 有 ori_config/chain_asset_config/global/user/my_wallet | M11 FUTURE GATE；不把可达解释为允许AssetManager付款/claim |
+| /activity/origin_info | C（当前Origin流程）+ A + D | 有 ori_config/chain_asset_config/global/user/my_wallet | M11领取功能已人工排除；接口可达不构成新版需求或AssetManager付款许可 |
 | /query/chain_asset_config | A（USD报价）+ D | data数组7行；不能据数量证明97价格可信 | 复用已存在Token price transport/mapper，未来确认asset/chain/单位/时效/缺价；97WBNB缺口仍不靠旧地址填充 |
 
 正式 API reference 未列 /round；latest/events flat-vs-nested、started/winners错位、unsafe IDs与金额number/string/8位缩放仍 Q-11。HTTP200 不是 Data Gate PASS；本轮不写新 DTO adapter、不接 route、不创建 API fallback双 owner。
@@ -225,12 +225,12 @@ M7 不是 Manual 的硬前置；fresh preflight + receipt-driven refetch 必须�
 | M4 | Auto config、fixed/random、register/stop、active替换卡 | 示例M3 | Development Core已放行实现；产品公式已签收，execution实际扣费待真实QA |
 | M9 | round lifecycle、countdown、verified result与动画 | 示例M4 | OPEN，时间/状态映射Gate |
 | M5 + M6 | ORI/BNB rewards read与claim分票 | 示例M5 | M5 read/UI COMPLETE，映射/显隐人工CLOSED；M6资金Gate独立，不混Origin或Stake |
-| M11 | Origin rewards read/AssetManager流程 | 示例M6 | DEFERRED — FUTURE GATE |
+| M11 | Origin rewards read/AssetManager流程 | 示例M6 | OUT OF SCOPE — 新版不做起源奖励领取，保留编号追溯 |
 | M10 | 当前开奖轮winners/read/UI | 示例M7 | Human decisions CLOSED / implementation COMPLETE，非空真实QA PENDING |
 | M7 | polling/freshness | 示例M8 | known-owner调度已实现，不影响交易fresh preflight/receipt |
 | M8 | realtime freshness signals | 示例M9 | DEFERRED，Q-47与owner依赖 |
 
-最短推荐主线：**M3 Manual → M4 Auto（先通过Auto-specific资金/选择/执行器Gate）→ M9 lifecycle/countdown → M5/M6 ORI rewards → M10 Miners/winners → M7 freshness → M8 realtime**。M11 Origin独立后置，Motherlode/price补充可按各自数据Gate并行规划，不让未来奖励阻塞Manual。流程顺序不是依赖全部前项交付：Miners仅依赖已确认round+dataset，Realtime不依赖任何write成功；Auto不能在执行费/最终预付 Gate 未通过时硬做。
+最短推荐主线：**M3 Manual → M4 Auto（先通过Auto-specific资金/选择/执行器Gate）→ M9 lifecycle/countdown → M5/M6 ORI rewards → M10 Miners/winners → M7 freshness → M8 realtime**。M11 Origin领取已人工排除，Motherlode/price补充可按各自数据Gate并行规划，不让未来奖励阻塞Manual。流程顺序不是依赖全部前项交付：Miners仅依赖已确认round+dataset，Realtime不依赖任何write成功；Auto不能在执行费/最终预付 Gate 未通过时硬做。
 
 必要依赖：M1/M2/W1→M3；M1/M2/W1+AutoGate→M4；M1/M2+LifecycleGate→M9；M1/W1+RewardGate→M5→M6；M1+MinersGate→M10；已建立owner→M7→M8。交易receipt的局部刷新由M3/M4/M6各自实现，非M7权限。Source/API/clock/Origin未决问题不被“连续开发”隐式关闭。
 
@@ -252,9 +252,9 @@ Status 在此表指需求/数据/实施准备度：READY=限定Scope可开工或
 | Stats | 四卡+USD/Round alternate | 同四类，旧双母矿 | total可读，个人/母矿技术候选；USD/秒time缺owner | 保留四卡；缺owner为—；不加旧双资产/hover布局 | Mine display adapter；quote独立 | PARTIAL |
 | Countdown | 00:48 / Waiting / Round | timestamp+60-localClock | block boundaries可读，未有正式seconds deadline | Required UI，真实驱动；不继承固定60s，fallback Waiting/— | future M9 lifecycle/deadline owner | OPEN |
 | Round lifecycle | Waiting、winner/lost、淘汰/保持 | gameState映射、3.6s+5s、WS | storedfulfilled+canDeploy并存；execution round由event | 候选waiting/live/resolving/revealed/next-round；不命名未知enum | Protocol/View canonical snapshot，M9 adapter；WS仅信号 | OPEN |
-| Motherlode | 单卡单值+USD | ORI+Origin、3–6轮/其他概率旧口径 | ORI字段可读，payout未签收 | 保留单卡，Origin/节奏仅历史，不混资产或推claim | 候选treasury；Origin另Gate | OPEN |
+| Motherlode | 单卡单值+USD | ORI+Origin、3–6轮/其他概率旧口径 | ORI字段可读，payout未签收 | 保留单卡，Origin/节奏仅历史，不混资产或推claim | treasury.motherlodeOre / ORI18 | 单卡资产CLOSED；payout仍OPEN |
 | ORI Rewards | 三行+Claim/Claim only | ethAmount/oriDirect/oriRefined、claimAll/Eth | 结构与部分simulation，不证明完整领取语义 | 保留reward Scope candidate；asset/税/时限/claim Gate | future Mine rewards Query / mapper | PARTIAL |
-| Origin Rewards | 无独立混合workflow设计 | origin_info + AssetManager deposit | ABI/接口可达不是付款许可 | FUTURE GATE，与ORI Claim隔离 | future isolated Origin workflow | DEFERRED |
+| Origin Rewards | 无独立混合workflow设计 | origin_info + AssetManager deposit | ABI/接口可达不是付款许可 | Human Confirmed新版不做起源奖励领取，与ORI Claim隔离 | 不创建workflow | OUT OF SCOPE |
 | Miners/Winners | Miners+Round+地址/双金额 | state4 winners/You置顶 | API winners空 | 当前人工确认当前开奖轮winners、8位双奖励、backend顺序、只首行You，空整区隐藏 | M10 Query | COMPLETE / nonempty QA PENDING |
 | Polling | 无频率规定 | 1/3/4/5/10s | Query现有refetch可用 | Mandatory fresh preflight/receipt先做；持续轮询后置 | 各Feature Query的有界refetch策略 | DEFERRED |
 | Realtime | 不定义protocol | Echo/Pusher两频道 | Foundation有；last WS502/真实payload未验证 | freshness-only，不patch真相、不发交易 | F7 transport →相关Query invalidation | DEFERRED |

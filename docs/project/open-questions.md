@@ -12,7 +12,7 @@ R0 逐项结论与来源见 [r0-evidence-audit.md](./r0-evidence-audit.md)。`PA
 
 | # | Question | Why it matters | Current evidence | Blocked |
 | --- | --- | --- | --- | --- |
-| Q-01 | 新版是否下线 "起源" 导航与起源交易挖矿，由 Points 取代？ | 决定导航、路由与是否需要起源 swap / 采矿基金 | PARTIALLY CONFIRMED：当前 Figma 与已审核 shell 导航一致；旧 navbar 的起源指向 `/`，旧首页确有交易/矿池；缺少新版入口不等于批准删除业务 | 起源去留 / Points 范围；不再阻塞已锁定 F9 路由 |
+| Q-01 | 新版是否下线 "起源" 导航与起源交易挖矿，由 Points 取代？ | 决定导航、路由与是否需要起源 swap / 采矿基金 | PARTIALLY CONFIRMED：当前 Figma 与已审核 shell 导航一致；旧 navbar 的起源指向 `/`，旧首页确有交易/矿池；缺少新版入口不等于批准删除全部业务；最新人工仅明确排除起源奖励领取（M11），交易挖矿等其他范围仍独立未决 | 起源去留 / Points 范围；不再阻塞已锁定 F9 路由 |
 | Q-02 | 新版 Mine 是否去掉 "ORI 游戏"（交易挖矿）标签？ | `oriSwap` 与 6 个 `ori_game` 接口是否还需要 | PARTIALLY CONFIRMED：当前 Mine 只有方块 Manual/Auto；旧 Mine 的 mining/game 分支与 OriTrade 组合仍存在，不能据此决定新版保留 | 新版 trade-to-mine 范围 / G-P |
 | Q-03 | Logo：确认使用线上金色 "轨道圆" 标志 + ORI 字标？品牌页 `确认` 中的像素 O 币是否专用于起源代币？ | Header 与代币图标 | PARTIALLY CONFIRMED：当前 Header 使用 `2003:3110` / `2003:3112`；品牌确认区并存多组资产，无最终用途映射，详见 R0 | 最终品牌 / 代币角色；已审核可替换 Header 不受阻 |
 | Q-04 | Production Privy App：是否沿用线上 App（`cmi70qts3005hl90c27u5uc75`）？新项目登录方式是否保持仅钱包（Binance / OKX / MetaMask）？Dev / Production App 的 Allowed Origins | 生产 Provider 配置与登录体验 | 开发 App 已确认（C-08）；线上配置已从源码恢复。Dev App 本地 Allowed Origins 已为 `http://localhost:3000`、`http://localhost:5199`（F5.1 验证通过）；Dev App 中仍有旧 `origin-website` Vercel 预览域，是否保留待确认 | 生产 Wallet / Provider |
@@ -35,17 +35,16 @@ R0 逐项结论与来源见 [r0-evidence-audit.md](./r0-evidence-audit.md)。`PA
 | Q-20 | Points 规则：Figma "每 1 USD 下注得 1 积分" vs 线上文案 "每 10 分钟按未中奖用户投入比例分配 1000 积分"？Points 数据接口？是否包含起源池、起源回购记录（线上 Points 文案包含）？ | 两种规则完全不同 | CONTRADICTORY：Figma `2003:2121` 的 1 USD/point 与旧未使用的 Points.subtitle 的 10 分钟/1000 分分配不同；points wrappers 无页面调用，Contract 示例不定义规则 | Points / G-P、G-D |
 | Q-22 | Wallet 余额资产 / 数据 owner；未来 embedded 功能 | BNB余额已确认 | User Confirmed：设计稿 ORE 错误；余额为目标 BSC 链 native BNB，Wagmi eth_getBalance(account)、18 decimals。external 隐藏 Export / Receive，embedded off | 余额范围已解决；未来 embedded 模型仍需独立 Gate |
 | Q-23 | 旧 Header 来源已确认；新版 ORI 价格在 BSC 97 的数据集、报价单位/时效及多行/缺价策略是什么？ | Header | PARTIALLY CONFIRMED：旧 Header price 来自 getPrice → query/chain_asset_config，以 ORI aux_contract_addr 匹配；不是 origin_info。97 数据集、单位/时效、重复行处理仍未知 | Header price / G-D、G-V |
-| Q-24 | Info 图标说明内容（线上 i18n 有 Stake 各项说明） | Tooltip | Live i18n `Stake.*Desc` | InfoHint |
+| Q-24（Stake Resolved） | Stake Summary 三项说明及交互已由用户确认 | PC 悬停、H5 点击；键盘聚焦可读，Escape / 外部点击关闭 | User Confirmed；文案保存在 Stake locale 的 hints；英文为对应翻译草稿 | 不自动解锁 Rewards 提示或 APR / TVL 数据源 |
 | Q-25 | CLOSED — Human Confirmed：ethAmount→BNB；oriDirect→未精炼ORI；oriRefined→已精炼ORI；三项全零隐藏整区；ORI任一>0显示领取→claimAll；BNB>0显示仅领取BNB→claimEth，BNB-only只有后者 | 映射/入口显隐已确认，不等于授权Claim交易 | 当前人工签收；historical rewards.tsx；97 getUserRewards runtime | M5 read/UI及后续人工授权97 Claim已实现；self recipient与相关reads完成已签收；真实Claim QA PENDING，56独立 |
 | Q-26 | Stake 是否需要线上的 Account / Yield / Claim / Claim and deposit？ | Figma 只画了表单与 Summary | PARTIALLY CONFIRMED：旧 Stake 实际有 Account/Yield/Claim，调用 claimStakeYield；claimAndDeposit 仅见 locale，无页面动作绑定或对应原子 ABI 方法 | Stake 扩展 Scope / G-P、G-T |
-| Q-27 | Explore 新版是否保留线上的多标签统计（ORI / ORI 游戏 / 起源挖矿 / 起源游戏）与两张回购表？ | Figma 简化为 4 卡 + 3 表 | PARTIALLY CONFIRMED：现稿四卡/三表；旧 Explore 四分支，两类回购 table/type 尚不能映射到新版单表；F6.1 缺 circulating_supply | Explore scope / G-P、G-D |
+| Q-27 | Explore 新版是否保留线上的多标签统计与两张回购表？ | User Confirmed：4 卡 + 3 表 | CLOSED：回购使用 bury_event/list 不传 type；流通供应量取 ORI totalSupply；其余字段及单位见 api.md 的 Explore 当前读取映射 | Production 仍独立验收 |
 
 ## P2
 
 | # | Question | Why it matters | Current evidence | Blocked |
 | --- | --- | --- | --- | --- |
 | Q-30 | Production 默认语言与正式业务正文的双语审定 | 发布文案策略 | 用户本轮已授权当前 UI 中/EN 切换：en / zh-CN、cookie 偏好、保留现有 EN 技术默认；不自动批准 About 正文、费率或历史翻译 | Production 默认与正式业务文案；不阻塞当前 UI 切换 |
-| Q-31 | 母矿卡显示 `ORI + 起源` 双资产还是只显示 ORI？ | 数据卡 | Live 显示双资产；Figma 单值 | 数据卡 |
 | Q-32 | 页脚是否显示 | Frame 外文本 | Figma | App Shell |
 | Q-33（Resolved） | 用户确认 Mine 使用 `/mine`，`/` 跳转到 `/mine`；其余为 `/points`、`/stake`、`/explore`、`/about` | F9 shell URL | User Confirmed；起源后续入口仍见 Q-01 | — |
 | Q-34 | Production domain（是否仍为 `ori.supply`）与各环境 | 部署、Privy Origins | Live | 部署 |
@@ -88,8 +87,8 @@ R0 逐项结论与来源见 [r0-evidence-audit.md](./r0-evidence-audit.md)。`PA
 - Manual 一轮一次成功、首笔多格、18位、value/mask、operationRound 和 receipt/event/refresh 已 Human approved；限定 Core 可开始下一阶段，但本轮不实现。Q-16 Manual shortcuts已签收当前Figma值与替换行为、无新全选，不让后续奖励/名单阻塞 Core。
 - Auto当前人工规则与技术补证以[M4 Gate](./mine-auto-transaction-gate.md)为准；输入、fixed/random、fees/value显示策略与self Stop已签收，不继续标OPEN。1–9999产品输入限制与backend remaining直出/缺失留空已签；仅当前implementation execution实际扣费技术证据保留；不新增Auto implementation授权。
 - Lifecycle/countdown：Figma 需要时间/Waiting/结果 UI；block 配置不是精确60秒，latest.timestamp+60 和历史 enum 不自动采用。候选 UI state 不是协议枚举。
-- Motherlode：ORI treasury 字段仅证明原始读；Origin 双资产、3–6轮与其他旧文案节奏均 Historical behavior — not yet adopted，payout OPEN。Q-25 的资产/label/方法入口与全零显隐已人工CLOSED；Q-42窗口时长仍未知，不推算净额/到期；后续人工已批准97 Claim/currentAccount与receipt+相关reads完成策略，真实Claim QA PENDING，不阻塞Development主线。
-- Miners/M10 Human Confirmed：当前开奖轮winners、/round_winners/round、round_id/viewer、10秒、后端顺序、只首行You+白字虚线、ore_reward/eth_reward 8位/截断6位、空整区隐藏均CLOSED。nonempty runtime QA PENDING；正式reference错位仍Q-11，不重开产品Gate。Origin为M11 FUTURE GATE。
+- Motherlode：Q-31 已由用户确认，只显示 treasury.motherlodeOre，ORI 18 decimals，已接入数据卡；Origin 双资产、3–6轮与其他旧文案节奏均 Historical behavior — not yet adopted，payout OPEN。Q-25 的资产/label/方法入口与全零显隐已人工CLOSED；Q-42窗口时长仍未知，不推算净额/到期；后续人工已批准97 Claim/currentAccount与receipt+相关reads完成策略，真实Claim QA PENDING，不阻塞Development主线。
+- Miners/M10 Human Confirmed：当前开奖轮winners、/round_winners/round、round_id/viewer、10秒、后端顺序、只首行You+白字虚线、ore_reward/eth_reward 8位/截断6位、空整区隐藏均CLOSED。nonempty runtime QA PENDING；正式reference错位仍Q-11，不重开产品Gate。M11起源领取已人工明确排除（OUT OF SCOPE），不再是待签收Gate。
 - Q-11：本轮六个历史只读端点 HTTP200，/ori/round 也可达；空 winners / null automation 不证明非空契约，large IDs、单位与 endpoint 命名冲突保留。Q-47 本轮未重测，旧502/真实 payload unknown 保留。
 - M7/M8 后置；交易前 fresh reads/simulation、receipt 后局部 refetch 属 Manual correctness，不等待持续 polling/realtime。
 
@@ -103,4 +102,4 @@ M4 Human Decisions现已全部CLOSED：rounds输入1–9999只是前端产品限
 
 正式页面继续Waiting / —，等待backend deadline；不展示剩余区块或估算秒数。该显示选择CLOSED，不因当前缺真实live-round样本重新开Product Gate。M9 live result transition=RUNTIME QA PENDING，工程动画/去重/cleanup/reduced-motion由Agent自主完成，见[记录](./mine-result-implementation.md)。
 
-- M7/M8最新限定实现：已有Query的有界freshness与F7 signal-only adapter已完成；不读取任何payload字段。Q-47真实订阅/payload/resync仍RUNTIME QA PENDING；不能因开发工具WebSocket有frame而认定Pusher业务可用。M11起源最新人工确认继续后置（DEFERRED — FUTURE GATE），不纳入当前Mine主线；不是等待本轮Scope决定，也不阻塞已完成模块。
+- M7/M8最新限定实现：已有Query的有界freshness与F7 signal-only adapter已完成；不读取任何payload字段。Q-47真实订阅/payload/resync仍RUNTIME QA PENDING；不能因开发工具WebSocket有frame而认定Pusher业务可用。M11最新人工确认：新版不做起源奖励领取，OUT OF SCOPE；此前继续后置决定被覆盖，相关领取Human Questions关闭为EXCLUDED，不再等待选择。

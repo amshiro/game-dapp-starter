@@ -30,8 +30,7 @@ describe("Mine read-only page", () => {
     expect(html).toContain('role="tablist"');
     expect(html).toContain('aria-selected="true"');
     expect(html).toContain('readOnly=""');
-    expect(html).toContain("Stored round");
-    expect(html).toContain("9007199254740993");
+    expect(html).not.toContain("Stored round");
     expect(html).toContain("Waiting");
     expect(html).toContain(
       "#4; Read-only; Participation count: 1; Deployed amount: 0.001 BNB",
@@ -50,7 +49,12 @@ describe("Mine read-only page", () => {
       expect(html).not.toContain("0.001");
       expect(html).not.toContain(">0<");
       expect(html).not.toContain("0xAB");
-      if (status === "loading") expect(html).toContain('aria-busy="true"');
+      if (status === "loading") {
+        expect(html).toContain('aria-busy="true"');
+        expect(html).toContain('role="status" aria-label="Loading…"');
+        const board = html.slice(html.indexOf("<ol"), html.indexOf("</ol>"));
+        expect(board).not.toContain(">—<");
+      }
     },
   );
   it.each(["default", "selected", "deployed", "combined"] as const)(
@@ -102,8 +106,7 @@ describe("Mine read-only page", () => {
         <MinePage display={{ status: "populated", snapshot }} />
       </LocaleProvider>,
     );
-    expect(html).toContain("已存储轮次");
-    expect(html).toContain("9007199254740993");
+    expect(html).not.toContain("已存储轮次");
     expect(html).toContain("参与计数: 1");
   });
 });

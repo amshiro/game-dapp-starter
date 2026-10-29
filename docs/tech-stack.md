@@ -178,19 +178,35 @@ Zustand 不用于：
 
 ### 链上整数与 raw amount
 
-链上整数、raw amount、contract integer、wei、decimals conversion 与链上整数参数优先使用 JavaScript `bigint` 以及 Viem 的 `parseUnits`、`formatUnits`、`parseEther`、`formatEther`。
+链上整数、raw amount、contract integer、wei 与链上整数参数使用 JavaScript `bigint`；EVM 的 decimals conversion 使用 Viem 的 `parseUnits`、`formatUnits`、`parseEther`、`formatEther`。不为统一展示工具而将合约读写改为 BigNumber 对象。
 
 不得使用 `Number(rawValue)`、`parseFloat(rawValue)` 或 `10 ** decimals` 进行价值敏感的链上金额计算。
 
 ### 高精度业务十进制
 
-默认使用 `bignumber.js` 处理 `price × amount`、USD value、percentage、ratio、PnL、price calculation 等非整数业务计算。
+统一使用 `bignumber.js` 处理 `price × amount`、USD value、percentage、ratio、PnL、积分等十进制业务计算，以及金额展示的截取、补位、千分位与舍入。这里的 BigNumber 指 `bignumber.js`，不是其他 SDK 的同名整数类型。
 
 不得无理由同时引入多个 BigNumber、Decimal 或 BN 类库。
 
+### 输入与精度边界
+
+- API 金额优先使用十进制字符串；链上原始整数保留 `bigint`。传入 `bignumber.js` 时使用原始十进制字符串，或原始 `bigint.toString()`，不得先经过 `Number`、`parseFloat` 或浮点运算。
+- 后端 JSON number 若在解析时已经丢失精度，BigNumber 无法恢复。需要精确表示的大数和小数应由后端返回字符串；不可恢复的数据不得伪装成精确金额。
+- 字段单位和 decimals 必须由合约或 API Contract 确认，不能因数值大小推断倍率。BigNumber 不替代输入格式、有效范围、正负值及非有限值校验。
+- 除法等可能产生无限小数的运算须显式配置计算精度和舍入模式。配置使用独立构造器（如 `BigNumber.clone`）或操作参数，不允许某个 Feature 修改全局配置影响其他调用方。
+- 转回合约整数前，必须检查小数位与范围；不得依赖工具的默认舍入静默改变交易金额。
+
 ### 展示格式
 
-通用动态小数位与 compact number 等显示能力属于 `shared/lib/number`；Token decimals 等带领域含义的处理属于 `domains/token/lib`；具体业务计算属于对应 Feature。
+展示使用 `bignumber.js` 的 `toFixed`、`toFormat` 等能力，并显式指定舍入模式；例如正数向下截取使用 `BigNumber.ROUND_DOWN`。该模式对负数是向零截取，不等于数学上的向负无穷取整，涉及负数时必须按业务语义选择。
+
+原始金额、计算结果与展示字符串分离。截断、千分位或 compact 后的展示值不得参与后续计算或作为交易提交值；输入草稿继续保留字符串，以支持清空及末尾小数点等编辑状态。
+
+具体显示几位、是否补零、千分位分隔符、小额阈值及 compact 策略属于项目视觉与业务规则，记录在 `docs/project/design-system.md` 或对应项目文档，不在全局工程规范中锁定。
+
+业务无关且确有跨 Feature 复用的格式化能力属于 `shared/lib/number`；Token decimals 等带领域含义的处理属于 `domains/token/lib`；具体业务计算属于对应 Feature。遵守架构的实际复用要求，不为本规则预建模块。
+
+此规则明确统一方向，不代表依赖已安装或现有实现已迁移。新增依赖仍遵守本文的依赖与 Runtime 检查；已有金额处理在获授权的改动范围内逐步迁移，不能仅因更新规则就自动重写合约或交易流程。
 
 ## i18n
 

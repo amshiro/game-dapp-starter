@@ -336,7 +336,7 @@ Figma exact asset
 
 ### Raster、SVG 与图片实现
 
-raster 资源的清晰度应综合 display size、DPR、asset type 与 file size 决定。不得建立“所有 raster 一律 3x”的规则；小型 icon-like raster 与大型 background 的需求可能不同。
+raster 资源的分类、默认导出倍率、最大展示尺寸计算、原始 Asset / Export 选择及例外处理，统一遵守 [Figma 资源导出规则](./figma-workflow.md#vectorraster-与命名)。视觉验收需结合实际显示尺寸、DPR、透明背景和文件体积核对清晰度，不在此重复维护倍率规则。
 
 真实 vector asset 应优先保持 vector 能力，并根据实际需要考虑 fill、stroke、\`currentColor\`、themeability、build compatibility 与安全来源。不得要求所有 SVG 都转为 React Component。
 
@@ -491,3 +491,18 @@ Tech Stack Baseline 不等于已经安装、接入或通过 Runtime 验证。实
 Modal 入场采用 CSS：遮罩/整体 180ms 淡入、面板 240ms ease-out 上移（bottom 24px、center 8px）；`prefers-reduced-motion: reduce` 时关闭动画。该过渡由用户本轮授权，不改变受控关闭、焦点或滚动锁生命周期，不增加动画依赖。
 
 这是一种 Modal primitive，不预建嵌套 Sheet/全局弹层管理器、Drawer、Popover 或动画框架。
+
+## Loading UI 的范围与复用
+
+Loading 必须按作用范围区分，不得将所有异步状态视作一种全局加载：
+
+| 类型 | 适用范围 | 展示原则 |
+| --- | --- | --- |
+| Action Loading | 按钮提交、签名、保存等局部操作 | 使用小 Spinner 或按钮 loading state，不阻塞整页 |
+| Inline / Data Loading | 单个余额、数值、图标的数据读取 | 使用轻量 LoadingIndicator / Skeleton，保持布局尺寸 |
+| Section Loading | 棋盘、奖励、中奖名单、记录表等完整业务区域 | 在该容器内居中显示 Spinner 或对应 Skeleton，不覆盖整页 |
+| Page / Route Loading | 路由切换或页面核心内容尚未可用 | 独立的 PageLoading / RouteLoading，与局部 Spinner 分开设计 |
+
+实现前先检查已有 Shared primitive。有则复用；没有且属于通用 Design System primitive 时可创建 `shared/ui` 组件，例如 Spinner / LoadingIndicator、Skeleton、Button loading indicator，以及全项目确实统一时的 PageLoading。Feature 特有的布局与展示保持 feature-local；后续相同视觉应主动复用或抽取，不重复实现，不强行合成万能 Loading 组件。
+
+Shared 只拥有视觉和可访问性，不读取业务 Query 或控制请求。状态判断及 owner 留在各 Feature；不得建立全局 loading store。加载指示应有可访问名称，区域可标记 `aria-busy`，动画遵守 reduced-motion；保留合理容器尺寸以减少布局跳动。加载、成功空数据、成功有数据、失败及尚未具备读取条件必须区分，失败不能展示成正常空态。

@@ -64,6 +64,7 @@ export function MineReadPage({
           },
         }}
         display={reads.display}
+        motherlodeOre={reads.motherlodeOre}
         refreshing={reads.refreshing}
         onRefresh={
           reads.canRefresh

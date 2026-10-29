@@ -1,3 +1,4 @@
+import { bufferedGasFees } from "../../../shared/web3/evm/gas-budget";
 import { encodeFunctionData, type PublicClient } from "viem";
 import { getConnection, writeContract } from "wagmi/actions";
 import type { Config } from "wagmi";
@@ -68,6 +69,15 @@ export function createStakeTxDependencies({
 }): StakeTxDependencies {
   // Retain replacement intent across confirmation timeouts and explicit receipt retries.
   const incompatibleHashes = new Set<string>();
+  let prepared:
+    | {
+        operation: StakeOperation;
+        step: StakeStep;
+        gas: bigint;
+        gasPrice: bigint;
+        budget: bigint;
+      }
+    | undefined;
   function client() {
     const c = getClient();
     if (c?.chain?.id !== 97) throw new StakeTxFault("wrong-chain");
@@ -136,12 +146,96 @@ export function createStakeTxDependencies({
       return { available, staked, allowance };
     },
     simulate: async (o, step) => {
+      prepared = undefined;
       const call = stakeCall(o, step);
-      if (call.functionName === "approve")
-        await client().simulateContract({ ...call, account: o.account });
-      else if (call.functionName === "depositStake")
-        await client().simulateContract({ ...call, account: o.account });
-      else await client().simulateContract({ ...call, account: o.account });
+      const simulate = async (fees?: { gas: bigint; gasPrice: bigint }) => {
+        if (call.functionName === "approve")
+          await client().simulateContract({
+            ...call,
+            account: o.account,
+            ...fees,
+          });
+        else if (call.functionName === "depositStake")
+          await client().simulateContract({
+            ...call,
+            account: o.account,
+            ...fees,
+          });
+        else
+          await client().simulateContract({
+            ...call,
+            account: o.account,
+            ...fees,
+          });
+      };
+      await simulate();
+      const [estimatedGas, currentGasPrice] = await Promise.all([
+        call.functionName === "approve"
+          ? client().estimateContractGas({ ...call, account: o.account })
+          : call.functionName === "depositStake"
+            ? client().estimateContractGas({ ...call, account: o.account })
+            : client().estimateContractGas({ ...call, account: o.account }),
+        client().getGasPrice(),
+      ]);
+      const fees = bufferedGasFees(estimatedGas, currentGasPrice);
+      let budget = fees.budget;
+      if (step === "approve") {
+        // The second call observes the first call's temporary state. Nothing is signed or broadcast.
+        // Use peak gas, not post-refund gasUsed, to avoid underestimating the transaction gas limit.
+        const approve = stakeCall(o, "approve");
+        const deposit = stakeCall(o, "deposit");
+        const blocks = await client().request({
+          method: "eth_simulateV1",
+          params: [
+            {
+              blockStateCalls: [
+                {
+                  calls: [
+                    {
+                      from: o.account,
+                      to: approve.address,
+                      data: encodeFunctionData(approve),
+                    },
+                    {
+                      from: o.account,
+                      to: deposit.address,
+                      data: encodeFunctionData(deposit),
+                    },
+                  ],
+                },
+              ],
+              validation: false,
+            },
+            "latest",
+          ],
+        });
+        const calls = blocks[0]?.calls;
+        if (
+          calls?.length !== 2 ||
+          calls.some((result) => result.status !== "0x1")
+        )
+          throw new StakeTxFault("simulation-reverted");
+        const peak = (calls[1] as { maxUsedGas?: string }).maxUsedGas;
+        if (!peak || !/^0x[0-9a-f]+$/i.test(peak))
+          throw new StakeTxFault("rpc-error");
+        const depositFees = bufferedGasFees(BigInt(peak), currentGasPrice);
+        budget += depositFees.budget;
+      }
+      if (
+        (await client().getBalance({
+          address: o.account,
+          blockTag: "pending",
+        })) < budget
+      )
+        throw new StakeTxFault("insufficient-gas");
+      await simulate({ gas: fees.gas, gasPrice: fees.gasPrice });
+      prepared = {
+        operation: o,
+        step,
+        gas: fees.gas,
+        gasPrice: fees.gasPrice,
+        budget,
+      };
     },
     send: async (o, step) => {
       const live = getConnection(config);
@@ -151,23 +245,47 @@ export function createStakeTxDependencies({
         live.address.toLowerCase() !== o.account.toLowerCase()
       )
         throw new StakeTxFault("account-changed");
+      const fees = prepared;
+      prepared = undefined;
+      if (!fees || fees.operation !== o || fees.step !== step)
+        throw new StakeTxFault("simulation-reverted");
+      if (
+        (await client().getBalance({
+          address: o.account,
+          blockTag: "pending",
+        })) < fees.budget
+      )
+        throw new StakeTxFault("insufficient-gas");
+      const latest = getConnection(config);
+      if (latest.chainId !== 97) throw new StakeTxFault("wrong-chain");
+      if (
+        latest.status !== "connected" ||
+        latest.address.toLowerCase() !== o.account.toLowerCase()
+      )
+        throw new StakeTxFault("account-changed");
       const call = stakeCall(o, step);
       if (call.functionName === "approve")
         return writeContract(config, {
           ...call,
           account: o.account,
           chainId: 97,
+          gas: fees.gas,
+          gasPrice: fees.gasPrice,
         });
       if (call.functionName === "depositStake")
         return writeContract(config, {
           ...call,
           account: o.account,
           chainId: 97,
+          gas: fees.gas,
+          gasPrice: fees.gasPrice,
         });
       return writeContract(config, {
         ...call,
         account: o.account,
         chainId: 97,
+        gas: fees.gas,
+        gasPrice: fees.gasPrice,
       });
     },
     wait: async (o, step, hash, onHash) => {

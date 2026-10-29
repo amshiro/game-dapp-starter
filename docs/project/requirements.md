@@ -70,9 +70,9 @@ Mine限定补充：按用户 → 当前Figma → 已审核docs → Mine Historic
 | C-36 | Historical behavior — not yet adopted： 开奖由链上随机数（Chainlink VRF）决定获胜方块；无人参与或获胜方块无人部署则本轮作废 | Live About；OreProtocol（VRF、`ResetEvent`） | |
 | C-37 | Historical behavior — not yet adopted： 未中奖：部署的 BNB 全部损失 | Live About | |
 | C-38 | Historical behavior — not yet adopted： 中奖：获得本轮奖池 BNB 的 90%，按获胜方块部署比例分配；产生 1 ORI（50% 给随机一人，50% 按比例） | Live About | |
-| C-39 | Motherlode历史文案有每轮+0.2 ORI、1/625概率；旧Game locale又有每3–6轮触发 | Historical behavior — not yet adopted | 当前Figma单卡；treasury.motherlodeOre原始字段存在不证明节奏、双资产或payout；Q-31/Reward Gate保持OPEN |
+| C-39 | Motherlode历史文案有每轮+0.2 ORI、1/625概率；旧Game locale又有每3–6轮触发 | Historical behavior — not yet adopted | 当前Figma单卡；treasury.motherlodeOre原始字段存在不证明节奏、双资产或payout；Q-31已确认单卡仅ORI treasury.motherlodeOre（18 decimals）；节奏与payout仍OPEN |
 | C-40 | Historical behavior — not yet adopted： 精炼：领取 ORI 挖矿奖励收 10% 精炼费，分配给仍未领取者；精炼池中的 ORI 领取免费 | Live About；`ClaimOre(tax, redistributed)`；`getUserRewards`（`oriDirect`、`oriRefined`） | |
-| C-41 | 新版Rewards有三行与Claim / Claim only两个入口；历史为全部领取与仅BNB | Figma1413；Historical claimAll/claimEth ABI与调用 | 人工已确认 ethAmount=BNB、oriDirect=未精炼ORI、oriRefined=已精炼ORI；任一ORI>0显示领取→claimAll；BNB>0显示仅领取BNB→claimEth；全零隐藏整卡。后续人工授权Development97 Claim：recipient=currentAccount，fresh read+simulation，1确认与对应交易/event+相关reads成功；不推算税/时限或最终净到账额；Origin独立FUTURE GATE |
+| C-41 | 新版Rewards有三行与Claim / Claim only两个入口；历史为全部领取与仅BNB | Figma1413；Historical claimAll/claimEth ABI与调用 | 人工已确认 ethAmount=BNB、oriDirect=未精炼ORI、oriRefined=已精炼ORI；任一ORI>0显示领取→claimAll；BNB>0显示仅领取BNB→claimEth；全零隐藏整卡。后续人工授权Development97 Claim：recipient=currentAccount，fresh read+simulation，1确认与对应交易/event+相关reads成功；不推算税/时限或最终净到账额；Origin奖励领取已人工排除（OUT OF SCOPE） |
 | C-42 | Historical behavior — not yet adopted： 奖励领取有时限 | OreProtocol `ClaimWindowPassed`、`ExpiredRewardsClaimed` | 时限值未知，见 Q-42 |
 | C-43 | 区块状态：正常、选中、已部署、已部署 + 选中、自动选中、中奖、未中奖、等待开始；人数 > 1000 缩写 | Figma `2003:1038` 标注 | |
 | C-44 | 结果动画：未中奖方块 100%→25% 透明度每块 0.15s 随机依次（3.6s）；获胜方块点亮 0.15s；保持 10s | Figma `2003:1405`–`2003:1408` 标注 | 线上动画未验证 |
@@ -131,3 +131,12 @@ Mine限定补充：按用户 → 当前Figma → 已审核docs → Mine Historic
 ### M10 Human-confirmed winners
 
 当前开奖轮中奖者（不等于所有参与者）；/ori/round_winners/round + round_id + optional winner_address；10秒查询。list backend顺序原样保留，仅首行本人用「你」/白色/下虚线，空list整区隐藏。ore_reward>0→ORI数量+；eth_reward→BNB始终显示，两者API8 decimals、最多6位截断。current result round由contract snapshot提供，不+/-1；不从投入字段推奖励。
+
+### Human Confirmed — Origin Rewards excluded
+
+新版ORI不实现「起源奖励领取」。M11 = OUT OF SCOPE（明确排除，不是DEFERRED或等待Human Gate）。不新增起源奖励卡、领取入口/确认流程，不接origin_info作为该功能的数据owner，不实现AssetManager.deposit(..., "claim", ...)的BNB付款/后台发放工作流。现有BNB/ORI Rewards Read/Claim保持已签收规则；本决定不自动关闭起源交易挖矿等其他独立未决范围，也不删除共享Registry/ABI的技术事实。
+
+
+### Human Confirmed — Mine 数据卡与页面修正
+
+母矿只显示 View.getTreasuryState().motherlodeOre，ORI 18 decimals，不混入起源或推导可领取奖励。我的部署复用当前展示 round/account 的 getMinerRoundInfo.totalDeployed（BNB18），错误/断连不补零。部署两卡用左侧 BNB 图标+右侧数值；移除页面顶部额外轮次/刷新和棋盘上方正常等待提示。初次棋盘加载显示小转圈，读取失败保留错误/重试。投注金额输入不显示边框高亮。所有页面 PC 内容左右无外层 padding，H5 继续14px；秒级deadline策略不由这次UI修改改变。

@@ -172,7 +172,9 @@ export function useMineManual(
   const display: BettingPresentation = {
     appearance,
     amount: input,
-    balance: balance === undefined ? undefined : mineAmount(balance).text,
+    balanceLoading:
+      context.identityPending === true || (connected && native.isPending),
+    balance: balance === undefined ? undefined : mineAmount(balance, 6).exact,
     blocks: selected.length.toString(),
     total: total === undefined ? undefined : mineAmount(total).exact,
   };
@@ -180,6 +182,10 @@ export function useMineManual(
     state,
     busy,
     hasDeployedThisRound: hasDeployed,
+    personalDeployed:
+      connected && snapshot && !info.isError
+        ? info.data?.totalDeployed
+        : undefined,
     // Product deploy limits gate submission only; local draft editing stays available.
     selectionEnabled: !busy,
     stateVisible:

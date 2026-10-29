@@ -1,20 +1,6 @@
 .page {
   min-width: 0;
 }
-.toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-.round {
-  color: var(--ori-color-text-secondary);
-  font-size: 12px;
-  line-height: 16px;
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
 .refresh {
   flex: none;
   border: 1px solid var(--ori-color-border);
@@ -62,7 +48,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: baseline;
+  align-items: center;
   gap: 4px;
   max-width: 100%;
   overflow-wrap: anywhere;
@@ -70,10 +56,8 @@
   font-weight: 500;
   line-height: 19px;
 }
-.metric small {
-  font-size: 10px;
-  color: var(--ori-color-text-secondary);
-  font-weight: 400;
+.metric dd img {
+  flex: none;
 }
 .accent {
   border: 2px solid var(--ori-color-accent);
@@ -282,11 +266,6 @@
   line-height: 19px;
   font-weight: 500;
 }
-.assetSlot {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-}
 .betAmount input {
   min-width: 0;
   width: 100%;
@@ -303,10 +282,6 @@
   color: var(--ori-color-text-muted);
   opacity: 1;
 }
-.betAmount:has(input:focus-visible) {
-  outline: 2px solid var(--ori-color-accent);
-  outline-offset: 2px;
-}
 .balanceRow {
   min-height: 24px;
   display: flex;
@@ -318,7 +293,7 @@
   line-height: 14px;
   color: var(--ori-color-text-secondary);
 }
-.balanceRow > span {
+.balanceRow > div:first-child {
   min-width: 0;
   overflow-wrap: anywhere;
 }
@@ -654,6 +629,10 @@
   color: var(--ori-color-text-secondary);
   overflow-wrap: anywhere;
 }
+.amountError {
+  text-align: center;
+  color: var(--ori-color-error);
+}
 .transactionStatus p + p {
   margin-top: 4px;
 }
@@ -750,4 +729,46 @@
   width: 14px;
   height: 14px;
   object-fit: contain;
+}
+
+.boardContainer {
+  position: relative;
+  margin-top: 24px;
+}
+.boardLoading {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--ori-color-border);
+  border-top-color: var(--ori-color-text-secondary);
+  border-radius: 50%;
+  animation: mine-spin 0.8s linear infinite;
+}
+@keyframes mine-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}
+
+.metric dd > span,
+.rewardValue > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.metric dd {
+  flex-wrap: nowrap;
 }

@@ -8,7 +8,9 @@ import {
   type StakeReadValue,
 } from "../model/stake-display";
 import { useStakeCopy } from "../copy";
-import { findEvmChain } from "../../../shared/config/evm-chains";
+import { useToastFeedback } from "../../../shared/ui/toast/use-toast-feedback";
+import { formatDecimal } from "../../../shared/lib/number/format-decimal";
+import { DataLoading } from "../../../shared/ui/data-loading/data-loading";
 import { parseStakeAmount, stakePercentage } from "../transaction/amount";
 import type { StakeTransactionUI } from "../transaction/use-stake-transaction";
 import type { StakeTxError } from "../transaction/errors";
@@ -17,15 +19,11 @@ import styles from "./stake.module.css";
 export function StakePanel({
   available,
   staked,
-  onRefresh,
-  refreshing,
   transaction,
   draftScope,
 }: Readonly<{
   available: StakeReadValue;
   staked: StakeReadValue;
-  onRefresh?: () => void;
-  refreshing: boolean;
   transaction?: StakeTransactionUI;
   draftScope?: string;
 }>) {
@@ -33,16 +31,29 @@ export function StakePanel({
   const [mode, setMode] = useState<StakeMode>("deposit");
   const balance = mode === "deposit" ? available : staked;
   const id = useId();
-  const [draft, setDraft] = useState({ scope: draftScope, mode, value: "" });
+  const [draft, setDraft] = useState<{
+    scope?: string;
+    mode: StakeMode;
+    value: string;
+    exact?: string;
+  }>({ scope: draftScope, mode, value: "" });
   // Drafts belong to the current account and mode, never to the next identity after a switch.
   const input =
     draft.scope === draftScope && draft.mode === mode ? draft.value : "";
+  const submissionInput =
+    draft.scope === draftScope && draft.mode === mode
+      ? (draft.exact ?? input)
+      : input;
   const setInput = (value: string) =>
-    setDraft({ scope: draftScope, mode, value });
+    setDraft({
+      scope: draftScope,
+      mode,
+      value,
+    });
   let amount: bigint | undefined, inputError: StakeTxError | undefined;
-  if (input)
+  if (input && !transaction?.busy)
     try {
-      amount = parseStakeAmount(input);
+      amount = parseStakeAmount(submissionInput);
       if (
         balance.status === "populated" &&
         balance.raw !== undefined &&
@@ -72,17 +83,55 @@ export function StakePanel({
     balance.raw === undefined ||
     (mode === "deposit" && transaction.allowance === undefined);
   const state = transaction?.state;
-  const explorer = state?.operation
-    ? findEvmChain(state.operation.chainId)?.blockExplorer.url
-    : undefined;
-  const statusText =
-    state && state.phase !== "idle"
-      ? state.error
-        ? copy.transaction.errors[state.error]
-        : state.phase === "success" && state.step === "approve"
-          ? copy.transaction.approvalReady
-          : `${state.step ? copy.transaction.steps[state.step] : copy[mode]} · ${copy.transaction.phases[state.phase]}`
-      : undefined;
+  const recovery =
+    state?.phase === "refresh-failed"
+      ? "refresh"
+      : state?.phase === "failed" && state.confirmationUnknown
+        ? "confirmation"
+        : undefined;
+  const stateVisible =
+    !state?.operation ||
+    draftScope ===
+      `${state.operation.chainId}:${state.operation.account.toLowerCase()}`;
+  const canRecover = stateVisible && !!recovery;
+  useToastFeedback(
+    !state || !stateVisible
+      ? undefined
+      : state.error &&
+          ["failed", "rejected", "refresh-failed"].includes(state.phase)
+        ? {
+            key: state,
+            type: "error",
+            message: copy.transaction.errors[state.error],
+          }
+        : state.phase === "success" &&
+            state.chainConfirmed &&
+            (state.step === "deposit" || state.step === "withdraw")
+          ? {
+              key: state,
+              type: "success",
+              message: copy.transaction.success[state.step],
+            }
+          : undefined,
+  );
+  const [clearedOperation, setClearedOperation] =
+    useState<StakeTransactionUI["state"]["operation"]>(undefined);
+  if (
+    state?.phase === "success" &&
+    (state.step === "deposit" || state.step === "withdraw") &&
+    state.chainConfirmed &&
+    state.operation &&
+    state.operation !== clearedOperation
+  ) {
+    setClearedOperation(state.operation);
+    if (
+      mode === state.operation.kind &&
+      draftScope ===
+        `${state.operation.chainId}:${state.operation.account.toLowerCase()}`
+    ) {
+      setDraft({ scope: draftScope, mode, value: "" });
+    }
+  }
 
   const tabs = useRef<Record<StakeMode, HTMLButtonElement | null>>({
     deposit: null,
@@ -126,37 +175,53 @@ export function StakePanel({
           tabIndex={0}
         >
           <div className={styles.amountRow}>
-            {/* SOL is a Figma placeholder. Keep the icon slot empty until the ORI asset is confirmed (Q-03). */}
-            <span className={styles.assetSlot} aria-hidden="true" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className={styles.assetSlot}
+              src="/ori/explore/ori-token.png"
+              width={20}
+              height={20}
+              alt=""
+            />
             <span className={styles.asset}>ORI</span>
             {/* Figma example values are visual placeholders only; never use them as runtime business data. */}
             <input
               className={styles.amount}
               value={input}
-              onChange={(event) => setInput(event.target.value)}
+              onChange={(event) => {
+                const value = event.target.value;
+                if (value === "" || /^\d*\.?\d{0,6}$/.test(value)) {
+                  setInput(value.startsWith(".") ? `0${value}` : value);
+                }
+              }}
               readOnly={unavailable || busy}
               inputMode="decimal"
               autoComplete="off"
               aria-invalid={!!inputError}
-              placeholder="—"
+              placeholder="0.00"
               aria-label={`${copy[mode]} ${copy.amount}`}
-              aria-describedby={`${id}-unavailable`}
+              aria-describedby={inputError ? `${id}-status` : undefined}
             />
           </div>
           <div className={styles.balanceRow}>
             <p aria-busy={balance.status === "loading" || undefined}>
               {copy.balance}{" "}
               <span
+                className={styles.balanceValue}
+                data-status={balance.status}
                 aria-label={`${mode === "deposit" ? copy.availableBalance : copy.stakedBalance}: ${balance.status === "populated" ? `${balance.exact ?? balance.text} ORI` : copy[balance.status]}`}
-                title={
-                  balance.status === "populated"
-                    ? `${balance.exact ?? balance.text} ORI`
-                    : undefined
-                }
               >
-                {balance.status === "populated" ? balance.text : "—"}
+                {balance.status === "loading" ? (
+                  <DataLoading label={copy.loading} />
+                ) : balance.status === "populated" ? (
+                  balance.text
+                ) : balance.status === "error" ? (
+                  copy.error
+                ) : (
+                  "—"
+                )}
               </span>{" "}
-              ORI
+              {balance.status !== "loading" && "ORI"}
             </p>
             <div className={styles.presets}>
               {/* The Figma 100% control is Max; the exact helper also supports 75% without floating point. */}
@@ -174,8 +239,15 @@ export function StakePanel({
                     if (
                       balance.status === "populated" &&
                       balance.raw !== undefined
-                    )
-                      setInput(stakePercentage(balance.raw, percent));
+                    ) {
+                      const exact = stakePercentage(balance.raw, percent);
+                      setDraft({
+                        scope: draftScope,
+                        mode,
+                        exact,
+                        value: formatDecimal(exact, { decimals: 6 }),
+                      });
+                    }
                   }}
                   aria-label={`${percent}% ${copy.percentage}`}
                 >
@@ -188,76 +260,41 @@ export function StakePanel({
           <button
             className={styles.action}
             type="button"
-            disabled={disabled}
-            aria-busy={busy || undefined}
+            disabled={canRecover ? false : disabled}
+            aria-busy={(busy && !canRecover) || undefined}
             onClick={() => {
-              if (!disabled) void transaction?.start(mode, input);
+              if (canRecover) {
+                if (recovery === "refresh") void transaction?.retryRefresh();
+                else void transaction?.retryConfirmation();
+              } else if (!disabled)
+                void transaction?.start(mode, submissionInput);
             }}
-            aria-describedby={`${id}-unavailable`}
+            aria-describedby={inputError ? `${id}-status` : undefined}
           >
-            {busy && state?.step
-              ? `${copy.transaction.steps[state.step]} · ${copy.transaction.phases[state.phase]}`
-              : needsApproval
-                ? copy.transaction.approveAndDeposit
-                : copy[mode]}
+            {busy && !canRecover && <DataLoading label={copy.loading} />}
+            {canRecover
+              ? recovery === "refresh"
+                ? copy.transaction.retryRefresh
+                : copy.transaction.checkTransaction
+              : busy && state?.step
+                ? `${copy.transaction.steps[state.step]} · ${copy.transaction.phases[state.phase]}`
+                : needsApproval
+                  ? copy.transaction.approveAndDeposit
+                  : copy[mode]}
           </button>
+          {inputError && (
+            <div className={styles.state}>
+              <p
+                id={`${id}-status`}
+                role="status"
+                aria-live="polite"
+                className={styles.amountError}
+              >
+                {copy.transaction.errors[inputError]}
+              </p>
+            </div>
+          )}
         </div>
-      </div>
-      <div className={styles.state}>
-        <p id={`${id}-unavailable`} role="status">
-          {statusText ??
-            (inputError
-              ? copy.transaction.errors[inputError]
-              : unavailable
-                ? `${copy.actionsUnavailable}${balance.status !== "populated" ? ` · ${copy[balance.status]}` : ""}`
-                : transaction?.allowanceError && mode === "deposit"
-                  ? copy.transaction.allowanceError
-                  : balance.status !== "populated"
-                    ? copy[balance.status]
-                    : mode === "deposit" && transaction?.allowanceLoading
-                      ? copy.loading
-                      : amount !== undefined
-                        ? copy.transaction.phases.idle
-                        : copy.transaction.enterAmount)}
-          {state?.operation && state.phase !== "idle" && (
-            <span className={styles.operationContext}>
-              {" "}
-              · {state.operation.account.slice(0, 6)}…
-              {state.operation.account.slice(-4)} · BSC 97
-            </span>
-          )}
-          {state?.hash && explorer && (
-            <a
-              href={`${explorer}/tx/${state.hash}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {" "}
-              {copy.transaction.viewTransaction}
-            </a>
-          )}
-        </p>
-        {state?.phase === "refresh-failed" ? (
-          <button
-            type="button"
-            onClick={() => void transaction?.retryRefresh()}
-          >
-            {copy.transaction.retryRefresh}
-          </button>
-        ) : state?.confirmationUnknown ? (
-          <button
-            type="button"
-            onClick={() => void transaction?.retryConfirmation()}
-          >
-            {copy.transaction.checkTransaction}
-          </button>
-        ) : (
-          onRefresh && (
-            <button type="button" onClick={onRefresh} disabled={refreshing}>
-              {copy.refresh}
-            </button>
-          )
-        )}
       </div>
     </section>
   );

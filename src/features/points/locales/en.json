@@ -4,9 +4,16 @@
   "myPoints": "My Points",
   "records": "Records",
   "rule": "Earn 1 point for every 1 USD bet.",
-  "demo": "Static demo",
   "time": "Time",
   "stake": "Stake",
   "value": "Value",
-  "earned": "Earn point"
+  "earned": "Earn point",
+  "loading": "Loading…",
+  "empty": "No data",
+  "error": "Could not load data",
+  "unavailable": "Data unavailable",
+  "pagination": "Pagination",
+  "previous": "Previous page",
+  "next": "Next page",
+  "page": "Page"
 }

@@ -1,5 +1,6 @@
 import { formatUnits, parseUnits } from "viem";
 export function parseStakeAmount(value: string): bigint {
+  value = value.replace(/\.$/, "");
   // Validate precision before parseUnits: library rounding must never choose a transaction amount.
   if (!/^\d+(?:\.\d{1,18})?$/.test(value)) throw new Error("invalid-amount");
   const raw = parseUnits(value, 18);

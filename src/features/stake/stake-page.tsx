@@ -15,16 +15,12 @@ export function StakePage({
   summary = unavailableStakeSummary,
   available = { status: "unavailable" },
   staked = { status: "unavailable" },
-  onRefresh,
-  refreshing = false,
   transaction,
   draftScope,
 }: Readonly<{
   summary?: StakeSummaryDisplay;
   available?: StakeReadValue;
   staked?: StakeReadValue;
-  onRefresh?: () => void;
-  refreshing?: boolean;
   transaction?: StakeTransactionUI;
   draftScope?: string;
 }>) {
@@ -38,8 +34,6 @@ export function StakePage({
         draftScope={draftScope}
         available={available}
         staked={staked}
-        onRefresh={onRefresh}
-        refreshing={refreshing}
       />
       <StakeSummary values={summary} />
     </div>

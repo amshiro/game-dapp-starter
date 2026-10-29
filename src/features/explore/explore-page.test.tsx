@@ -10,12 +10,12 @@ import {
 } from "./model/explore-display";
 
 describe("Explore read presentation", () => {
-  it("ships only unavailable slots, three empty table bodies and inert pagination", () => {
+  it("ships only unavailable slots, three unavailable table bodies without pagination", () => {
     const html = renderToStaticMarkup(<ExplorePage />);
     expect(html.match(/<table /g)).toHaveLength(3);
     expect(html.match(/<tbody><\/tbody>/g)).toHaveLength(3);
     expect(html.match(/Data unavailable/g)?.length).toBeGreaterThanOrEqual(3);
-    expect(html.match(/disabled=""/g)).toHaveLength(6);
+    expect(html).not.toContain("<nav");
     expect(html.match(/<dd /g)).toHaveLength(4);
     expect(html).not.toMatch(
       /28,000,000|827,239|2,896|16,327|35,683|24,520,466|0xAB|SOL|oriGame|originGame/,
@@ -31,7 +31,7 @@ describe("Explore read presentation", () => {
       expect(html).toContain("<tbody></tbody>");
       const text = {
         loading: "Loading…",
-        empty: "No records",
+        empty: "No data",
         error: "Could not load data",
         unavailable: "Data unavailable",
       }[status];
@@ -61,7 +61,12 @@ describe("Explore read presentation", () => {
             },
           ],
         },
-        pagination: { currentPage: 3, hasPrevious: true, hasNext: false },
+        pagination: {
+          currentPage: 3,
+          total: 21,
+          hasPrevious: true,
+          hasNext: false,
+        },
       },
     };
     const html = renderToStaticMarkup(
@@ -71,7 +76,7 @@ describe("Explore read presentation", () => {
     expect(html).toContain("&lt;unsafe&gt;");
     expect(html).not.toContain("<unsafe>");
     expect(html.match(/aria-current="page"/g)).toHaveLength(1);
-    expect(html.match(/disabled=""/g)).toHaveLength(5);
+    expect(html.match(/disabled=""/g)).toHaveLength(1);
     expect(html).toContain('scope="col"');
     expect(html).toContain('type="button"');
   });
@@ -82,7 +87,7 @@ describe("Explore read presentation", () => {
         data={{ status: "populated", value: [] }}
       />,
     );
-    expect(html).toContain("No records");
+    expect(html).toContain("No data");
     expect(html).not.toContain("Data unavailable");
   });
 });
@@ -147,7 +152,7 @@ describe("Explore controlled pagination", () => {
       const html = renderToStaticMarkup(
         <ExplorePagination
           title="TEST"
-          page={{ currentPage: 2, hasPrevious: true, hasNext: true }}
+          page={{ currentPage: 2, total: 60, hasPrevious: true, hasNext: true }}
           {...props}
         />,
       );

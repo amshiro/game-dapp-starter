@@ -47,7 +47,9 @@ describe("human-confirmed Mine reward visibility / read-only claim entries", () 
     expect(html.match(/<button[^>]*disabled=""/g)).toHaveLength(2);
     expect(html).toContain('data-layout="complete"');
     expect(html).not.toMatch(/ORE|BURY|Claimable|claimable/);
-    expect(html).toContain('title="9007199254740993.000000000000000001 ORI"');
+    expect(html).toContain(
+      'aria-label="9007199254740993.000000000000000001 ORI"',
+    );
   });
   it("shows approved Chinese labels and does not reinterpret them as Origin rewards", () => {
     const html = renderToStaticMarkup(

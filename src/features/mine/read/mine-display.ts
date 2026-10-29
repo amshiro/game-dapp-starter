@@ -1,3 +1,4 @@
+import { formatDecimal } from "../../../shared/lib/number/format-decimal";
 import { formatUnits } from "viem";
 import type { MineBoardSnapshot, MineReadContext } from "./mine-read-query";
 
@@ -24,36 +25,43 @@ export function mineBoardDisplay(
   return { status: "populated", snapshot: query.data };
 }
 
-export function mineAmount(raw: bigint) {
+export function mineAmount(raw: bigint, precision: 4 | 6 = 4, compact = false) {
+  if (raw < BigInt(0)) throw Error("Negative Mine amount");
   const exact = formatUnits(raw, 18);
-  const [whole, fraction] = exact.split(".");
-  const digits = fraction?.slice(0, 4).replace(/0+$/, "");
-  // Truncate presentation only; exact decimal and raw bigint remain available for inspection.
+  if (compact) {
+    for (const [power, suffix] of [
+      [12, "T"],
+      [9, "B"],
+      [6, "M"],
+    ] as const) {
+      if (raw >= BigInt(10) ** BigInt(18 + power)) {
+        return {
+          exact,
+          text: `${formatDecimal(exact, { decimals: 2, group: true, shift: -power })}${suffix}`,
+        };
+      }
+    }
+  }
   return {
     exact,
-    text: digits
-      ? `${whole}.${digits}`
-      : whole === "0" && raw > BigInt(0)
-        ? "<0.0001"
-        : whole,
+    text: formatDecimal(exact, {
+      decimals: precision,
+      group: true,
+      smallThreshold: true,
+    }),
   };
 }
 
 export function mineCount(raw: bigint): string {
   const exact = raw.toString();
-  if (exact.length <= 3) return exact;
-  // String slicing keeps even uint256 counts lossless at the source; no Number conversion.
-  const groups = [
+  for (const [power, suffix] of [
     [12, "T"],
     [9, "B"],
     [6, "M"],
     [3, "K"],
-  ] as const;
-  for (const [power, suffix] of groups) {
-    if (exact.length > power) {
-      const split = exact.length - power;
-      const tenth = exact[split];
-      return `${exact.slice(0, split)}${tenth === "0" ? "" : `.${tenth}`}${suffix}`;
+  ] as const) {
+    if (raw >= BigInt(10) ** BigInt(power)) {
+      return `${formatDecimal(exact, { decimals: 1, shift: -power })}${suffix}`;
     }
   }
   return exact;

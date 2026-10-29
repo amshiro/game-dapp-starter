@@ -16,6 +16,7 @@ export type BettingPresentation = Readonly<{
     "unavailable" | "disconnected" | "no-selection" | "insufficient" | "ready";
   amount?: string;
   balance?: string;
+  balanceLoading?: boolean;
   blocks?: string;
   rounds?: string;
   selectedBlocks?: string;

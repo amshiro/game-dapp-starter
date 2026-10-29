@@ -122,7 +122,7 @@ Refresh Strategy 只分类，不决定 polling 频率或实现；所有 contract
 | My cell deployment | getMinerSquares(roundId,account) | mask:uint256、uint8[]、uint256[] | BNB 18 | contract query | PARTIALLY CONFIRMED：零地址结构；账户切换需实现验收 |
 | Cell selection | 人工确认后的本地草稿，不覆盖 deployed mask | 局部 index set | 无 | static/config | OPEN：可选时机/清空/重选 |
 | Winning / unwinning cell | round.randomnessFulfilled + winningSquare | bool / uint8 | index | contract query | 技术字段 CONFIRMED；呈现时序 OPEN |
-| Motherlode | treasury.motherlodeOre 候选，不混入起源旧池 | uint256 | ORI 18 候选 | contract query | PARTIALLY CONFIRMED；Q-31，正式 slot unavailable |
+| Motherlode | View.getTreasuryState().motherlodeOre，不混起源 | uint256 | ORI 18 | contract query | User Confirmed；Q-31 CLOSED，正式slot已接入；不推导payout |
 | Miners list / row amount | 尚无批准 owner；逐格 participants、winning participants、API winners 不是同一语义 | address/uint96 或未签收 DTO | 投注 / payout / 双资产未定 | contract query 或 API query（待 Gate） | OPEN；不造 rows/排序 |
 | USD alternate metrics | 待确认 price owner + exact amount | 高精度 decimal | USD | API query（待 Gate） | OPEN；unavailable |
 | Round transition freshness | F7 resync/invalidation 后重读上述 owner | 已验证事件 schema 尚缺 | 无 | realtime freshness signal / polling fallback | PARTIALLY CONFIRMED；Q-47，不实现 |
@@ -155,3 +155,8 @@ Q-18/Q-19、Miners 与 timing 的完整产品 Gate 保留；56 继续 Release Ga
 原始审计与完整数据 Gate BLOCKED 的历史结论保留；后续 Human approved Manual 规则、七 frame inventory 与 [正式需求对齐](./mine-requirements-reconciliation.md) 已将限定 Manual Core 标为 READY FOR IMPLEMENTATION，不表示完整 M1 或当前草稿已交付。Public board Query 继续 canonical；account deployment 按 chain/deployment/operationRound/account 隔离。stored round 不推导 +1；执行轮从 matching DeployEvent 确认。
 
 本轮 /ori/round 的只读 HTTP200 返回 round_id:string/global/user/last_updated，修正“未正式登记”可能被误读为“不可达”的判断；并未签收其非空 DTO/单位或替换 Chain owner。其他五端点也仅获得 smoke evidence，见 api.md；WS 本轮未重测。
+
+
+## 当前母矿 / 数据卡接线（覆盖上方 M1/M2 历史限制）
+
+User Confirmed：母矿仅ORI treasury.motherlodeOre、18 decimals。Feature-local独立公共Query按chain/View部署隔离，30s前台刷新、沿用退避/焦点恢复；读取失败只令母矿不可用，不阻塞board和交易。我的部署复用当前展示round/account的info Query totalDeployed，断连/错链/error隐藏旧值。BNB图标复用既有reward-bnb.svg；ORI图标复用已用16px资产。精确秒deadline与开奖执行仍是独立边界。

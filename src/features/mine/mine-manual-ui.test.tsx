@@ -1,12 +1,17 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
+import { useToastFeedback } from "../../shared/ui/toast/use-toast-feedback";
 import { LocaleProvider } from "../../shared/i18n/locale-provider";
 import { MineCell } from "./components/mine-cell";
 import { MineBettingPanel } from "./components/mine-betting-panel";
 import {
   MineManualStatus,
+  MineManualFeedback,
   type ManualPanelControls,
 } from "./components/mine-manual-status";
+vi.mock("../../shared/ui/toast/use-toast-feedback", () => ({
+  useToastFeedback: vi.fn(),
+}));
 function controls(
   overrides: Partial<ManualPanelControls> = {},
 ): ManualPanelControls {
@@ -131,7 +136,7 @@ describe("Manual mounted UI boundary", () => {
   });
   it("keeps a connected-wallet operation status out of another account's UI", () => {
     const html = renderToStaticMarkup(
-      <MineManualStatus
+      <MineManualFeedback
         manual={controls({
           state: {
             phase: "failed",
@@ -145,6 +150,7 @@ describe("Manual mounted UI boundary", () => {
     );
     expect(html).not.toContain("reverted");
     expect(html).not.toContain("Transaction hash");
+    expect(useToastFeedback).toHaveBeenLastCalledWith(undefined);
   });
   it("confirmed refresh failure offers reads-only recovery", () => {
     const html = renderToStaticMarkup(
@@ -161,7 +167,34 @@ describe("Manual mounted UI boundary", () => {
       />,
     );
     expect(html).toContain("Retry Refresh");
-    expect(html).toContain("Chain confirmed");
-    expect(html).toContain("Retry refresh only.");
+    expect(html).not.toContain("Chain confirmed");
+    expect(html).not.toContain("Retry refresh only.");
+    expect(
+      html.match(/class="[^"]*deployAction[^"]*"[^>]*>Retry Refresh/g),
+    ).toHaveLength(1);
   });
+});
+
+it("separates draft validation from transaction Gas failures", () => {
+  const manual = controls({
+    state: {
+      phase: "failed",
+      chainConfirmed: false,
+      error: "insufficient-native",
+    },
+  });
+  expect(renderToStaticMarkup(<MineManualStatus manual={manual} />)).toBe("");
+  expect(renderToStaticMarkup(<MineManualFeedback manual={manual} />)).toBe("");
+  expect(useToastFeedback).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      key: manual.state,
+      type: "error",
+      message: expect.stringContaining("Gas"),
+    }),
+  );
+  expect(
+    renderToStaticMarkup(
+      <MineManualStatus manual={controls({ error: "invalid-amount" })} />,
+    ),
+  ).toContain("Enter a positive per-cell BNB amount");
 });

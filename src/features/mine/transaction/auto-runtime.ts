@@ -1,3 +1,4 @@
+import { bufferedGasFees } from "../../../shared/web3/evm/gas-budget";
 import {
   decodeEventLog,
   encodeFunctionData,
@@ -205,10 +206,11 @@ export function createAutoDependencies({
       await gate(o);
       const call = autoCall(o);
       await simulate(o);
-      const [gas, gasPrice] = await Promise.all([
+      const [estimatedGas, currentGasPrice] = await Promise.all([
         estimate(o),
         client().getGasPrice(),
       ]);
+      const { gas, gasPrice } = bufferedGasFees(estimatedGas, currentGasPrice);
       const balance = await gate(o);
       if (balance < (call.value ?? BigInt(0)) + gas * gasPrice)
         throw new AutoFault("insufficient-native");
@@ -223,6 +225,15 @@ export function createAutoDependencies({
       prepared = undefined;
       const call = autoCall(o),
         fees = { chainId: 97, gas: p.gas, gasPrice: p.gasPrice } as const;
+      if (
+        (await client().getBalance({
+          address: o.account,
+          blockTag: "pending",
+        })) <
+        (call.value ?? BigInt(0)) + p.gas * p.gasPrice
+      )
+        throw new AutoFault("insufficient-native");
+      current(o);
       return call.functionName === "stopAutomation"
         ? writeContract(config, { ...call, ...fees })
         : writeContract(config, { ...call, ...fees });

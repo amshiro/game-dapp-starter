@@ -5,6 +5,7 @@ export type ManualContext = Readonly<{
   targetChainId: number;
   address?: Address;
   ready: boolean;
+  identityPending?: boolean;
   wrongChain: boolean;
 }>;
 export type ManualOperation = Readonly<{

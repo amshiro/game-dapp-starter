@@ -1,3 +1,4 @@
+import { formatDecimal } from "../../../shared/lib/number/format-decimal";
 import { formatUnits, type Address } from "viem";
 import type { EvmChain } from "../../../shared/config/evm-chains";
 import type { WalletIdentity } from "../model/wallet-identity";
@@ -36,15 +37,9 @@ export function nativeBalanceDisplay(
     return { status: "error" };
   const raw = query.data.value;
   const exact = formatUnits(raw, targetChain.nativeCurrency.decimals);
-  const [whole, fraction] = exact.split(".");
-  const shortened = fraction?.slice(0, 6).replace(/0+$/, "");
   return {
     status: "populated",
-    text: shortened
-      ? `${whole}.${shortened}`
-      : raw > BigInt("0") && whole === "0"
-        ? "<0.000001"
-        : whole,
+    text: formatDecimal(exact, { decimals: 6, smallThreshold: true }),
     exact,
     raw,
   };

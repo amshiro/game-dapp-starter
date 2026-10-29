@@ -2,6 +2,12 @@
 
 User confirmed：本项目以验证完整前端工程流程为目标，非生产上线目标。当前模式覆盖旧项目文档中“普通工程实现必须逐个Human Gate”的推断，不解除资金、安全和生产边界。
 
+## Feature Freeze
+
+User Confirmed：ORI 已进入最终收口阶段，不再新增业务功能，也不再自动推进下一张 Feature。只允许 bug 修复、回归测试、明显 UI / Figma 偏差修复、构建 / 部署修复及必要文档同步。
+
+当前发布目标为 **Development / Demo，BSC Testnet Chain 97**，不是 Production-ready。最终收口任务已明确授权 QA 通过后的 checkpoint、`main → origin/main` push 和现有 Cloudflare Demo workflow；该授权不包含主网、真实签名或资金交易。所有已有 **RUNTIME QA PENDING** 必须保留，不能以自动化测试或页面正常展示替代真实环境验收。部署步骤见 [Environment Contract](./environment.md#demo-deployment)。
+
 ## 人工决定与工程自治
 
 人类负责技术栈、产品/Figma意图、API/合约来源，以及会改变用户行为、业务含义、金额/费用/奖励、钱包交易行为、权限/安全的决定。API/合约字段存在多种业务解释或Figma与明确产品规则冲突时，不能由Agent随意选择。
@@ -24,4 +30,4 @@ M4 execution fee deduction维持RUNTIME QA PENDING；Stake Real Tx QA=DEFERRED �
 
 ## Feature连续推进与补充检查
 
-完整Feature完成后可自主进入任务图的下一Feature，不等待人工再发开发票。但进入前必须检查尚未同步的Human Decision/用户补充：先应用并验证，再继续。新的产品问题集中列为HUMAN QUESTIONS，不受影响部分继续开发。当前任务更具体的no commit/push等限制优先于模式默认checkpoint授权。
+Feature Freeze 期间不进入新 Feature。修复前必须检查尚未同步的 Human Decision / 用户补充；真正涉及产品行为、金额、权限或钱包资金行为的变化集中列为 HUMAN QUESTIONS，不受影响的回归工作继续执行。当前任务更具体的 Git / deploy 限制优先于模式默认授权。

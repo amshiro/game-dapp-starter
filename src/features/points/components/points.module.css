@@ -1,5 +1,13 @@
 .page {
   min-width: 0;
+  /* Match the shell's header, fixed navigation and 24px main padding at each end. */
+  min-height: calc(
+    100dvh - var(--ori-layout-header-height) -
+      var(--ori-layout-bottom-nav-height) - env(safe-area-inset-top, 0px) -
+      env(safe-area-inset-bottom, 0px) - 48px
+  );
+  display: flex;
+  flex-direction: column;
   background: var(--ori-color-background);
   letter-spacing: 0;
 }
@@ -10,6 +18,7 @@
   line-height: normal;
 }
 .balance {
+  flex-shrink: 0;
   position: relative;
   display: flex;
   align-items: center;
@@ -35,15 +44,14 @@
   font-weight: 500;
   line-height: normal;
 }
-.demo {
-  position: absolute;
-  top: 8px;
-  right: 10px;
-  color: var(--ori-color-text-secondary);
-  font-size: 10px;
-}
 .records {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   margin-top: 24px;
+}
+.records > :not(.readState) {
+  flex-shrink: 0;
 }
 .records h2 {
   font-size: 20px;
@@ -133,4 +141,18 @@
     transparent 4px 8px
   );
   pointer-events: none;
+}
+
+.readState {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--ori-color-text-secondary);
+  font-size: 12px;
+  padding: 16px;
+}
+.readState [role="alert"] {
+  color: var(--ori-color-error);
 }

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { getRequestLocale } from "./request-locale";
 import { LocaleProvider } from "../src/shared/i18n/locale-provider";
+import { AppToaster } from "../src/shared/ui/toast/toast";
 import Providers from "./providers";
 import { AppShell } from "./_shell/app-shell";
 import "./globals.css";
@@ -34,6 +35,7 @@ export default async function RootLayout({
         <LocaleProvider locale={locale}>
           <Providers>
             <AppShell locale={locale}>{children}</AppShell>
+            <AppToaster />
           </Providers>
         </LocaleProvider>
       </body>

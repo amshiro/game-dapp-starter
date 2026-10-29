@@ -1,7 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { AboutAccordion, type AboutAccordionItem } from "./about-accordion";
-import { AboutAccordionFixture } from "../__fixtures__/about-accordion.fixture";
 
 const items: readonly AboutAccordionItem[] = [
   { id: "one", title: "Fixture one", content: <p>Fixture body one</p> },
@@ -79,11 +78,22 @@ describe("About accordion presentation contract", () => {
     expect(html).toContain("<h3>Fixture subheading</h3>");
     expect(html).toContain("<em>emphasis</em>");
   });
-  it("keeps stress-test content explicitly labelled as fixture data", () => {
-    const html = renderToStaticMarkup(<AboutAccordionFixture />);
-    expect(html).toContain("TEST FIXTURE ONLY");
-    expect(html).toContain("TEST FIXTURE END");
-    expect(html.match(/aria-expanded="false"/g)).toHaveLength(5);
-    expect(html).not.toMatch(/Solana|BUBY|BURE|BURY|https?:|\d+%/);
+  it("preserves long caller-owned content inside an initially inert panel", () => {
+    const longText = "UNBROKEN".repeat(100);
+    const html = renderToStaticMarkup(
+      <AboutAccordion
+        items={[
+          {
+            id: "long",
+            title: "Long content",
+            content: <p>{longText}</p>,
+          },
+        ]}
+      />,
+    );
+    expect(html).toContain(longText);
+    expect(html).toContain('aria-expanded="false"');
+    expect(html).toContain('inert=""');
+    expect(html).not.toMatch(/<a\b/);
   });
 });

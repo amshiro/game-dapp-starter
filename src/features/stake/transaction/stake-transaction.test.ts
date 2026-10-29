@@ -75,7 +75,6 @@ describe("Stake exact amounts", () => {
     " 1 ",
     "1,000",
     ".5",
-    "1.",
     "1.0000000000000000001",
     "NaN",
     "Infinity",
@@ -86,6 +85,7 @@ describe("Stake exact amounts", () => {
     expect(() => parseStakeAmount(value)).toThrow("zero-amount"),
   );
   it("accepts 18 decimals and large exact integers", () => {
+    expect(parseStakeAmount("1.")).toBe(BigInt("1000000000000000000"));
     expect(parseStakeAmount(input)).toBe(BigInt(1));
     expect(parseStakeAmount("9007199254740993.123456789012345678")).toBe(
       BigInt("9007199254740993123456789012345678"),

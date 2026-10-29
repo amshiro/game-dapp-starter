@@ -43,7 +43,7 @@
 | M8 | Mine realtime invalidation | READY | F7 signal-only adapter implementation COMPLETE；不解释payload，只invalidate当前owners。REAL SUBSCRIPTION/PAYLOAD/RESYNC QA PENDING，Q-47不伪造已解决 |
 | M9 | Mine lifecycle / countdown / result | READY | 当前批准scope：verified result/动画；倒计时Human approved继续Waiting/—等backend deadline。live result transition=RUNTIME QA PENDING；无新协议enum/polling |
 | M10 | Mine Miners / Winners data | READY | 人工确认当前开奖轮winners、8位BNB/ORI、backend顺序/首行You/空整区隐藏；implementation COMPLETE，nonempty runtime QA PENDING |
-| M11 | Mine Origin rewards | BLOCKED | Human Confirmed：继续后置，DEFERRED — FUTURE GATE；不纳入当前Mine主线，backend + AssetManager 独立于 ORI Claim |
+| M11 | Mine Origin rewards | OUT OF SCOPE | Human Confirmed：新版不做起源奖励领取；从开发序列移除，非待签收/后置票据；保留编号追溯 |
 
 ## Dependency Graph
 
@@ -78,7 +78,6 @@ flowchart TD
   M7 --> M8
   M2 --> M9
   M1 --> M10
-  M1 --> M11
 ```
 
 R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 仅产出一份“仍未知”报告就自动解锁。M1 的公开 round 查询可先于 W1 实现，账户查询/完整验收需要 W1。M9 可以在 R0/M1 已确认的链上/轮询结果上工作，**不强依赖 M8**；若要用 WS 必须等待 M8 并重新读取 canonical 数据。Stake 与 Manual/Auto 彼此不是强依赖；先完成 Stake 仅是风险递进建议。Realtime 不依赖任一写交易成功。
@@ -433,22 +432,16 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 | QA | schema/mapper/空与非空样本、跨 round、375/500、长地址与金额 |
 | Non-goals | ranking 产品、奖励领取、从参与人数推 winners、扩展旧 UI |
 
-### M11 — Mine Origin rewards（FUTURE GATE）
+### M11 — Mine Origin rewards（OUT OF SCOPE）
 
-| Field | Ticket |
+| Field | Decision |
 | --- | --- |
-| Goal | 独立确认 Origin 后端 allocation + AssetManager 的产品与资金语义 |
-| Route | 未来设计/产品 Gate 决定；不自动新增 Mine workflow |
-| Owner / Dependencies | 未创建实现 owner；先 Product / API / Transaction Gate，不依赖 ORI Claim 实现 |
-| Source of Truth | 用户规则与当前 Figma 优先；historical OriginClaimCard 仅提供功能/技术调查入口 |
-| API dependencies | origin_info 可达不证明额度单位、orderId、幂等与 backend 完成契约 |
-| Web3 dependencies | AssetManager.deposit 历史路径，当前地址/ABI/runtime/value/recipient 必须另验；不继承旧10位金额/时间戳 orderId |
-| Realtime dependencies | 无已批准依赖 |
-| UI/Figma dependencies | 无已签收独立 Origin 资金流程；不把 BURY 占位直接解释为 Origin |
-| Open Questions / Blockers | BLOCKED / DEFERRED — FUTURE GATE；产品 Scope、双端状态和资金安全均待签收 |
-| Acceptance Criteria | 先完成独立 Gate；以后才定义实现 ticket 与业务完成条件 |
-| QA | 本阶段只做证据核对；任何真实 write 必须另获授权 |
-| Non-goals | 本轮实现、与 claimAll 合并、自动 backend/chain 混合交易 |
+| Product decision | Human Confirmed：新版ORI不做「起源奖励领取」；此前DEFERRED / FUTURE GATE由此覆盖 |
+| Route / Owner | 不新增页面、卡片、入口或Feature owner，不进入后续自动开发序列 |
+| API / Web3 | 不接origin_info或AssetManager.deposit(...,"claim",...)作为起源领取流程；既有ABI/Registry保留为技术事实，不因此删除其他能力 |
+| Scope status | CLOSED — EXCLUDED，不是BLOCKED、未完成实现或待选择产品问题 |
+| Existing rewards | BNB/ORI Read/Claim保持已签收映射与流程，不混入Origin；各项真实QA PENDING保持 |
+| Evidence | 历史OriginClaimCard/API/ABI仅保留调查依据，不构成新版需求；起源交易挖矿等独立范围不因本决定自动关闭 |
 
 ## R0 — 支撑票据：只读证据核对
 
@@ -488,7 +481,7 @@ R0 当时的限定交付见 [R0 Evidence Audit](./r0-evidence-audit.md)：仅比
 1. W1、W2、R0 已完成并审核。本轮 A1 / P1 页面完整 UI 依用户限定授权实现，等已通过人工审核；生产文案/积分数据 Gate 不因此关闭。
 2. A1 使用当前源码恢复的对应 copy；P1 使用 Figma demo。审核后再决定 checkpoint；不得把当前工程演示授权推广为其他页面的历史内容继承。
 3. 已审核页面/read 子集保持完成；Points 真实数据仍需 Q-20/Q-11 Gate。Mine 当前优先 M3 限定 Manual Core，M7 暂缓且不作为交易局部刷新前置。
-4. 当前最短 Mine 主线：M3 Manual → M4 Auto（产品已closed、Development Core已人工放行，execution真实QA待补）→ M9 lifecycle/countdown → M5/M6 ORI rewards → M10 Miners → M7 freshness → M8 realtime。M11 Origin 独立 FUTURE GATE；未来 Rewards/名单不阻塞 Manual，Auto Gate 未通过不能硬做。S2 真实 QA 缺 ORI 暂缓，不是 Mine 前置。所有真实交易逐类授权。
+4. 当前最短 Mine 主线：M3 Manual → M4 Auto（产品已closed、Development Core已人工放行，execution真实QA待补）→ M9 lifecycle/countdown → M5/M6 ORI rewards → M10 Miners → M7 freshness → M8 realtime。M11 Origin领取已人工排除（OUT OF SCOPE）；未来 Rewards/名单不阻塞 Manual，Auto Gate 未通过不能硬做。S2 真实 QA 缺 ORI 暂缓，不是 Mine 前置。所有真实交易逐类授权。
 5. Q-47 恢复且 M1/M7 owner 明确后做 M8，不需等全部交易完成；M9 在结果来源/时序/reduced-motion 明确后执行，不与 transport 或资金流程绑定成巨票据。
 6. W3、起源/ORI 游戏与生产发布均留在对应 Gate 后。Q-01/Q-02 未确认前，本图**不安排起源 swap/trade-to-mine 实现**；这不等于决定下线它们。
 

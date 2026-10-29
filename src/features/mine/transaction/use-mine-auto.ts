@@ -136,12 +136,20 @@ export function useMineAuto(
     rounds,
     selectedBlocks: selected.length
       ? selected.map((i) => `#${i + 1}`).join(", ")
-      : blocks === "0"
-        ? undefined
-        : `× ${blocks}`,
-    totalPerRound: intent ? mineAmount(intent.roundPrincipal).exact : undefined,
-    total: intent ? mineAmount(intent.displayTotal).exact : undefined,
-    balance: balance === undefined ? undefined : mineAmount(balance).text,
+      : undefined,
+    totalPerRound: intent
+      ? mineAmount(intent.roundPrincipal).exact
+      : !selected.length && /^0*$/.test(blocks)
+        ? "0"
+        : undefined,
+    total: intent
+      ? mineAmount(intent.displayTotal).exact
+      : !selected.length && /^0*$/.test(blocks)
+        ? "0"
+        : undefined,
+    balanceLoading:
+      context.identityPending === true || (connected && native.isPending),
+    balance: balance === undefined ? undefined : mineAmount(balance, 6).exact,
     appearance: !context.address
       ? "disconnected"
       : insufficient

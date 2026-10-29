@@ -1,3 +1,4 @@
+import { formatDecimal } from "../../../shared/lib/number/format-decimal";
 import { formatUnits, isAddress, type Address } from "viem";
 import { InvalidResponseError } from "../../../shared/api/errors";
 import type {
@@ -24,10 +25,8 @@ export function winnerInteger(raw: unknown): bigint {
 }
 export function winnerAmount(raw: bigint) {
   // Winners API uses human-confirmed 8-place scaled integers, NOT the chain's 18-decimal wei/token amounts.
-  const exact = formatUnits(raw, 8),
-    [whole, fraction] = exact.split(".");
-  const short = fraction?.slice(0, 6).replace(/0+$/, "");
-  return { raw, exact, text: short ? `${whole}.${short}` : whole };
+  const exact = formatUnits(raw, 8);
+  return { raw, exact, text: formatDecimal(exact, { decimals: 6 }) };
 }
 export function mineWinnersDisplay(
   raw: unknown,

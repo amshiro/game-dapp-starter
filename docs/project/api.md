@@ -181,7 +181,7 @@ realtime 只在**轮次边界**（开始 / 开奖）推送，并且不可补偿�
 | /ori/round | round_id:string、global、user、last_updated | 未正式登记不等于不可达；非空字段单位/精度仍未签收，不替代链上 board owner |
 | /ori/automation/user | data:null | active 非空 schema、remaining、fee、链上状态一致性 |
 | /ori/round_winners/round | round_id:string、total、list:[]、reset_event | 非空奖励 row、dataset、排序、单位与正式端点命名冲突 |
-| /ori/activity/origin_info | ori_config、chain_asset_config、global、user、my_wallet | allocation/claim/payment；Origin 为独立 FUTURE GATE |
+| /ori/activity/origin_info | ori_config、chain_asset_config、global、user、my_wallet | allocation/claim/payment；Origin奖励领取已被人工排除（OUT OF SCOPE） |
 | /ori/query/chain_asset_config | 数组7项 | 97 price quote 覆盖、价格精度与资产映射 |
 
 A/B/C/D 分类及新架构 owner 见 [需求对齐](./mine-requirements-reconciliation.md)。HTTP200 不关闭 Q-11，不引入旧 DTO 或 Number 大整数；本轮未重测 WS，Q-47 先前502/真实 payload unknown 继续保留。
@@ -193,3 +193,13 @@ A/B/C/D 分类及新架构 owner 见 [需求对齐](./mine-requirements-reconcil
 ## Mine freshness implementation
 
 M7按已存在Query owners执行有界route-only read预算，M10维持人工10s；M8复用F7两个注册wire events/resync，只invalidate精确当前keys。payload全部忽略，不能作为round/winner/balance/state真相。真实connection/subscription/payload/resync仍RUNTIME QA PENDING（Q-47），不以mock或polling成功关闭。见[M7/M8](./mine-freshness-implementation.md)。
+
+## Explore 当前读取映射（User Confirmed）
+
+仅四张顶部卡：`max_supply.value` 原值 BigNumber 千分位；ORI `totalSupply()` 按18位换算并截断/补齐2位、千分位；`buried_7d.value` 与 `protocol_rev_7d.value` 按8位换算截断6位。三个后端统计字段由 POST `/explore` 每30秒读取；流通供应链上每10秒读取。未精炼 ORI 不在本次范围。
+
+三表 POST：挖矿 `/reset_event/list` 的 `motherlode=""`；母矿同接口 `motherlode="1"`；回购 `/bury_event/list` 不传 type。`page`、`page_size="10"` 均为字符串，读取 `data.list/total`，每10秒刷新当前页。各表页码独立，query key 包含环境、链、表、页码、语言；后台刷新保留原记录。
+
+挖矿/母矿：轮次 round_id；现有“区块”列显示 winning_square + 1（中奖格子编号，非 block_number）；ORI获得者按 num_winners / split_reward / top_miner 显示无人获奖、平分或缩略地址；获奖人数 num_winners；部署量 total_deploy。回购：时间 timestamp；已花费 amount_in；已埋藏 burned；质押收益 staking_yield 原值使用 BigNumber 截断并固定保留2位小数后加 %，不乘100（User Confirmed）。表格金额均按8位换算截断6位，不添加小额阈值提示。
+
+Development97 接线；Production56仍受独立发布Gate限制。

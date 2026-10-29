@@ -8,6 +8,8 @@ export type StatisticId =
 export type ExploreSectionId = "mining" | "motherlodes" | "buybacks";
 export type PaginationDisplay = Readonly<{
   currentPage: number;
+  /** Total records from the data owner; page size is 10. */
+  total?: number;
   hasPrevious: boolean;
   hasNext: boolean;
 }>;

@@ -67,6 +67,7 @@ describe("Manual selection and exact per-cell amount", () => {
     expect(() => toggleCell(s, 25)).toThrow("invalid-mask");
   });
   it("uses per-cell input and full bigint precision", () => {
+    expect(manualAmount("1.")).toBe(manualAmount("1"));
     expect(manualValue(cellMask([0, 2, 7, 24]), manualAmount("0.02"))).toBe(
       BigInt("80000000000000000"),
     );

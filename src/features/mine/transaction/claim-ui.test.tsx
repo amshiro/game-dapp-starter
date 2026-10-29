@@ -1,3 +1,4 @@
+import { useToastFeedback } from "../../../shared/ui/toast/use-toast-feedback";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import type { Hash } from "viem";
@@ -5,6 +6,9 @@ import { MineRewardState } from "../components/mine-rewards";
 import { MineClaimStatus } from "../components/mine-claim-status";
 import { presentMineRewards } from "../model/mine-rewards";
 import type { MineClaimUI } from "./use-mine-claim";
+vi.mock("../../../shared/ui/toast/use-toast-feedback", () => ({
+  useToastFeedback: vi.fn(),
+}));
 const reward = presentMineRewards({
   ethAmount: BigInt(1),
   oriDirect: BigInt(1),
@@ -42,7 +46,7 @@ describe("Rewards claim UI", () => {
     const html = renderToStaticMarkup(
       <MineRewardState display={reward} claim={ui()} />,
     );
-    expect(html.match(/<button/g)).toHaveLength(2);
+    expect(html.match(/data-claim-method=/g)).toHaveLength(2);
     expect(html).not.toContain('disabled=""');
   });
   it.each([
@@ -69,7 +73,13 @@ describe("Rewards claim UI", () => {
     const claim = ui("failed");
     claim.state = { ...claim.state, error: "claim-window-passed" };
     const html = renderToStaticMarkup(<MineClaimStatus claim={claim} />);
-    expect(html).toContain("Operation failed. Please try again.");
+    expect(html).toBe("");
+    expect(useToastFeedback).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        type: "error",
+        message: "Operation failed. Please try again.",
+      }),
+    );
     expect(html).not.toContain("ClaimWindowPassed");
   });
   it("confirmed refresh failure remains recoverable after rewards become all zero", () => {
@@ -87,9 +97,14 @@ describe("Rewards claim UI", () => {
           <MineClaimStatus claim={claim} />
         </>,
       );
-    expect(html).not.toContain("data-claim-method");
+    expect(html).toContain('data-claim-method="claimAll"');
     expect(html).toContain("Retry Refresh");
-    expect(html).toContain("Chain confirmed");
+    expect(useToastFeedback).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        type: "error",
+        message: expect.stringContaining("Chain confirmed"),
+      }),
+    );
     expect(html).not.toContain("try again");
   });
   it("new account never sees old account's hash or success; pending original operation still blocks", () => {
@@ -97,7 +112,7 @@ describe("Rewards claim UI", () => {
     claim.stateVisible = false;
     const html = renderToStaticMarkup(<MineClaimStatus claim={claim} />);
     expect(html).not.toContain(claim.state.hash);
-    expect(html).toContain("previous operation");
+    expect(html).toBe("");
     claim.busy = false;
     expect(renderToStaticMarkup(<MineClaimStatus claim={claim} />)).toBe("");
   });
@@ -105,7 +120,24 @@ describe("Rewards claim UI", () => {
     const html = renderToStaticMarkup(
       <MineClaimStatus claim={ui("rejected")} />,
     );
-    expect(html).toContain("Wallet request cancelled");
+    expect(html).toBe("");
+    expect(useToastFeedback).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        type: "error",
+        message: "Wallet request cancelled",
+      }),
+    );
     expect(html).not.toContain("Retry Refresh");
   });
+});
+
+it.each([
+  "preparing",
+  "awaiting-signature",
+  "submitted",
+  "confirming",
+  "refreshing",
+  "success",
+] as const)("hides extra Claim %s status", (phase) => {
+  expect(renderToStaticMarkup(<MineClaimStatus claim={ui(phase)} />)).toBe("");
 });

@@ -414,3 +414,36 @@ describe("Manual matching receipt event", () => {
     expect(() => verifyDeploy(operation, r)).toThrow("verification-failed");
   });
 });
+
+describe("Manual buffered native budget", () => {
+  it.each([44100, 44101])(
+    "checks principal plus two separately rounded margins at %s",
+    async (balance) => {
+      const h = harness();
+      h.raw.balance = BigInt(balance);
+      if (balance === 44100)
+        await expect(h.deps.prepare(operation)).rejects.toThrow(
+          "insufficient-native",
+        );
+      else {
+        await h.deps.prepare(operation);
+        await h.deps.send(operation);
+        expect(writeContract).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.objectContaining({
+            value: BigInt(1),
+            gas: BigInt(22050),
+            gasPrice: BigInt(2),
+          }),
+        );
+      }
+    },
+  );
+  it("stops if native balance falls after preparation", async () => {
+    const h = harness();
+    await h.deps.prepare(operation);
+    h.raw.balance = BigInt(44100);
+    await expect(h.deps.send(operation)).rejects.toThrow("insufficient-native");
+    expect(writeContract).not.toHaveBeenCalled();
+  });
+});

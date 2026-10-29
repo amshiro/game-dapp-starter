@@ -24,15 +24,6 @@ export function StakeReadPage({
       available={reads.available}
       staked={reads.staked}
       summary={{ ...unavailableStakeSummary, totalDeposit: reads.total }}
-      onRefresh={
-        reads.canRefresh
-          ? () => {
-              reads.refresh();
-              transaction.refreshAllowance();
-            }
-          : undefined
-      }
-      refreshing={reads.refreshing}
     />
   );
 }

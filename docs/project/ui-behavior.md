@@ -39,7 +39,7 @@
 
 - **Confirmed**：Motherlode、剩余时间、总部署、你的部署；点击切换美金值 / 轮次（C-45）。
 - **Confirmed**：等待开始时显示 Waiting（线上 "等待中…"）。
-- **Correction**：Figma 1037 说明点击数据块切换 USD / Round，不能证明四卡必须同时切换。保持逐卡本地展示状态；USD 缺 quote owner 时为 —。
+- **User Confirmed**：四卡保持逐卡本地展示状态，PC 鼠标移入切换、移出恢复，H5 点击切换。母矿、总部署、你的部署的 USD secondary 尚未接入报价时显示 `≈$ 0`，仅为展示占位，不代表真实报价为零或读取成功。剩余时间卡仍显示真实轮次，缺失轮次为 `—`。
 - **Unknown**：母矿卡是否显示 `ORI + 起源` 双资产（Q-31）。
 
 ### Block cell states
@@ -149,8 +149,16 @@ Step3  获胜方块保持点亮 10s
 ## Loading / Error / Disabled / Success
 
 - **Confirmed**：不可用按钮样式；余额不足错误色。
-- **Unknown**：加载、空状态、网络 / RPC 错误、交易 pending / 成功 / 失败视觉（Q-12）。不得自造视觉；需设计补充或用户批准的最小方案。
+- 加载与空态按 [项目 Design System](./design-system.md#数据区域状态user-confirmed)；Mine / Stake 交易反馈按下文用户确认规则，其他未确认视觉仍属于 Q-12，不得自行扩展。
 - 链上错误到 UI 文案的映射由 Feature 负责（`docs/web3.md`），错误列表见 web3.md。
+
+## 交易反馈（User Confirmed）
+
+- Mine 与 Stake 的输入校验错误只显示在当前卡片内，居中、红色、沿用既有字号；输入改正或清空后由当前输入重新计算，不保留交易错误。
+- 点击按钮进入交易流程后的 Gas、模拟、签名、提交、确认及刷新错误统一使用公共 Sonner `toast.error`；成功使用 `toast.success`。均为 top-center、richColors、默认字号、3秒消失。同一终态的重渲染和语言切换不重复弹出，新的失败尝试可再次提示。
+- 卡片下不再添加交易状态、错误、hash 或账户/链信息。忙碌状态保留原按钮内的进度和禁用逻辑。
+- Toast 生命周期不改变 transaction owner。确认结果未知时原按钮变为检查交易；确认后校验/刷新失败时变为重试校验/重试刷新。恢复只查原交易或重读数据，不重新签名或提交；恢复进行中按钮禁用，原表单保持锁定。Mine 自动停止及奖励领取同样保留原操作的恢复入口，即使链上读取已显示 inactive / 零奖励。
+- Stake 授权完成不提示存入成功；存入/取出须 receipt 确认且刷新成功才显示成功 Toast 并清空对应草稿。Mine 沿用各 transaction owner 的 success 完成条件。
 
 ## Responsive
 
@@ -159,13 +167,13 @@ Step3  获胜方块保持点亮 10s
 
 ## Language switch
 
-User Confirmed：钱包入口右侧提供单个 32×32 `中` / `EN` 切换按钮；显示当前语言，点击切换另一语言。13px / 400，radius 8px、2px border、项目背景色。支持 `en` / `zh-CN`；保留 EN 默认值，显式选择优先，不检测浏览器语言。
+User Confirmed：钱包入口右侧提供单个 32×32 `中` / `EN` 切换按钮；显示当前语言，点击切换另一语言。13px / 400、line-height normal，radius 8px、2px border、项目背景色。支持 `en` / `zh-CN`；保留 EN 默认值，显式选择优先，不检测浏览器语言。
 
 `app_locale` cookie（Path=/、SameSite=Lax、1 年；HTTPS 下 Secure）是服务端可见偏好。`app/request-locale.ts` 每请求统一解析；RootLayout 将同一 locale 交给 html lang、App Shell 与 LocaleProvider。切换写 cookie 后 `router.refresh()` 刷新 RSC，不 reload，不 key/remount Wallet Provider，不修改钱包、链或查询 identity。资源按 App Shell / Feature / Shared owner 存放；Client 使用 Context 中的同一 resolved locale，无 localStorage / Zustand locale 镜像。现有 Stake、Explore、Wallet 与占位标题可切换；正式 About 正文、Points 规则、Privy SDK 自有弹窗文案不在此资源中推造。
 
 ## Latest Human Decision — Manual / Auto interaction
 
-Manual→Auto允许：hasDeployedThisRound仅影响Manual最终action，不影响Auto配置/eligibility。Active Auto→Manual不允许：chain active整体替换Trade Card，移除两个form/tabs/注册入口；Stop确认并刷新inactive后恢复Trade，独立Manual单轮一次限制仍生效。Auto普通Register/Stop失败用户侧只显示“操作失败，请重试。”；decoded error仅留内部分类。输入校验仍可提供明确字段提示；confirmation unknown和confirmed后verify/refresh失败保留专用安全提示，只读Retry，不resend。
+Manual→Auto允许：hasDeployedThisRound仅影响Manual最终action，不影响Auto配置/eligibility。Active Auto→Manual不允许：chain active整体替换Trade Card，移除两个form/tabs/注册入口；Stop确认并刷新inactive后恢复Trade，独立Manual单轮一次限制仍生效。Auto普通Register/Stop失败用户侧只显示“操作失败，请重试。”；decoded error仅留内部分类。Gas不足、confirmation unknown和confirmed后verify/refresh失败使用专用安全文案，遵守上文交易反馈规则；恢复只读Retry，不resend。输入校验仍提供明确字段提示。
 
 ## M10 Miners — latest Human Decision
 

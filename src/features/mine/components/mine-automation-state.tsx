@@ -1,4 +1,5 @@
 "use client";
+import { mineRecoveryAction } from "../transaction/feedback";
 import { useMineCopy } from "../copy";
 import type { AutomationPresentation } from "../model/mine-presentation";
 import type { MineAutoUI } from "../transaction/use-mine-auto";
@@ -10,6 +11,9 @@ export function MineAutominerState({
   auto,
 }: Readonly<{ display?: AutomationPresentation; auto?: MineAutoUI }>) {
   const copy = useMineCopy();
+  const recovery = auto?.stateVisible
+    ? mineRecoveryAction(auto.state)
+    : undefined;
   return (
     <section className={styles.autominer} aria-label={copy.autominer}>
       <h2>{copy.autominer}</h2>
@@ -34,12 +38,14 @@ export function MineAutominerState({
         type="button"
         className={styles.deployAction}
         data-appearance="ready"
-        disabled={!auto?.canStop}
-        onClick={auto?.stop}
+        disabled={!recovery && !auto?.canStop}
+        onClick={recovery ? () => void auto?.retry() : auto?.stop}
       >
-        {auto?.busy
-          ? copy.autoFlow.phases[auto.state.phase]
-          : copy.stopAutominer}
+        {recovery
+          ? copy.transaction[recovery]
+          : auto?.busy
+            ? copy.autoFlow.phases[auto.state.phase]
+            : copy.stopAutominer}
       </button>
     </section>
   );

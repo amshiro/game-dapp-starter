@@ -1,13 +1,7 @@
 "use client";
-
-import {
-  adjacentPage,
-  validPagination,
-  type PaginationDisplay,
-} from "../model/explore-display";
+import { Pagination } from "../../../shared/ui/pagination/pagination";
+import type { PaginationDisplay } from "../model/explore-display";
 import { useExploreCopy } from "../copy";
-import styles from "./explore.module.css";
-
 export function ExplorePagination({
   title,
   page,
@@ -21,46 +15,20 @@ export function ExplorePagination({
 }>) {
   const copy = useExploreCopy();
   return (
-    <nav
-      aria-label={`${title} ${copy.pagination}`}
-      className={styles.pagination}
-    >
-      {validPagination(page) && (
-        <span
-          className={styles.currentPage}
-          aria-current="page"
-          aria-label={`${copy.page} ${page.currentPage}`}
-        >
-          {page.currentPage}
-        </span>
-      )}
-      {(["previous", "next"] as const).map((direction) => {
-        const target = adjacentPage(page, direction);
-        const disabled = busy || !onPageChange || target === undefined;
-        return (
-          <button
-            key={direction}
-            type="button"
-            disabled={disabled}
-            aria-label={copy[direction]}
-            className={styles.pageButton}
-            onClick={() => {
-              if (!disabled && target !== undefined) onPageChange?.(target);
-            }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={`/ori/explore/page-${direction}.svg`}
-              width={28}
-              height={28}
-              alt=""
-              className={
-                direction === "previous" ? styles.previousIcon : undefined
-              }
-            />
-          </button>
-        );
-      })}
-    </nav>
+    <Pagination
+      page={
+        page && page.total !== undefined
+          ? { currentPage: page.currentPage, total: page.total, pageSize: 10 }
+          : undefined
+      }
+      busy={busy}
+      onPageChange={onPageChange}
+      labels={{
+        title: `${title} ${copy.pagination}`,
+        previous: copy.previous,
+        next: copy.next,
+        page: copy.page,
+      }}
+    />
   );
 }

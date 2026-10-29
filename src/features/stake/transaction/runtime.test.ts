@@ -87,6 +87,12 @@ function transactionFor(transactionHash: Hash, input: Hash): Transaction {
 function harness() {
   const tags: unknown[] = [];
   const raw = {
+    native: BigInt(1000000),
+    estimatedGas: BigInt(100),
+    gasPrice: BigInt(100),
+    depositPeak: "0xc8" as string | undefined,
+    sequenceFails: false,
+    sequenceUnsupported: false,
     balance: BigInt(100),
     stake: BigInt(10),
     total: BigInt(9000),
@@ -103,6 +109,27 @@ function harness() {
           if (method === "eth_chainId") return "0x61";
           if (method === "eth_blockNumber")
             return `0x${raw.block.toString(16)}`;
+          if (method === "eth_getBalance")
+            return `0x${raw.native.toString(16)}`;
+          if (method === "eth_estimateGas")
+            return `0x${raw.estimatedGas.toString(16)}`;
+          if (method === "eth_gasPrice")
+            return `0x${raw.gasPrice.toString(16)}`;
+          if (method === "eth_simulateV1") {
+            if (raw.sequenceUnsupported) throw Error("method unsupported");
+            return [
+              {
+                calls: [
+                  { status: "0x1", gasUsed: "0x64", maxUsedGas: "0x64" },
+                  {
+                    status: raw.sequenceFails ? "0x0" : "0x1",
+                    gasUsed: "0x64",
+                    maxUsedGas: raw.depositPeak,
+                  },
+                ],
+              },
+            ];
+          }
           if (method !== "eth_call") throw Error("Unexpected non-read RPC");
           const [call, tag] = params as [{ to: string; data: Hash }, string];
           tags.push(tag);
@@ -341,4 +368,91 @@ describe("Stake runtime contracts and allowance", () => {
       ).toMatchObject({ confirmations: 1, hash });
     },
   );
+});
+
+describe("Stake fee preflight", () => {
+  it.each(["deposit", "withdraw"] as const)(
+    "sends buffered %s fees and allows exact budget",
+    async (step) => {
+      const h = harness();
+      h.raw.native = BigInt(11025);
+      await h.deps.simulate(operation, step);
+      await h.deps.send(operation, step);
+      expect(writeContract).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ gas: BigInt(105), gasPrice: BigInt(105) }),
+      );
+    },
+  );
+  it("rejects funds sufficient for approval alone before opening wallet", async () => {
+    const h = harness();
+    h.raw.native = BigInt(11025);
+    await expect(h.deps.simulate(operation, "approve")).rejects.toThrow(
+      "insufficient-gas",
+    );
+    expect(writeContract).not.toHaveBeenCalled();
+  });
+  it.each([33074, 33075])(
+    "checks both buffered budgets at BNB boundary %s",
+    async (native) => {
+      const h = harness();
+      h.raw.native = BigInt(native);
+      if (native === 33074)
+        await expect(h.deps.simulate(operation, "approve")).rejects.toThrow(
+          "insufficient-gas",
+        );
+      else {
+        await h.deps.simulate(operation, "approve");
+        await h.deps.send(operation, "approve");
+        expect(writeContract).toHaveBeenCalledTimes(1);
+      }
+    },
+  );
+  it("uses peak deposit gas instead of post-refund gas used", async () => {
+    const h = harness();
+    h.raw.native = BigInt(22050);
+    await expect(h.deps.simulate(operation, "approve")).rejects.toThrow(
+      "insufficient-gas",
+    );
+  });
+  it.each(["sequenceFails", "sequenceUnsupported"] as const)(
+    "never sends when %s",
+    async (key) => {
+      const h = harness();
+      h.raw[key] = true;
+      await expect(h.deps.simulate(operation, "approve")).rejects.toThrow();
+      expect(writeContract).not.toHaveBeenCalled();
+    },
+  );
+  it("does not invent a deposit gas limit if RPC omits its peak", async () => {
+    const h = harness();
+    h.raw.depositPeak = undefined;
+    await expect(h.deps.simulate(operation, "approve")).rejects.toThrow(
+      "rpc-error",
+    );
+  });
+  it("rechecks BNB after preparing, without reusing failed preparation", async () => {
+    const h = harness();
+    await h.deps.simulate(operation, "deposit");
+    h.raw.native = BigInt(11024);
+    await expect(h.deps.send(operation, "deposit")).rejects.toThrow(
+      "insufficient-gas",
+    );
+    h.raw.native = BigInt(100000);
+    await expect(h.deps.send(operation, "deposit")).rejects.toThrow(
+      "simulation-reverted",
+    );
+    expect(writeContract).not.toHaveBeenCalled();
+  });
+  it("re-estimates after approval and stops when remaining BNB cannot cover deposit", async () => {
+    const h = harness();
+    await h.deps.simulate(operation, "approve");
+    await h.deps.send(operation, "approve");
+    h.raw.gasPrice = BigInt(200);
+    h.raw.native = BigInt(11025);
+    await expect(h.deps.simulate(operation, "deposit")).rejects.toThrow(
+      "insufficient-gas",
+    );
+    expect(writeContract).toHaveBeenCalledTimes(1);
+  });
 });

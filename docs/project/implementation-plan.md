@@ -171,7 +171,7 @@ About + Points 完整 UI 本轮已通过人工审核；M7 polling/freshness 暂�
 
 [正式范围/数据 owner/最终矩阵](./mine-requirements-reconciliation.md) 已核对七个 Mine frame、历史功能与既有97证据。新产品不继承旧界面；runtime capability 不等于产品许可。当前交付仍为 read-only UI，暂停草稿本轮未修改；M3 限定 Manual Core 的需求已 READY，可在下一阶段恢复实现，不代表已实现或真实交易通过。
 
-保留既有票号：M3 Manual → M4 Auto（先签资金/选择/执行器 Gate）→ M9 lifecycle/countdown/result → M5/M6 ORI rewards → M10 Miners → M7 polling → M8 realtime。M11 Origin 为独立 FUTURE GATE。M7 不再是 M3/M4/M6 的硬依赖；operation 自己负责 fresh preflight 与 receipt 后读取。历史60秒、收益/母矿概率、旧API单位不自动转为产品事实。Stake Real Tx QA 继续 DEFERRED — TEST ORI REQUIRED，不阻塞 Manual。
+保留既有票号：M3 Manual → M4 Auto（先签资金/选择/执行器 Gate）→ M9 lifecycle/countdown/result → M5/M6 ORI rewards → M10 Miners → M7 polling → M8 realtime。M11起源领取已人工排除（OUT OF SCOPE），不进入开发序列。M7 不再是 M3/M4/M6 的硬依赖；operation 自己负责 fresh preflight 与 receipt 后读取。历史60秒、收益/母矿概率、旧API单位不自动转为产品事实。Stake Real Tx QA 继续 DEFERRED — TEST ORI REQUIRED，不阻塞 Manual。
 
 ## M3 Mine Manual Core — 当前实现状态
 
@@ -207,4 +207,4 @@ Human decisions CLOSED，Development97 implementation COMPLETE：当前开奖轮
 
 ## Mine Development checkpoint — runtime QA boundary
 
-M4 Auto Core、M5 Rewards Read/Claim、M9 Result/Animation、M10 Winners、M7 bounded freshness、M8 signal-only实现与自动QA完成。以下均保持 **RUNTIME QA PENDING**：Auto successful execution fee deduction；Auto real Register/Stop；Rewards non-zero real Claim；Winners non-empty real dataset；realtime real event/subscription/resync；result real lifecycle。不能把simulation、fixture、socket/HMR或build通过写为VERIFIED，不阻塞本Development checkpoint。Production56独立Release Gate；M11继续后置，当前仅允许需求review。
+M4 Auto Core、M5 Rewards Read/Claim、M9 Result/Animation、M10 Winners、M7 bounded freshness、M8 signal-only实现与自动QA完成。以下均保持 **RUNTIME QA PENDING**：Auto successful execution fee deduction；Auto real Register/Stop；Rewards non-zero real Claim；Winners non-empty real dataset；realtime real event/subscription/resync；result real lifecycle。不能把simulation、fixture、socket/HMR或build通过写为VERIFIED，不阻塞本Development checkpoint。Production56独立Release Gate；M11已完成需求review后由人工明确排除：新版不做起源奖励领取（OUT OF SCOPE），不等待后续实现或Human Gate。

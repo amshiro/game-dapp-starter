@@ -1,3 +1,4 @@
+import { bufferedGasFees } from "../../../shared/web3/evm/gas-budget";
 import {
   decodeEventLog,
   encodeFunctionData,
@@ -187,10 +188,11 @@ export function createManualDependencies({
       const before = await gate(o),
         call = manualCall(o);
       await client().simulateContract(call);
-      const [gas, gasPrice] = await Promise.all([
+      const [estimatedGas, currentGasPrice] = await Promise.all([
         client().estimateContractGas(call),
         client().getGasPrice(),
       ]);
+      const { gas, gasPrice } = bufferedGasFees(estimatedGas, currentGasPrice);
       const after = await gate(o);
       if (after.round !== before.round || after.canDeploy !== before.canDeploy)
         throw new ManualFault("round-unavailable");
@@ -207,6 +209,15 @@ export function createManualDependencies({
         throw new ManualFault("simulation-reverted");
       const fees = prepared;
       prepared = undefined;
+      if (
+        (await client().getBalance({
+          address: o.account,
+          blockTag: "pending",
+        })) <
+        o.value + fees.gas * fees.gasPrice
+      )
+        throw new ManualFault("insufficient-native");
+      current(o);
       return writeContract(config, {
         ...manualCall(o),
         chainId: 97,

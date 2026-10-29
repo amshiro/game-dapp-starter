@@ -21,6 +21,10 @@ function DevelopmentMine() {
         targetChainId: target.id,
         address: "address" in identity ? identity.address : undefined,
         ready: identity.status === "connected",
+        identityPending:
+          identity.status === "loading" ||
+          identity.status === "connecting" ||
+          identity.status === "synchronizing",
         wrongChain:
           identity.status === "chain-mismatch" ||
           identity.status === "chain-unknown",

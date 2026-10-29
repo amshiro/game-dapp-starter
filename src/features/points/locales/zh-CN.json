@@ -4,9 +4,16 @@
   "myPoints": "我的积分",
   "records": "记录",
   "rule": "每下注 1 USD 可获得 1 积分。",
-  "demo": "静态演示",
   "time": "时间",
   "stake": "投入",
   "value": "价值",
-  "earned": "获得积分"
+  "earned": "获得积分",
+  "loading": "加载中…",
+  "empty": "暂无数据",
+  "error": "数据加载失败",
+  "unavailable": "数据暂不可用",
+  "pagination": "分页",
+  "previous": "上一页",
+  "next": "下一页",
+  "page": "页"
 }

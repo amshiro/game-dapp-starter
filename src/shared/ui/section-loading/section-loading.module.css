@@ -1,0 +1,19 @@
+.spinner {
+  display: inline-flex;
+  flex: none;
+  vertical-align: middle;
+  color: var(--ori-color-accent);
+}
+.spinner svg {
+  animation: rotate 1s linear infinite;
+}
+@keyframes rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spinner svg {
+    animation: none;
+  }
+}

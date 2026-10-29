@@ -27,6 +27,8 @@ export function assertFirstManualDeploy(
 }
 
 export function manualAmount(input: string): bigint {
+  // A trailing decimal point is a valid editing state (e.g. "1.").
+  input = input.replace(/\.$/, "");
   // Reject precision that parseEther would otherwise round; 1 wei is evidence, not a product minimum.
   if (!/^\d+(?:\.\d{1,18})?$/.test(input)) throw Error("invalid-amount");
   const raw = parseEther(input);

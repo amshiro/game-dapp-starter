@@ -1,5 +1,5 @@
-import { ExplorePage } from "../../src/features/explore/explore-page";
+import { ExploreRuntime } from "./explore-runtime";
 
 export default function Page() {
-  return <ExplorePage />;
+  return <ExploreRuntime />;
 }

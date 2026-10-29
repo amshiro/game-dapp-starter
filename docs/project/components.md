@@ -21,7 +21,7 @@ Figma 中没有 Component，以下候选全部从重复视觉中识别。
 | DataTable | Points Records、Explore 三表 | 横向滚动；表头 / 行 | Points、Explore | 列定义由 Feature 提供 |
 | Pagination（‹ ›） | `2003:2883` 等 | 首页只有下一页 | Explore（Points 未画分页） | 圆形 28px 按钮 |
 | Sheet / Dialog primitive | `2003:2490` | H5 bottom / PC center，面板 PC 400px 居中，全屏 backdrop | 目前只有 Wallet | `shared/ui/modal` 原生 dialog 提供 top layer、ESC、遮罩点击、焦点隔离/恢复与 scroll lock；默认视觉、标题栏与关闭资产由 Shared 提供；Wallet 仅注入业务内容/标题与关闭通知，无拖拽关闭 |
-| InfoHint（ⓘ） | `2003:1988` 等 | — | Stake Summary、Rewards | 说明内容与交互（tooltip / popover）未设计，暂时只渲染图标或等待确认 |
+| InfoHint（ⓘ） | `2003:1988` 等 | — | Stake Summary、Rewards | Stake 已由用户确认三项说明：PC 悬停、H5 点击，Feature-local 实现；Rewards 仍仅图标，未解锁其说明 |
 | AboutAccordion | About 行 `2003:2245` 等 | 默认全收起、单项展开/再点可收起 | `features/about/components` | 局部 React state + 原生 button/ARIA，调用方注入标题/内容，无新 dependency 或 Shared abstraction |
 
 ## Project App Shell

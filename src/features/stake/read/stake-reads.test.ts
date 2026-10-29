@@ -230,7 +230,7 @@ describe("Stake exact display and readiness", () => {
   it("uses exact 18-decimal strings and bigint without floating point", () => {
     expect(principalDisplay(success, connected(), true)).toEqual({
       status: "populated",
-      text: "6527.156351",
+      text: "6,527.156351",
       exact: "6527.156351833573905102",
       raw: success.data,
     });
@@ -252,7 +252,7 @@ describe("Stake exact display and readiness", () => {
         true,
       ),
     ).toMatchObject({
-      text: "900719925474099312345.123456",
+      text: "900,719,925,474,099,312,345.123456",
       exact: "900719925474099312345.123456789123456789",
     });
   });

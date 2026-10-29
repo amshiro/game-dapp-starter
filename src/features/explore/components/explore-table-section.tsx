@@ -1,4 +1,6 @@
 "use client";
+import { EmptyState } from "../../../shared/ui/empty-state/empty-state";
+import { SectionLoading } from "../../../shared/ui/section-loading/section-loading";
 
 import { useId } from "react";
 import type {
@@ -47,8 +49,8 @@ export function ExploreTableSection({
           aria-labelledby={heading}
         >
           <colgroup>
-            {columns.map((name, i) => (
-              <col key={name} className={styles[`column${i}`]} />
+            {columns.map((name) => (
+              <col key={name} />
             ))}
           </colgroup>
           <thead>
@@ -74,12 +76,15 @@ export function ExploreTableSection({
         </table>
       </div>
       {rows.length === 0 && (
-        <p
-          className={styles.readState}
-          role={status === "error" ? "alert" : "status"}
-        >
-          {copy[status]}
-        </p>
+        <div className={styles.readState}>
+          {status === "loading" ? (
+            <SectionLoading label={copy.loading} />
+          ) : status === "empty" ? (
+            <EmptyState label={copy.empty} />
+          ) : (
+            <p role={status === "error" ? "alert" : "status"}>{copy[status]}</p>
+          )}
+        </div>
       )}
       <ExplorePagination
         title={copy[kind]}

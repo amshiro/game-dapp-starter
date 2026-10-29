@@ -334,7 +334,7 @@ describe("Mine display safety", () => {
     });
     expect(mineAmount(BigInt("900719925474099312345678901234567890"))).toEqual({
       exact: "900719925474099312.34567890123456789",
-      text: "900719925474099312.3456",
+      text: "900,719,925,474,099,312.3456",
     });
     expect(mineAmount(BigInt(0))).toEqual({ exact: "0", text: "0" });
     expect(mineCount(BigInt("1200"))).toBe("1.2K");

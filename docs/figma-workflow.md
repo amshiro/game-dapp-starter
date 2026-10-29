@@ -221,13 +221,26 @@ confirmed equivalent library icon
 
 ### Vector、Raster 与命名
 
-Figma 原始为 Vector 时，优先保留 vector 能力。根据项目需求选择 SVG file、inline SVG 或 React component；不得机械要求所有 SVG 转换为 React Component。
+资源格式与导出倍率按以下默认规则执行：
 
-Raster export 应按实际显示尺寸、DPR、清晰度、文件大小与资源类型决定。不得建立所有图片统一 3x 的规则；小型 icon-like raster 与大型 background 的合理倍率可能不同。设计资源本身透明时，必须保留透明背景。
+| 资源类型 | 默认实现 / 导出规则 |
+| --- | --- |
+| 原始矢量图标、Logo | 保留 SVG，不转成 PNG；按用途使用 SVG file、inline SVG 或 React component，不要求全部转换成 React component |
+| 小型位图：代币图标、头像、小插图等 | 默认导出 3x |
+| 大型背景位图 | 默认导出 2x |
+| 纯色、普通渐变、简单形状 | 使用 CSS，无需导出图片；不得借此临摹品牌标志或定制图标 |
+
+小图与大型背景按实际用途和展示范围区分，不能仅凭源文件像素尺寸分类。设计资源本身透明时，必须保留透明背景与正确宽高比。
+
+执行细则：
+
+1. **倍率按实际最大展示尺寸计算。** 同一图标用于 16px 和 20px 时，按 20px × 3 准备至少 60×60 像素的位图。需覆盖已确认的 PC / H5 布局和复用位置；Figma 节点尺寸与实际最大展示尺寸不一致时，应设置正确的输出像素尺寸，不能机械使用该节点的 3x 导出结果。
+2. **需要保留节点处理时使用 Export。** 有裁剪、遮罩、调色等效果时，导出最终资产节点。直接使用原始 Asset 时，必须核对这些处理及最终渲染外观，并确认源图像素尺寸足够；原图像素尺寸不代表节点显示尺寸或导出倍率。导出的目标是资产节点，不是包含文字、按钮或卡片的父 Frame。
+3. **源图不足时不靠放大凑倍率。** 位图源像素不足时，报告缺少高分辨率素材，不把插值放大当作达到清晰度要求。因特殊大文件等情况需要偏离默认倍率时，先说明实际展示尺寸、目标 DPR、文件体积和清晰度影响，再按任务授权确定例外，不静默降低规格。
 
 正式落地的 asset 应使用语义化名称，避免 image1.png、Frame-123.png、Group-7.svg 等临时名称进入长期生产代码。本文不锁定 asset directory；存放位置由 owner、reuse 与现有工程架构决定。
 
-具体资源导出格式、倍率和当前 Figma MCP 的操作方式应依据当时官方能力与项目需求决定；不得把某次 MCP API 固化为永久规则。
+资源分类与默认倍率以上述规则为准；具体导出操作按当前 Figma 官方能力执行，不把某次 MCP API 固化为永久规则。
 
 ## Phase 5：Implementation Plan
 
@@ -508,7 +521,7 @@ ambiguity handling
 以下事项随 Figma 当前官方能力、项目和团队流程确定，本文不预先锁定：
 
 - 具体 Figma MCP tool names 与 call sequence；
-- asset export API、精确格式与倍率；
+- asset export API 与默认分类以外的特殊格式；默认资源分类与倍率已在 Phase 4 定义；
 - Code Connect strategy；
 - Figma branch workflow 与 design approval workflow；
 - specific screenshot / pixel diff tooling；

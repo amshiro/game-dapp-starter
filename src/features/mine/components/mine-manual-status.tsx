@@ -1,4 +1,6 @@
 "use client";
+import { useToastFeedback } from "../../../shared/ui/toast/use-toast-feedback";
+import { mineTerminalError } from "../transaction/feedback";
 import { useMineCopy } from "../copy";
 import type { MineManualUI } from "../transaction/use-mine-manual";
 import styles from "./mine.module.css";
@@ -23,66 +25,41 @@ export type ManualPanelControls = Pick<
 export function MineManualStatus({
   manual,
 }: Readonly<{ manual: ManualPanelControls }>) {
-  const copy = useMineCopy().transaction;
-  const state = manual.stateVisible ? manual.state : undefined;
-  // The deployed-state notice belongs to the action button, never a second status block.
-  if (
-    !manual.busy &&
-    !manual.error &&
-    manual.hasDeployedThisRound &&
-    (!state || state.phase === "idle")
-  )
-    return null;
-  if (
-    !state?.chainConfirmed &&
-    (state?.error === "already-deployed-round" ||
-      state?.error === "duplicate-cell")
-  )
-    return null;
-  const message = state?.error
-    ? copy.errors[state.error]
-    : manual.error
-      ? copy.errors[manual.error]
-      : manual.busy && !manual.stateVisible
-        ? copy.otherPending
-        : state && state.phase !== "idle"
-          ? copy.phases[state.phase]
-          : manual.hasDeployedThisRound === undefined
-            ? copy.accountUnavailable
-            : copy.perCell;
-  const quiet =
-    !manual.busy &&
-    !manual.error &&
-    (manual.hasDeployedThisRound !== undefined ||
-      manual.display.appearance === "disconnected") &&
-    (!state || state.phase === "idle");
-  return (
-    <div className={quiet ? styles.boundary : styles.transactionStatus}>
-      <p role="status" aria-live="polite">
+  const copy = useMineCopy();
+  const message =
+    manual.error === "invalid-amount"
+      ? copy.transaction.errors[manual.error]
+      : manual.display.appearance === "insufficient"
+        ? copy.insufficient
+        : undefined;
+  return message ? (
+    <div className={styles.transactionStatus}>
+      <p className={styles.amountError} role="status" aria-live="polite">
         {message}
       </p>
-      {state?.chainConfirmed && <p>{copy.chainConfirmed}</p>}
-      {state?.operationRound !== undefined && (
-        <p>
-          {copy.operationRound}: #{state.operationRound.toString()}
-        </p>
-      )}
-      {state?.hash && (
-        <p className={styles.txHash}>
-          {copy.hash}: <code>{state.hash}</code>
-        </p>
-      )}
-      {state &&
-        (["refresh-failed", "verification-failed"].includes(state.phase) ||
-          state.confirmationUnknown) && (
-          <button type="button" onClick={() => void manual.retry()}>
-            {state.confirmationUnknown
-              ? copy.checkConfirmation
-              : state.phase === "verification-failed"
-                ? copy.retryVerification
-                : copy.retryRefresh}
-          </button>
-        )}
     </div>
+  ) : null;
+}
+
+export function MineManualFeedback({
+  manual,
+}: Readonly<{ manual: ManualPanelControls }>) {
+  const copy = useMineCopy().transaction;
+  const state = manual.stateVisible ? manual.state : undefined;
+  useToastFeedback(
+    !state
+      ? undefined
+      : mineTerminalError(state)
+        ? {
+            key: state,
+            type: "error",
+            message: state.error
+              ? copy.errors[state.error]
+              : copy.phases[state.phase],
+          }
+        : state.phase === "success" && state.chainConfirmed
+          ? { key: state, type: "success", message: copy.phases.success }
+          : undefined,
   );
+  return null;
 }
