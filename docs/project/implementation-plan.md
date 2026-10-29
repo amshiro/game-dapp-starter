@@ -176,3 +176,11 @@ About + Points 完整 UI 本轮已通过人工审核；M7 polling/freshness 暂�
 ## M3 Mine Manual Core — 当前实现状态
 
 用户已正式授权恢复并接通限定 Manual Core；正式 /mine 支持本地多选、per-cell BNB、本人round读取与一次Deploy防线，97 simulation→receipt/event→refresh生命周期已实现。无签名浏览器交互与自动测试完成情况见 [实现记录](./mine-manual-implementation-plan.md)。用户最终人工验收已确认Chain97真实Manual Deploy PASS；这是用户提供的真实交易验收结论，不是自动化测试推断。之前章节的 read-only/暂停表述为交付历史；Auto/Rewards/Countdown/Polling/Realtime继续后置，无commit/push/deploy。
+
+## M4 Auto Transaction Gate — 前轮限定调查记录（后续实现授权见下节）
+
+见[M4 Auto Gate](./mine-auto-transaction-gate.md)。本轮仅文档和Chain97只读/非持久化模拟，无签名、广播或Auto实现。人工已签fixed/random、每格金额、principal-only显示与含费实际value、active整体换卡、self Stop及合约退款；当前register/getter/stop已验证。当时Gate结论BLOCKED（现已由下节人工Development放行覆盖）：execution费用扣减仅有历史上下文证据，历史implementation与当前关联受RPC缺历史状态限制；M4产品层全部closed：前端rounds限制1–9999（不是contract maximum），Running Card remaining原样用backend extend_data.round_remaining，缺失留空、不估算/不补—。最新定点simulation仍RoundNotLive，runtime path technically unresolved；产品公式不重新标OPEN。M3 checkpoint/真实97验收保持完成；Stake Real Tx QA仍DEFERRED — TEST ORI REQUIRED。Production56、Auto execution服务能力、polling/realtime未解锁。
+
+## M4 Auto Core — Development Human-approved implementation
+
+人工明确接受RoundNotLive造成的execution扣费证据缺口，不再阻塞Development97 Auto Core；产品层全部closed。当前已接Auto config、fixed/random、含fee value、getAutomation owner、backend remaining原样/缺失空白、register/RunningCard/Stop和严格receipt/event/read lifecycle，见[实现记录](./mine-auto-core-implementation.md)。**AUTO EXECUTION FEE DEDUCTION = RUNTIME QA PENDING**，只在真实有效轮次execution QA后关闭；不声称已真实注册/停止/执行。无Rewards/新Miners/polling/realtime/Production56；本轮不签名、广播、commit/push/deploy。

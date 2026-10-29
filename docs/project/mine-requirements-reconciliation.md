@@ -64,17 +64,17 @@ Figma Auto **代表真实自动挖矿功能 Scope**，不只是永久静态展�
 
 | 能力 | Figma + baseline + ABI 对照 | 结论 |
 | --- | --- | --- |
-| 注册 / 停止 | 6 的 Deploy；4b Autominer/Stop；历史 `registerAutomation(tuple)` payable、`stopAutomation(to)` | KEEP，进入独立 M4；真实 runtime write、recipient/退款与完成语义先 Gate |
+| 注册 / 停止 | 6 Deploy；4b Stop；payable register / stop(to) | M4 Human approved：stop recipient=self，receipt/event/read完成；当前97虚拟register/duplicate/stop/refund已验证；不代表真实Auto TX或bot验收 |
 | Blocks | 6 的 Blocks 数量/selected list；4b Random×25 | 是 cell 数量/选择集合，不是区块高度或回合长度 |
-| fixed / random | 历史有 selected cells 则 fixed mask，否则 Blocks count + randomizeMask=true；4b 有 Random，6 有选中格列表 | 两类 Scope 有共同证据；random/fixed 的新版选择/切换方式、空选择是否等于 random仍 OPEN，不从旧 input 自动推断 |
-| Rounds | 6 stepper 1/3；历史 roundsToFund | 计划资助/运行轮数；不是 roundId。UI default 1 有设计，旧上限 9999 不是新版限制 |
-| active presentation | 4b 以 Autominer 替换 Trade；历史 pages/mine 按 automationData.id 换卡 | KEEP 运行态替换表单、Stop；新版 active 真相应来自已验证链上 active，不能把 backend id 有值等于 active |
+| fixed / random | 历史selected位图/无selected随机count；4b Random、6固定列表 | M4 Human approved：有selected用fixed mask，无selected用random count；当前97 register编码验证通过，不再OPEN；不是本轮实现授权 |
+| Rounds | 6 stepper 1/3；历史 roundsToFund | 计划资助/运行轮数；不是 roundId。UI default1；当前人工确认1–9999为前端产品限制，不描述为已验证contract maximum |
+| active presentation | 4b Autominer替换Trade；历史backend id换卡 | M4 Human approved：active=true整体替换Manual/Auto form，无tabs/全选/二次register；当前97 P.getAutomation为owner，不能用backend id或balance>0替代active |
 | active 可否修改 | active 稿只显示摘要/Stop；历史替换后不再有 Trade config | KEEP 不提供运行中原地编辑；取消后能否同轮切 Manual 需行为/安全 Gate，不能自动重新注册 |
-| per-round total / total prepaid | 历史提交 `(perSquare×cells + executorFee)×rounds`；旧 UI total 又漏 fee；Figma 4 cells/.02/3 rounds 显示 .02/.06 | **PARTIALLY CONFIRMED / Human approved**：输入是每格金额，每轮本金=输入×cells，多轮本金再×rounds；4格/.02/3轮对应 .08/轮与 .24 BNB 本金，覆盖 Figma .02/.06。executorFee/botFee、总预付/最终 msg.value 仍 OPEN，历史含费公式不能直接采用 |
-| executorFee / botFee | Protocol config.executorFee、Automation.botFee；Protocol getAutomation 返回 7 字段，View projection 为 6 字段/无 botFee | ABI/版本和实际 fee 消费/rounds remaining 语义须 runtime 验证；不把 View projection 当已完整证明一致 |
-| prepaid BNB | Figma Total 与部署按钮；历史 payable 预存 | KEEP 预付概念；准确本金/执行费/gas/退款/remainingRounds 公式必须先签收 |
+| per-round total / total prepaid | 历史提交 `(perSquare×cells + executorFee)×rounds`；旧 UI total 又漏 fee；Figma 4 cells/.02/3 rounds 显示 .02/.06 | M4 Human approved：页面每轮/总计/按钮只显示本金，4格/.02/3轮=.08/.24 BNB；实际value=(perSquare×cells+executorFee)×rounds，余额加gas。当前exact/±1均接受；当前版本执行扣款补证仍PARTIAL，不把已签产品公式继续标OPEN |
+| executorFee / botFee | P.config index8；P.getAutomation七字段/View六字段 | 当前97 config=10^12 wei，register覆盖botFee为该值，六字段投影匹配；历史execution每次额外扣fee证据与当前implementation关联未证；remaining显示已人工锁定backend extend_data.round_remaining原样展示、缺失留空 |
+| prepaid BNB | Figma Total/按钮；历史payable预存 | 人工已签本金与含fee value分离、gas能力、退款属合约；remaining由backend字段直出、缺失留空；仅current implementation execution扣费补证仍是技术Gate |
 
-Auto 的 provisional canonical owner：Protocol `getAutomation(account)` / config；backend 仅提供签收后的 enrichment，例如 round_remaining。剩余轮数不是当前 ABI 明确字段，不自行由 balance/executorFee 猜计算。人工签收策略、ABI/runtime compatibility 和 Auto-specific UX Gate 不被 Manual Gate 自动覆盖。
+M4 Gate的当前证据与人工决定见[Auto Transaction Gate](./mine-auto-transaction-gate.md)。canonical account owner已确认Protocol `getAutomation(account)`，config为新注册fee来源；backend仅enrichment，三个null样本不能证明非空contract。链上无remainingRounds直接字段；当前人工锁定Running Card使用POST /ori/automation/user的extend_data.round_remaining原样显示、缺失留空，禁止balance/fee预算估算。rounds输入1–9999是产品限制；10000预算被接受不改变该限制。产品层全部closed；人工已批准M4 Development实现；execution实际扣费=RUNTIME QA PENDING（待真实QA），不再BLOCK implementation，不影响M3已完成状态。
 
 ## 5. Round lifecycle 与 countdown
 
@@ -181,7 +181,7 @@ A=可能需要链上不能完整提供的 enrichment；B=已有或可用的链�
 | --- | --- | --- | --- |
 | /latest/events | B（round身份）+ A候选（链下计时metadata）+ D | data flat；有 round_id/start/end/timestamp/reset_event_round_id，round_id 为 number；common.timestamp另有 | 不作第二个 current-round owner；秒计时权威与lossless身份未签收，不能沿旧 max/+1 |
 | /round | B + D | HTTP200，data={round_id:string,global,user,last_updated}；此前未登记于正式API Contract，不再表述为“已证明不可达” | 不接入：public board/account principal 使用链读；非空字段、单位及链关联仍需Contract，旧8 decimals不继承 |
-| /automation/user | B（链上配置）+ A（remaining等enrichment）+ D | 零地址 data=null；正式文档有 extend_data，但本次未验证活动配置 | 先用经验证的 Protocol配置真相；extend.round_remaining 需owner/单位/fee策略，不能凭null宣告功能不存在 |
+| /automation/user | B（链上配置）+ A（remaining等enrichment）+ D | 零地址 data=null；正式文档有 extend_data，但本次未验证活动配置 | 先用经验证的 Protocol配置真相；当前人工已锁定extend_data.round_remaining为remaining display owner，原样显示、缺失留空，不推算；非空runtime样本未验证不改变产品决定 |
 | /round_winners/round | A候选（payout/排序）+ D | data={round_id:string,total,list:[],reset_event}；非空行未验证 | 与正式API reference的endpoint内容错位问题仍在；不自动交换两个endpoint，不把投注amount当payout |
 | /activity/origin_info | C（当前Origin流程）+ A + D | 有 ori_config/chain_asset_config/global/user/my_wallet | M11 FUTURE GATE；不把可达解释为允许AssetManager付款/claim |
 | /query/chain_asset_config | A（USD报价）+ D | data数组7行；不能据数量证明97价格可信 | 复用已存在Token price transport/mapper，未来确认asset/chain/单位/时效/缺价；97WBNB缺口仍不靠旧地址填充 |
@@ -221,7 +221,7 @@ M7 不是 Manual 的硬前置；fresh preflight + receipt-driven refetch 必须�
 | --- | --- | --- | --- |
 | M1 + M2 | 已审核 read-only board +四卡/全Mine视觉结构；后续字段各自补owner | 示例M1 | READY（已交付限定Scope）；完整数据仍PARTIAL |
 | M3 | Manual selection +一次真实deploy；account reads/strict transaction completion | 示例M2 | READY FOR IMPLEMENTATION，未完成实现/QA |
-| M4 | Auto config、fixed/random、register/stop、active替换卡 | 示例M3 | PARTIAL，真实资金公式/fee/runtime Gate未通过 |
+| M4 | Auto config、fixed/random、register/stop、active替换卡 | 示例M3 | Development Core已放行实现；产品公式已签收，execution实际扣费待真实QA |
 | M9 | round lifecycle、countdown、verified result与动画 | 示例M4 | OPEN，时间/状态映射Gate |
 | M5 + M6 | ORI/BNB rewards read与claim分票 | 示例M5 | PARTIAL / OPEN，不混Origin或Stake |
 | M11 | Origin rewards read/AssetManager流程 | 示例M6 | DEFERRED — FUTURE GATE |
@@ -246,7 +246,7 @@ Status 在此表指需求/数据/实施准备度：READY=限定Scope可开工或
 | Feature | Figma | Historical | Runtime | New Product Decision | Data Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | Manual | 5四态、1/2多格、同页mode | 单轮一次、旧6位/旧quick/全选 | selector/mask/value/receipt路径与异格能力已有97证据 | Human approved一次多格，禁止第二次；18位；不继承旧quick、无新全选 | Mine Feature account+public Queries / local draft / transaction owner | READY |
-| Auto | 6 config、4b active+Stop、Random | register/stop、fixed/random、预付+fee | ABI存在；资金/remaining/runtime尚未完整验证 | Human approved每格金额，覆盖4 cells示例；fee/最终预付/选择/执行器Gate仍OPEN | 候选Protocol automation/config +已签收backend enrichment | PARTIAL |
+| Auto | 6 config、4b active+Stop、Random | register/stop、fixed/random、预付+fee | 当前register/stop已模拟；execution扣费技术证据未齐 | M4产品层closed：每格金额/含fee value、fixed/random、1–9999产品上限、self Stop；remaining后端直出且缺失留空 | Protocol automation/config canonical；backend round_remaining为remaining唯一display owner | Core implementation获批；execution真实QA PENDING |
 | Board | 25格与全variants | 旧API global/user统计+伪造随机count | 97 public量/人数已读；personal有原始证据 | 保留global/own/draft三类；不采用fake count或第二轮次owner | 现有Mine public Query + future completed account mapper | READY |
 | Stats | 四卡+USD/Round alternate | 同四类，旧双母矿 | total可读，个人/母矿技术候选；USD/秒time缺owner | 保留四卡；缺owner为—；不加旧双资产/hover布局 | Mine display adapter；quote独立 | PARTIAL |
 | Countdown | 00:48 / Waiting / Round | timestamp+60-localClock | block boundaries可读，未有正式seconds deadline | Required UI，真实驱动；不继承固定60s，fallback Waiting/— | future M9 lifecycle/deadline owner | OPEN |

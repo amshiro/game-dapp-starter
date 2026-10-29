@@ -15,6 +15,8 @@ import type {
   MineCellVisual,
 } from "./model/mine-presentation";
 import type { MineManualUI } from "./transaction/use-mine-manual";
+import type { MineAutoUI } from "./transaction/use-mine-auto";
+import { MineAutoStatus } from "./components/mine-auto-status";
 import styles from "./components/mine.module.css";
 
 export function MinePage({
@@ -25,8 +27,10 @@ export function MinePage({
   results,
   cellPresentation,
   manual,
+  auto,
 }: Readonly<{
   manual?: MineManualUI;
+  auto?: MineAutoUI;
   display?: MineBoardDisplay;
   onRefresh?: () => void;
   refreshing?: boolean;
@@ -98,16 +102,24 @@ export function MinePage({
               cellPresentation?.[index]?.ownAmount ??
               manual?.ownAmounts.get(index)
             }
-            onToggle={manual ? () => manual.toggle(index) : undefined}
+            onToggle={
+              manual && !auto?.active ? () => manual.toggle(index) : undefined
+            }
             selected={manual?.selected.includes(index)}
-            selectionDisabled={manual ? !manual.selectionEnabled : undefined}
+            selectionDisabled={
+              manual
+                ? !manual.selectionEnabled || auto?.busy || auto?.active
+                : undefined
+            }
             amount={snapshot?.deployedPerSquare[index]}
             miners={snapshot?.minersPerSquare[index]}
           />
         ))}
       </ol>
-      {/* Figma state != approved runtime state. The formal read owner supplies only form/unavailable. */}
-      {actionPresentation?.kind === "autominer" ? (
+      {/* Running state comes from the chain owner; isolated Figma reward variants never create runtime rewards. */}
+      {auto?.active ? (
+        <MineAutominerState display={auto.running} auto={auto} />
+      ) : actionPresentation?.kind === "autominer" ? (
         <>
           <MineAutominerState display={actionPresentation.automation} />
           {actionPresentation.rewards && (
@@ -118,8 +130,10 @@ export function MinePage({
         <MineBettingPanel
           display={actionPresentation?.betting}
           manual={manual}
+          auto={auto}
         />
       )}
+      {auto && <MineAutoStatus auto={auto} />}
       <MineResults display={results} />
     </section>
   );

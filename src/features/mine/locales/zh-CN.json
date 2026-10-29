@@ -108,5 +108,31 @@
     "perCell": "输入为每格 BNB 金额；总本金 = 每格金额 × 格子数。",
     "otherPending": "上一笔操作仍在处理中，请等待确认。"
   },
-  "unselected": "未选中"
+  "unselected": "未选中",
+  "autoFlow": {
+    "executorFee": "执行费 / 每轮",
+    "random": "随机",
+    "funding": "每格金额；合计仅含本金，实际支付另含每轮执行费及 Gas。",
+    "errors": {
+      "invalid-blocks": "每轮格数必须为 1–25。",
+      "invalid-rounds": "回合数必须为 1–9999。",
+      "already-active": "自动挖矿已生效，请刷新查看。",
+      "not-active": "没有可停止的当前自动挖矿，请刷新。",
+      "fee-changed": "执行费已变化或不可用，请刷新并重新确认。"
+    },
+    "phases": {
+      "idle": "就绪",
+      "preparing": "检查自动挖矿…",
+      "awaiting-signature": "等待钱包确认…",
+      "submitted": "交易已提交",
+      "confirming": "等待 1 次确认…",
+      "confirmed": "链上已确认",
+      "refreshing": "刷新自动挖矿…",
+      "success": "自动挖矿状态已更新",
+      "rejected": "钱包请求已取消",
+      "failed": "自动挖矿操作未完成",
+      "refresh-failed": "链上已确认 · 刷新失败",
+      "verification-failed": "链上已确认 · 事件核验失败"
+    }
+  }
 }

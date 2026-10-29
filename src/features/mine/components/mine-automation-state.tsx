@@ -4,12 +4,14 @@ import type {
   AutomationPresentation,
   RewardPresentation,
 } from "../model/mine-presentation";
+import type { MineAutoUI } from "../transaction/use-mine-auto";
 import styles from "./mine.module.css";
 
-/** Frame 4b visual only. Formal runtime must not infer running automation from a selected Auto tab. */
+/** Frame 4b runtime is driven by chain active, never by the currently selected tab or backend id. */
 export function MineAutominerState({
   display = {},
-}: Readonly<{ display?: AutomationPresentation }>) {
+  auto,
+}: Readonly<{ display?: AutomationPresentation; auto?: MineAutoUI }>) {
   const copy = useMineCopy();
   return (
     <section className={styles.autominer} aria-label={copy.autominer}>
@@ -17,11 +19,14 @@ export function MineAutominerState({
       <dl className={styles.betSummary}>
         <div>
           <dt>{copy.blocks}</dt>
-          <dd>{display.blocks ?? "—"}</dd>
+          <dd>
+            {auto?.running?.random ? `${copy.autoFlow.random} ` : ""}
+            {display.blocks ?? "—"}
+          </dd>
         </div>
         <div>
           <dt>{copy.roundsRemaining}</dt>
-          <dd>{display.roundsRemaining ?? "—"}</dd>
+          <dd>{display.roundsRemaining ?? ""}</dd>
         </div>
         <div>
           <dt>{copy.totalPerRound}</dt>
@@ -32,9 +37,12 @@ export function MineAutominerState({
         type="button"
         className={styles.deployAction}
         data-appearance="ready"
-        disabled
+        disabled={!auto?.canStop}
+        onClick={auto?.stop}
       >
-        {copy.stopAutominer}
+        {auto?.busy
+          ? copy.autoFlow.phases[auto.state.phase]
+          : copy.stopAutominer}
       </button>
     </section>
   );

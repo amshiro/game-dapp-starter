@@ -27,7 +27,7 @@ R0 逐项结论与来源见 [r0-evidence-audit.md](./r0-evidence-audit.md)。`PA
 | Q-47 | Realtime：Development Pusher 路由（`<WS host>/app/<key>`）在 F7 验证中返回 Cloudflare 502（上游不可达，本轮未复测），需要后端启动实时服务；Production WS host 与公开 app key；两个事件的正式 payload schema（是否 `{ data: <JSON string> }` 双层）；轮次内（部署量变化）是否会有推送事件；本机 `NEXT_PUBLIC_REFERRAL_CODE` 中的值是否就是该 Pusher key（已由用户配置到 `NEXT_PUBLIC_PUSHER_APP_KEY`，待服务恢复后验证）。服务恢复后补一次真实 smoke | 实时新鲜度与 polling 间隔 | PARTIALLY CONFIRMED：旧监听解包 eventData.data 并读取 timestamp/winning_square；ABI 与 API 可对照字段，仍无实际 WS 样本。502 是 F7 记录，本轮未复测 | Mine 实时 / schema / Production 配置 / G-R |
 | Q-12 | 交易 UX：签名中、已提交、确认中、成功、失败、取消的视觉？成功是否需要等待后端索引？ | 设计无交易状态 | CONTRADICTORY：旧 Manual/Stake 在 receipt 前提示成功，Auto/Rewards 等 wait 后提示；没有统一 backend completion 契约，见 R0 顺序表 | 所有交易 / G-T、G-P、G-V |
 | Q-14 | Production RPC：专用 provider / endpoint 与凭据边界（凭据不得进入前端）；生产读取是否部分走后端？ | 旧 QuickNode 凭据已泄露、不得复用 | 开发 RPC 已确认（C-08） | 生产 Web3 读写 |
-| Q-15 | Auto 输入为每格金额已 Human approved；剩余：botFee/executorFee 收取/展示、最终预付、最大轮数 | Auto 表单与交易参数 | Human approved 覆盖 Figma 数字：.02×4=.08 BNB/轮，3轮本金 .24 BNB；历史 funding=(perSquare×cells+executorFee)×rounds 仅技术候选，不能据本金确认 fee。fixed/random 入口、Protocol 7字段/View 6字段与 active remaining owner 待 Auto Gate | Auto；PARTIAL，不阻塞 Manual |
+| Q-15 | Auto当前implementation execution扣费路径技术补证（产品层closed） | Auto预算与运行卡 | M4人工已签每格金额、fixed/random编码、principal-only显示与含费value、active整体换卡、self Stop；当前97 register/getter/stop/refund已模拟，config=10^12，历史执行每次扣fee但implementation关联未证。rounds产品限制1–9999（非contract maximum）；remaining使用backend extend_data.round_remaining原样展示、缺失留空，不估算/不补—；API populated未验证不重开产品Gate，见[M4 Gate](./mine-auto-transaction-gate.md) | M4 Development implementation已人工放行；execution deduction=RUNTIME QA PENDING |
 | Q-16 | Manual 快捷值与行为已 Human approved；Stake 百分比既有签收保留 | 表单 | CONFIRMED（Manual）：当前Figma +0.5/+1/+2，直接替换每格BNB输入，非累加；断连/错链/已部署可编辑，count不变/total重算，busy保持原锁。旧0.02/0.05/0.1不继承；不解锁Auto | Manual不再有此blocker，transaction单轮一次不变 |
 | Q-17 | 最小 / 最大部署金额、小数位、是否预留 gas、100% 如何计算 | 输入校验 | Human approved：18位 bigint，fresh simulation/余额含gas；97 1wei 可调用不是产品 minimum。未知 min/max 不造限制；不以旧6位取代18位 | 表单校验；未知 cap 不阻塞 Core |
 | Q-18 | 已部署金额颜色（绿 / 金）；自动选中半透明变体含义 | 方块视觉 | PARTIALLY CONFIRMED：M1 重读 1078 独立已投注金额金色、823 选中+部署绿色/白边；不同状态不能直接视为同态冲突，完整映射及其他稿差异仍未签收，见 M1 | BlockCell |
@@ -86,9 +86,15 @@ R0 逐项结论与来源见 [r0-evidence-audit.md](./r0-evidence-audit.md)。`PA
 见 [正式需求对齐](./mine-requirements-reconciliation.md)。固定优先级：用户产品规则 → 当前 Figma → 已审核 docs → Mine Historical Functional Baseline → runtime 可行性。
 
 - Manual 一轮一次成功、首笔多格、18位、value/mask、operationRound 和 receipt/event/refresh 已 Human approved；限定 Core 可开始下一阶段，但本轮不实现。Q-16 Manual shortcuts已签收当前Figma值与替换行为、无新全选，不让后续奖励/名单阻塞 Core。
-- Auto 保留真实自动挖矿 Scope；Human approved：Manual/Auto 输入均为每格金额，Figma 漏乘格数样例不采用。输入含义已解决，executorFee/botFee 与最终 payable funding 仍独立 Gate。
+- Auto当前人工规则与技术补证以[M4 Gate](./mine-auto-transaction-gate.md)为准；输入、fixed/random、fees/value显示策略与self Stop已签收，不继续标OPEN。1–9999产品输入限制与backend remaining直出/缺失留空已签；仅当前implementation execution实际扣费技术证据保留；不新增Auto implementation授权。
 - Lifecycle/countdown：Figma 需要时间/Waiting/结果 UI；block 配置不是精确60秒，latest.timestamp+60 和历史 enum 不自动采用。候选 UI state 不是协议枚举。
 - Motherlode：ORI treasury 字段仅证明原始读；Origin 双资产、3–6轮与其他旧文案节奏均 Historical behavior — not yet adopted，payout OPEN。Q-25/Q-42 的奖励资产、领取税/时限/完成语义仍 OPEN。
 - Miners：地址/金额/Round UI 已确认，current/previous、participants/winners、单位/排序/本人行 Data Contract OPEN。Origin 为 M11 FUTURE GATE，不混 ORI Claim。
 - Q-11：本轮六个历史只读端点 HTTP200，/ori/round 也可达；空 winners / null automation 不证明非空契约，large IDs、单位与 endpoint 命名冲突保留。Q-47 本轮未重测，旧502/真实 payload unknown 保留。
 - M7/M8 后置；交易前 fresh reads/simulation、receipt 后局部 refetch 属 Manual correctness，不等待持续 polling/realtime。
+
+## M4 Auto Transaction Gate — 2026-10-29
+
+当前P.getAutomation七字段与View六字段已验证，ABI中的automations(address)却直接revert（code3、空revert data），Q-10仅关闭已列路径，不认证整份ABI/implementation。Q-11 automation/user三个HTTP200/null样本仍为PARTIAL — populated contract unverified。Q-12 Auto沿用receipt+1confirmation+matching AutomationUpdated+原账户相关reads，confirmed+refresh-failed只retry reads、不resend；注册成功不等于bot已下注。当前版本execution的RoundNotLive与历史版本存储missing trie node是最小技术补证边界；不升级为生产验收。
+
+M4 Human Decisions现已全部CLOSED：rounds输入1–9999只是前端产品限制；剩余回合原样展示POST /ori/automation/user的extend_data.round_remaining，backend负责计算，字段缺失留空，不补—、不从链上balance/fee计算。HUMAN DECISIONS REQUIRED=NONE。当前定点复核block139572425，同一implementation执行仍RoundNotLive、虚拟balance未变；runtime path technically unresolved已人工接受为Development非阻塞项，execution实际扣费待真实QA，见[M4 Gate](./mine-auto-transaction-gate.md)。

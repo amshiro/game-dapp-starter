@@ -108,5 +108,31 @@
     "perCell": "Input is BNB per cell; total principal = amount per cell × cell count.",
     "otherPending": "A previous operation is still pending. Wait for confirmation."
   },
-  "unselected": "Not selected"
+  "unselected": "Not selected",
+  "autoFlow": {
+    "executorFee": "Executor fee / round",
+    "random": "Random",
+    "funding": "Per-cell BNB. Totals show principal; wallet funding also includes executor fees and gas.",
+    "errors": {
+      "invalid-blocks": "Enter 1–25 cells per round.",
+      "invalid-rounds": "Enter 1–9999 rounds.",
+      "already-active": "Automation is already active. Refresh its state.",
+      "not-active": "No active automation to stop. Refresh its state.",
+      "fee-changed": "Executor fee changed or is unavailable. Refresh and review."
+    },
+    "phases": {
+      "idle": "Ready",
+      "preparing": "Checking automation…",
+      "awaiting-signature": "Awaiting wallet confirmation…",
+      "submitted": "Transaction submitted",
+      "confirming": "Waiting for 1 confirmation…",
+      "confirmed": "Chain confirmed",
+      "refreshing": "Refreshing automation…",
+      "success": "Automation state updated",
+      "rejected": "Wallet request cancelled",
+      "failed": "Automation operation not completed",
+      "refresh-failed": "Chain confirmed · refresh failed",
+      "verification-failed": "Chain confirmed · verification failed"
+    }
+  }
 }

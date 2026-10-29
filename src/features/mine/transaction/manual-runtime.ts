@@ -112,7 +112,7 @@ export function createManualDependencies({
     const block = await cl.getBlock({ blockTag: "latest" });
     if (block.number === null) throw new ManualFault("round-unavailable");
     const at = { blockNumber: block.number };
-    const [board, info] = await Promise.all([
+    const [board, info, automation] = await Promise.all([
       cl.readContract({
         ...contracts.oreProtocol,
         functionName: "board",
@@ -123,7 +123,15 @@ export function createManualDependencies({
         functionName: "getCurrentRoundInfo",
         ...at,
       }),
+      cl.readContract({
+        ...contracts.oreProtocol,
+        functionName: "getAutomation",
+        args: [o.account],
+        ...at,
+      }),
     ]);
+    // Recheck chain active even for a stale Manual draft captured before the Running Card replaced the form.
+    if (automation.active) throw new ManualFault("round-unavailable");
     if (!board[6] || !info[4] || board[0] !== info[0])
       throw new ManualFault("round-unavailable");
     const round = await cl.readContract({

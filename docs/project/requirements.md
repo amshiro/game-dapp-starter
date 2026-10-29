@@ -63,8 +63,8 @@ Mine限定补充：按用户 → 当前Figma → 已审核docs → Mine Historic
 | --- | --- | --- | --- |
 | C-30 | 新版保留5×5共25格、BNB多格部署。历史文案“每轮1分钟”不作为当前精确时钟 | Human approved/Figma（board）；Historical Live About（60s） | 合约roundLength以blocks配置；seconds deadline待M9 Gate；全25格可编码不代表新增全选入口 |
 | C-31 | Manual 一轮；Auto 多轮且 BNB 预先收取 | Live About；`registerAutomation` payable | |
-| C-32 | Human approved：Manual / Auto 输入均为每格金额；Manual 本金=每格金额×格数，Auto 每轮本金=每格金额×格数，多轮本金再×轮数 | Live bundle；`deployManual(mask, amountPerSquare)`；`DifferentAmountPerSquareNotSupported` | Manual 与 Figma `0.42 × 2 = 0.84` 一致；Auto `.02/.06` 漏乘格数的样例不采用；执行费/最终预付另 Gate |
-| C-33 | Auto保留fixed/random配置Scope候选，Blocks指cell数量/集合，Rounds指资助轮数 | Figma1832/1413 + Mine Historical Functional Baseline；registerAutomation ABI | random/fixed切换入口、金额/fee/remaining与限制仍OPEN；不是已批准真实Auto write |
+| C-32 | Human approved：Manual / Auto 输入均为每格金额；Manual 本金=每格金额×格数，Auto 每轮本金=每格金额×格数，多轮本金再×轮数 | Live bundle；`deployManual(mask, amountPerSquare)`；`DifferentAmountPerSquareNotSupported` | Manual 与 Figma `0.42 × 2 = 0.84` 一致；Auto `.02/.06` 漏乘格数的样例不采用；页面本金不含执行费；实际 value=(每轮本金+executorFee)×rounds，余额另需gas；Human approved，当前执行扣费RUNTIME QA PENDING，人工允许Development实现，见M4 Gate |
+| C-33 | Human approved：有board selection用fixed位图；无selection用random格数；Blocks是每轮格数，Rounds是资助轮数。active automation替换整个Manual/Auto form，不显示切换/全选/第二次注册 | 当前用户M4规则；Figma1832/1413；[M4 Gate](./mine-auto-transaction-gate.md) | 当前97 fixed位图/random count编码已验证；提交count1–25；rounds产品限制1–9999，非合约maximum；remaining原样使用backend extend_data.round_remaining，缺失留空、不计算/不补—；M4 Core已获本轮实现授权；execution扣费仅待真实QA，不声称VERIFIED |
 | C-34 | 一个账户每个实际 operation round 最多成功完成一次 Manual Deploy；第一次可一次选择多个格子并合并为一个 mask。成功后本轮 Manual action 禁用，不开放任何异格追加交易。既有 Manual / Auto 互斥约束保留 | User Confirmed：Mine Manual Requirement Correction；Mine Historical Functional Baseline；链上 participation/squares reads | Contract capability ≠ product behavior；当前 97 runtime 可接受异格追加，不构成产品许可。新一轮使用对应 round/account 的新 reads，不沿用旧轮锁 |
 | C-35 | 历史平台费1%；97已读feeBps=100配置；Manual value不额外加1% | Historical Live About；97 Gate；Human approved value公式 | 内部扣费时点/完整分配仍Q-41，不能从配置推导Claim费率或Auto预付公式 |
 | C-36 | Historical behavior — not yet adopted： 开奖由链上随机数（Chainlink VRF）决定获胜方块；无人参与或获胜方块无人部署则本轮作废 | Live About；OreProtocol（VRF、`ResetEvent`） | |
@@ -78,8 +78,8 @@ Mine限定补充：按用户 → 当前Figma → 已审核docs → Mine Historic
 | C-44 | 结果动画：未中奖方块 100%→25% 透明度每块 0.15s 随机依次（3.6s）；获胜方块点亮 0.15s；保持 10s | Figma `2003:1405`–`2003:1408` 标注 | 线上动画未验证 |
 | C-45 | 数据卡：Motherlode、剩余时间（等待中显示 Waiting / 等待中…）、总部署、你的部署；点击切换美金值 / 轮次 | Figma 标注 `2003:1037`；Live | |
 | C-46 | Manual 按钮状态：未连接 → Connect wallet；未选方块 → Deploy 不可用；余额不足 → 余额变红且按钮不可用；可部署 → `Deploy {total} BNB` | Figma 标注 `2003:1715`（文案中 SOL 为占位） | |
-| C-47 | Auto 轮数步进器默认 1 | Figma 标注 `2003:1947` | |
-| C-48 | Auto 运行态有 Stop；退款仅历史路径，尚未签收新版完成条件 | Figma Stop autominer；Historical stopAutomation(to) | recipient、fee、剩余余额与退款 runtime 另 Gate |
+| C-47 | Auto 轮数步进器默认1，输入产品限制1–9999 | Figma标注2003:1947；当前Human Decision | 不是已验证contract maximum |
+| C-48 | Human approved：Stop=stopAutomation(currentAccount)，receipt success+1confirmation+matching event+相关reads；确认inactive后恢复form；退款由合约处理 | Figma Stop；当前用户M4规则；当前97虚拟register/stop/refund证据 | 前端不另发退款；confirmed+refresh-failed只retry reads、不resend；不自动赋予同轮Manual提交资格，见[M4 Gate](./mine-auto-transaction-gate.md) |
 | C-49 | Miners 列表有 Round、地址与金额行；dataset 未签收 | Figma `2003:508` | 线上数据源见 api.md |
 
 ### Stake
@@ -115,7 +115,7 @@ Mine限定补充：按用户 → 当前Figma → 已审核docs → Mine Historic
 | I-10 | 点击 Header 地址打开 Wallet Sheet；Sheet 内复制地址、断开连接 | Figma | `导出` / `接收` 含义见 Q-22 |
 | I-11 | Wallet Sheet 点遮罩或 ✕ 关闭；无拖拽关闭 | Figma（无拖拽手柄） | |
 | I-20 | 方块可多选、再次点击取消 | Figma；Live（`全选`） | |
-| I-21 | 原输入含义推断已由 Human approved 取代：输入为每格金额，每轮本金=输入×格数，多轮本金=每轮本金×轮数 | 用户明确确认，覆盖 Figma 未乘格数示例 | 执行费与最终 msg.value 仍 Q-15，不把本金合计当含费预付 |
+| I-21 | 原输入含义推断已由 Human approved 取代：输入为每格金额，每轮本金=输入×格数，多轮本金=每轮本金×轮数 | 用户明确确认，覆盖 Figma 未乘格数示例 | 人工已签收含费value与本金分离；Q-15仅保留当前implementation execution扣费路径的技术补证，产品层全部closed；不把本金合计当含费预付 |
 | I-22 | 已部署金额以绿色显示 | Figma 多数状态稿 | 单态样例为金色，见 Q-18 |
 | I-23 | 余额不足 = 总额 > 钱包 BNB 余额 | Figma；Live bundle 余额比较 | 是否预留 gas 见 Q-17 |
 | I-24 | 已由 Human approved 取代：Manual shortcuts +0.5/+1/+2 直接替换每格输入为0.5/1/2 BNB，非累加；count不变，total重算 | 当前 Figma1715 + 用户明确签收 | 断连/错链/已部署可编辑；busy仍禁用；单轮一次提交防线不变，不继承旧快捷数值 |

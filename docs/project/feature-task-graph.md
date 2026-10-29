@@ -36,7 +36,7 @@
 | M1 | Mine read models / owner Queries | PARTIALLY BLOCKED | Read/Data Gate 证据审计已完成并通过人工审核；97 原始读子集供 M2 使用，完整状态/Miners/单位契约仍未解锁 |
 | M2 | Mine read-only UI / selection | PARTIALLY BLOCKED | 此前仅棋盘的 checkpoint 不代表整页 UI 完成；Full Mine read-only UI correction 已完成并通过人工审核，覆盖 1–6 全状态展示；业务 selection、Miners 数据、timing 与未确认资产仍 gated |
 | M3 | Mine Manual transaction | READY | 限定 Manual Core COMPLETE；用户最终验收确认 Chain97真实Manual Deploy PASS；W1 + M1/M2 已确认子集，单轮一次；Manual shortcuts已按Figma启用替换输入，不依赖 M7/Reward |
-| M4 | Mine Auto mining start / stop | PARTIALLY BLOCKED | W1/M1/M2；输入每格金额已签收；Q-15 fee/最终预付/remaining/执行器 Gate；不依赖 M7 |
+| M4 | Mine Auto mining start / stop | PARTIALLY BLOCKED | M4只读Gate已执行；人工fixed/random/value/Stop已锁定；产品层closed：轮数1–9999、remaining后端直出/缺失留空；M4 Core已获人工放行实现，execution fee deduction=RUNTIME QA PENDING，待真实QA，不依赖M7 |
 | M5 | Mine Rewards read/UI | PARTIALLY BLOCKED | W1/M1；Q-10、Q-25、Q-42 与资产/状态待确认 |
 | M6 | Mine Rewards claim | BLOCKED | W1/M5；Q-12、Q-25、Q-42 与完成/领取安全 Gate |
 | M7 | Mine polling / freshness | PARTIALLY BLOCKED | DEFERRED：核心 Mine 功能优先；不阻塞 Manual，持续 freshness 待已有 Query owner 明确 |
@@ -321,12 +321,12 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 | Goal | 在明确预付公式与执行器事实后实现多轮自动部署、运行状态和停止退款 |
 | Route | `/mine` Auto 与 Autominer 状态，无新 Route |
 | Owner / Dependencies | Mining Automation workflow；W1/M1/M2 + Auto-specific Gate；不把 Manual 成功当作技术前置，建议在 M3 审核后推进以降低风险 |
-| Source of Truth | C-31/C-33/C-34/C-47/C-48、registerAutomation/getAutomation/stopAutomation、正式 automation Contract |
-| API dependencies | automation/user 的 user 参数与响应字段/单位；链上 getAutomation 与后端不一致时的 canonical/索引延迟先锁定 |
-| Web3 dependencies | registerAutomation 的 owner/balance/mask/amountPerSquare/randomizeMask/active/botFee 与 msg.value；stopAutomation(to) 收款地址与退款验收；执行器由后端/协议 owner 提供 |
+| Source of Truth | 当前M4人工规则、C-31/C-33/C-34/C-47/C-48、[M4 Gate](./mine-auto-transaction-gate.md)、当前Figma；历史材料不替代runtime验证 |
+| API dependencies | P.getAutomation为active/config/balance canonical owner；automation/user仅enrichment，HTTP200/null不证明populated契约，remaining display owner已签收为extend_data.round_remaining、缺失留空，禁止balance/fee推导；API样本验证限制不重开产品Gate |
+| Web3 dependencies | 当前97 register/getter/stop/refund虚拟验证；value=(perSquare×count+fee)×rounds、余额另需gas；stop recipient=self、退款由合约。执行器非前端；当前执行扣费版本补证仍缺 |
 | Realtime dependencies | preflight/receipt 后局部刷新由 Auto owner 负责；M7/M8 后置，不能用事件推算余额/剩余轮数 |
-| UI/Figma dependencies | `2003:1832`、`2003:1890`、`2003:1667`、运行中 `2003:1413`；费用/最大轮数状态需补齐 |
-| Open Questions / Blockers | PARTIALLY BLOCKED：Human approved：Manual/Auto 输入均为每格金额；Auto 示例本金应为 .08/轮、3轮 .24 BNB，覆盖 Figma .02/.06。执行费/最终预付仍待 Gate；Protocol automation 7字段 vs View 6字段；fixed/random 入口、recipient、remaining 与执行器/退款证据待 Gate，不猜公式 |
+| UI/Figma dependencies | `2003:1832`、`2003:1890`、`2003:1667`、运行中 `2003:1413`；产品输入1–9999、最小执行费说明已签；remaining后端直出/缺失留空 |
+| Open Questions / Blockers | Development Core已Human approved放行；完整execution QA仍PENDING：产品金额/fixed/random/显示fee/self Stop均已签收；当前execution扣费只有历史context、implementation关联未证；产品层Human Decisions全部closed：1–9999为前端限制，remaining直接显示后端字段且缺失留空。七/六字段投影已验证、backend非空未证不改变产品owner。runtime path technically unresolved由人工接受，不阻塞Development Core；[实现/真实QA边界](./mine-auto-core-implementation.md)，不声称成功execution扣费已验证 |
 | Acceptance Criteria | G-P/G-T/G-V；精确预付拆分、随机/指定 mask 一致、Manual 互斥；start receipt 不等于已执行下一轮；stop 后按批准的链上状态/退款对账，不依据旧 UI 直接显示成功 |
 | QA | 通用 QA；轮数/费用/余额/随机位图、执行器延迟/缺席、停止失败与退款地址、账户/链/round 切换；start/stop 真实调用分项授权 |
 | Non-goals | 自建 executeAutomation bot、后台常驻任务、从前端执行 resetRound |
@@ -488,7 +488,7 @@ R0 当时的限定交付见 [R0 Evidence Audit](./r0-evidence-audit.md)：仅比
 1. W1、W2、R0 已完成并审核。本轮 A1 / P1 页面完整 UI 依用户限定授权实现，等已通过人工审核；生产文案/积分数据 Gate 不因此关闭。
 2. A1 使用当前源码恢复的对应 copy；P1 使用 Figma demo。审核后再决定 checkpoint；不得把当前工程演示授权推广为其他页面的历史内容继承。
 3. 已审核页面/read 子集保持完成；Points 真实数据仍需 Q-20/Q-11 Gate。Mine 当前优先 M3 限定 Manual Core，M7 暂缓且不作为交易局部刷新前置。
-4. 当前最短 Mine 主线：M3 Manual → M4 Auto（先解决资金/选择/执行器 Gate）→ M9 lifecycle/countdown → M5/M6 ORI rewards → M10 Miners → M7 freshness → M8 realtime。M11 Origin 独立 FUTURE GATE；未来 Rewards/名单不阻塞 Manual，Auto Gate 未通过不能硬做。S2 真实 QA 缺 ORI 暂缓，不是 Mine 前置。所有真实交易逐类授权。
+4. 当前最短 Mine 主线：M3 Manual → M4 Auto（产品已closed、Development Core已人工放行，execution真实QA待补）→ M9 lifecycle/countdown → M5/M6 ORI rewards → M10 Miners → M7 freshness → M8 realtime。M11 Origin 独立 FUTURE GATE；未来 Rewards/名单不阻塞 Manual，Auto Gate 未通过不能硬做。S2 真实 QA 缺 ORI 暂缓，不是 Mine 前置。所有真实交易逐类授权。
 5. Q-47 恢复且 M1/M7 owner 明确后做 M8，不需等全部交易完成；M9 在结果来源/时序/reduced-motion 明确后执行，不与 transport 或资金流程绑定成巨票据。
 6. W3、起源/ORI 游戏与生产发布均留在对应 Gate 后。Q-01/Q-02 未确认前，本图**不安排起源 swap/trade-to-mine 实现**；这不等于决定下线它们。
 

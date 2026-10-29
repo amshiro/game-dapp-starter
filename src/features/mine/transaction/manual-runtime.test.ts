@@ -70,6 +70,7 @@ function harness() {
     participated: false,
     failAccount: false,
     failSimulation: false,
+    automationActive: false,
     balance: BigInt("100000"),
     round: BigInt("1654"),
   };
@@ -113,6 +114,20 @@ function harness() {
                 throw Error("controlled simulation failure");
               return "0x";
             }
+            if (d.functionName === "getAutomation")
+              return encodeFunctionResult({
+                abi: c.oreProtocol.abi,
+                functionName: "getAutomation",
+                result: {
+                  owner: a,
+                  balance: BigInt(0),
+                  mask: BigInt(0),
+                  amountPerSquare: BigInt(0),
+                  randomizeMask: false,
+                  active: raw.automationActive,
+                  botFee: BigInt(0),
+                },
+              });
             if (d.functionName === "board")
               return encodeFunctionResult({
                 abi: c.oreProtocol.abi,
@@ -222,6 +237,15 @@ beforeEach(() => {
   wallet.status = "connected";
 });
 describe("Manual pre-submit RPC boundary", () => {
+  it("rejects a stale Manual draft once chain automation is active", async () => {
+    const h = harness();
+    h.raw.automationActive = true;
+    await expect(h.deps.prepare(operation)).rejects.toThrow(
+      "round-unavailable",
+    );
+    expect(h.simulated()).toBe(0);
+    expect(writeContract).not.toHaveBeenCalled();
+  });
   it("freshly reads participation and simulates before one exact-value wallet request", async () => {
     const h = harness();
     await h.deps.prepare(operation);

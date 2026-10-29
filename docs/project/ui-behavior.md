@@ -95,12 +95,13 @@ Step3  获胜方块保持点亮 10s
 ### 部署面板 — Auto
 
 - **Confirmed**：轮数默认 1（C-47）；BNB 预先收取；可选方块或随机方块（C-33）。
-- **Human approved**：Manual / Auto 输入均为每格金额。Auto 每轮本金=输入×选中/执行格数，多轮本金再×轮数；这不包含尚未确认的执行费。
-- **Human approved override**：Figma 4格/.02/3轮的 .02/.06 计算示例不采用，应为每轮本金 .08、3轮本金 .24 BNB。**OPEN**：历史含 executorFee 的 funding 公式尚未验证/签收，不能把本金直接作为最终 msg.value。fixed/random 入口、executor 与 remaining owner、费用及最大轮数需 Auto Gate（Q-15）。
+- **Human approved**：输入为每格金额；有选择用fixed位图，无选择用random格数；页面每轮/总计/按钮仅显示本金。实际value=(每格金额×格数+executorFee)×rounds，余额需覆盖value与gas，允许最小执行费说明行。
+- **Human approved override**：Figma 4格/.02/3轮的 .02/.06 不采用；每轮本金 .08、3轮本金 .24 BNB。当前97注册参数/stop/refund已模拟；产品层已closed：rounds=1–9999是前端限制，非contract maximum。仅当前版本execution扣费路径仍需[M4 Gate](./mine-auto-transaction-gate.md)，人工已批准Development Core实现，execution实际扣费RUNTIME QA PENDING，不阻塞实现。
 
 ### Autominer（运行中）
 
-- **Figma confirmed**：active Autominer 替换配置卡，显示 Random/格数、剩余轮数、每轮金额与 Stop autominer。**Historical behavior — not yet adopted**：stopAutomation(to) 退款路径；recipient/fee/余额对账需 Auto Gate，不能从截图宣告退款已验证。
+- **Human approved**：链上active=true时整个Manual/Auto form不渲染，替换Running Card，无模式切换/全选/二次注册。显示fixed/random/格数、每轮本金与Stop；剩余回合直接展示POST /ori/automation/user的extend_data.round_remaining，由backend计算；缺失留空，不补—，不从链上balance或executorFee推导。
+- Stop固定self；当前97非持久化模拟已验证合约退回余额/清除配置。receipt+1confirmation+matching event+reads后才成功；confirmed+refresh失败不resend。active owner为P.getAutomation(account)，API仅enrichment、非空样本未验证；本轮已接M4 Core但无真实Auto交易验收，见[M4 Gate](./mine-auto-transaction-gate.md)。
 
 ### Rewards
 

@@ -1,4 +1,5 @@
 "use client";
+import { formatEther } from "viem";
 import { useId, useRef, useState } from "react";
 import {
   bettingModeForKey,
@@ -12,21 +13,26 @@ import {
   MineManualStatus,
   type ManualPanelControls,
 } from "./mine-manual-status";
+import type { MineAutoUI } from "../transaction/use-mine-auto";
 import styles from "./mine.module.css";
 
 export function MineBettingPanel({
   display: suppliedDisplay = unavailableBetting,
   manual,
+  auto,
   initialMode = "manual",
 }: Readonly<{
   display?: BettingPresentation;
   initialMode?: BettingMode;
   manual?: ManualPanelControls;
+  auto?: MineAutoUI;
 }>) {
   const copy = useMineCopy();
   const [mode, setMode] = useState<BettingMode>(initialMode);
   const activeManual = mode === "manual" ? manual : undefined;
-  const display: BettingPresentation = activeManual?.display ?? suppliedDisplay;
+  const activeForm = mode === "auto" ? auto : manual;
+  const formBusy = !!manual?.busy || !!auto?.busy;
+  const display: BettingPresentation = activeForm?.display ?? suppliedDisplay;
   const id = useId();
   const tabs = useRef<Record<BettingMode, HTMLButtonElement | null>>({
     manual: null,
@@ -59,10 +65,10 @@ export function MineBettingPanel({
             aria-selected={mode === item}
             aria-controls={`${id}-panel`}
             tabIndex={mode === item ? 0 : -1}
-            disabled={manual?.busy}
+            disabled={formBusy}
             onClick={() => setMode(item)}
             onKeyDown={(event) => {
-              if (manual?.busy) return;
+              if (formBusy) return;
               const next = bettingModeForKey(mode, event.key);
               if (!next) return;
               event.preventDefault();
@@ -91,14 +97,14 @@ export function MineBettingPanel({
             aria-describedby={`${id}-boundary`}
             inputMode="decimal"
             type="text"
-            readOnly={!activeManual || activeManual.busy}
+            readOnly={!activeForm || formBusy}
             onChange={
-              activeManual
-                ? (event) => activeManual.setInput(event.target.value)
+              activeForm
+                ? (event) => activeForm.setInput(event.target.value)
                 : undefined
             }
             value={display.amount ?? ""}
-            placeholder={activeManual ? "0.00" : "—"}
+            placeholder={activeForm ? "0.00" : "—"}
           />
         </div>
         <div className={styles.balanceRow}>
@@ -117,11 +123,9 @@ export function MineBettingPanel({
               <button
                 key={value}
                 type="button"
-                disabled={!activeManual || activeManual.busy}
+                disabled={!activeForm || formBusy}
                 onClick={
-                  activeManual
-                    ? () => activeManual.setShortcut(value)
-                    : undefined
+                  activeForm ? () => activeForm.setShortcut(value) : undefined
                 }
               >
                 +{value}
@@ -141,7 +145,19 @@ export function MineBettingPanel({
                 </span>
                 {copy.blocks}
               </span>
-              <span>{display.blocks ?? "—"}</span>
+              <input
+                className={styles.cellsInput}
+                aria-label={copy.blocks}
+                inputMode="numeric"
+                type="text"
+                value={display.blocks ?? ""}
+                readOnly={!auto || auto.fixed || formBusy}
+                onChange={
+                  auto
+                    ? (event) => auto.setBlocks(event.target.value)
+                    : undefined
+                }
+              />
             </div>
             <div className={styles.configRow}>
               <label className={styles.configLabel} htmlFor={`${id}-rounds`}>
@@ -150,7 +166,21 @@ export function MineBettingPanel({
                 {copy.rounds}
               </label>
               <div className={styles.roundStepper}>
-                <button type="button" disabled aria-label={copy.decreaseRounds}>
+                <button
+                  type="button"
+                  disabled={
+                    !auto ||
+                    formBusy ||
+                    !/^\d+$/.test(display.rounds ?? "") ||
+                    BigInt(display.rounds ?? "0") <= BigInt(1)
+                  }
+                  onClick={() =>
+                    auto?.setRounds(
+                      (BigInt(display.rounds ?? "1") - BigInt(1)).toString(),
+                    )
+                  }
+                  aria-label={copy.decreaseRounds}
+                >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src="/ori/mine/minus.svg"
@@ -159,16 +189,35 @@ export function MineBettingPanel({
                     alt=""
                   />
                 </button>
-                {/* Draft UI default 1 is drawn in frame 6; it is not an active automation or approved round limit. */}
+                {/* 1–9999 is a human-approved UI cap, not a contract maximum. */}
                 <input
                   id={`${id}-rounds`}
                   type="text"
                   inputMode="numeric"
                   value={display.rounds ?? "1"}
-                  readOnly
+                  readOnly={!auto || formBusy}
+                  onChange={
+                    auto
+                      ? (event) => auto.setRounds(event.target.value)
+                      : undefined
+                  }
                   aria-describedby={`${id}-boundary`}
                 />
-                <button type="button" disabled aria-label={copy.increaseRounds}>
+                <button
+                  type="button"
+                  disabled={
+                    !auto ||
+                    formBusy ||
+                    !/^\d+$/.test(display.rounds ?? "") ||
+                    BigInt(display.rounds ?? "0") >= BigInt(9999)
+                  }
+                  onClick={() =>
+                    auto?.setRounds(
+                      (BigInt(display.rounds ?? "1") + BigInt(1)).toString(),
+                    )
+                  }
+                  aria-label={copy.increaseRounds}
+                >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/ori/mine/plus.svg" width={16} height={16} alt="" />
                 </button>
@@ -197,8 +246,19 @@ export function MineBettingPanel({
             <dt>{copy.betTotal}</dt>
             <dd>{display.total ?? "—"} BNB</dd>
           </div>
+          {mode === "auto" && auto && (
+            <div>
+              <dt>{copy.autoFlow.executorFee}</dt>
+              <dd>
+                {auto.executorFee === undefined
+                  ? "—"
+                  : formatEther(auto.executorFee)}{" "}
+                BNB
+              </dd>
+            </div>
+          )}
         </dl>
-        {/* Only the Manual owner can submit. Auto and isolated Figma fixtures remain non-executable. */}
+        {/* Displayed principal excludes executor fees; the Auto owner validates the larger payable value. */}
         <button
           type="button"
           className={styles.deployAction}
@@ -209,32 +269,38 @@ export function MineBettingPanel({
           }
           aria-describedby={`${id}-boundary`}
           disabled={
-            !activeManual ||
-            activeManual.busy ||
-            activeManual.hasDeployedThisRound === true ||
+            !activeForm ||
+            formBusy ||
+            activeManual?.hasDeployedThisRound === true ||
             (display.appearance === "disconnected"
-              ? !activeManual.onConnect
-              : !activeManual.canSubmit)
+              ? !activeForm.onConnect
+              : !activeForm.canSubmit)
           }
           onClick={
-            activeManual
+            activeForm
               ? () => {
                   if (display.appearance === "disconnected")
-                    activeManual.onConnect?.();
-                  else if (activeManual.hasDeployedThisRound !== true)
-                    activeManual.submit();
+                    activeForm.onConnect?.();
+                  else if (activeManual?.hasDeployedThisRound !== true)
+                    activeForm.submit();
                 }
               : undefined
           }
         >
-          {activeManual?.busy
-            ? activeManual.stateVisible
-              ? copy.transaction.phases[activeManual.state.phase]
-              : copy.loading
-            : activeManual?.hasDeployedThisRound
-              ? copy.transaction.alreadyDeployed
-              : action}
-          {!activeManual?.busy &&
+          {formBusy
+            ? auto?.busy
+              ? auto.stateVisible
+                ? copy.autoFlow.phases[auto.state.phase]
+                : copy.loading
+              : manual?.stateVisible
+                ? copy.transaction.phases[manual.state.phase]
+                : copy.loading
+            : mode === "auto" && auto?.loading
+              ? copy.loading
+              : activeManual?.hasDeployedThisRound
+                ? copy.transaction.alreadyDeployed
+                : action}
+          {!formBusy &&
           !activeManual?.hasDeployedThisRound &&
           display.appearance === "ready" &&
           display.total
@@ -243,8 +309,17 @@ export function MineBettingPanel({
         </button>
       </div>
       {activeManual && <MineManualStatus manual={activeManual} />}
+      {mode === "auto" && auto?.error && (
+        <p className={styles.boundary} role="status">
+          {{ ...copy.transaction.errors, ...copy.autoFlow.errors }[auto.error]}
+        </p>
+      )}
       <p id={`${id}-boundary`} className={styles.boundary}>
-        {activeManual ? copy.transaction.perCell : copy.actionsUnavailable}
+        {activeForm
+          ? mode === "auto"
+            ? copy.autoFlow.funding
+            : copy.transaction.perCell
+          : copy.actionsUnavailable}
       </p>
     </section>
   );

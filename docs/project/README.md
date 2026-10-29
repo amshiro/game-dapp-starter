@@ -76,6 +76,7 @@ Mine requirement reconciliation 的固定优先级：**用户明确产品规则 
 | [implementation-plan.md](./implementation-plan.md) | Foundation 阶段状态与范围索引 |
 | [feature-task-graph.md](./feature-task-graph.md) | F10 Feature Tickets、依赖、Ready/Blocked、人工 Gate 与下一张任务 |
 | [mine-requirements-reconciliation.md](./mine-requirements-reconciliation.md) | Mine全状态/历史/runtime对齐、正式Scope与owner、Gate和新版实施顺序 |
+| [mine-auto-transaction-gate.md](./mine-auto-transaction-gate.md) | M4人工Auto规则、97注册/停止只读模拟、执行费版本补证与Human Decisions；不代表Auto已实现 |
 | [stake-transaction-slice-1.md](./stake-transaction-slice-1.md) | Development 97 存取交易的人工授权、实现边界与真实交易验收 |
 | [r0-evidence-audit.md](./r0-evidence-audit.md) | 后续 Feature 的静态证据、冲突与未解锁项；不代表新 API/RPC/WS 验证 |
 
@@ -111,3 +112,5 @@ AGENTS.md
 ## 当前限定授权：About + Points 页面完整 UI
 
 用户明确授权本项目作为工程流程验证项目：About 视觉仍以当前 ORI-AI测试为准，仅对应五项的正文、标题与链接可从当前 `ori-website/pages/about/index.tsx` 实际引用的 en/zh 资源恢复。不得继承旧布局或额外栏目；文案中的费率不成为合约规则。Points 当前没有匹配新版的可用数据 owner，允许集中使用 Figma 静态 demo model，并明确显示演示标记。该授权不推广到其他 Feature，也不关闭生产规则/数据 Gate。参见 [页面 inventory 与来源](./about-points-ui-inventory.md)。M7 polling/freshness 按人工优先级暂缓。
+
+M4当前Development授权与实现范围见[Auto Core实现记录](./mine-auto-core-implementation.md)；execution实际扣费保留RUNTIME QA PENDING，不推广主网。
