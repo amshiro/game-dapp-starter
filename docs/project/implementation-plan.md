@@ -113,6 +113,8 @@ Stage 1–2 可以在 Stage 0 未完成时开始，但导航项与 Logo 位置�
 
 ## Stage 7 — Mine Transactions
 
+Manual 当前以 [Mine Manual Requirement Correction / 实现计划](./mine-manual-implementation-plan.md) 为准：每账户每个实际 operation round 最多一次成功 Deploy，首笔可多选；废弃同轮异格追加产品规则。上一轮实现已暂停，本轮仅修正文档与未提交草稿的单次提交防线；正式 `/mine` 继续保持已审核的只读 UI，未完成 Manual，不进入 Auto/Rewards。Stake Real Tx QA 的 DEFERRED 不阻塞此规划。
+
 | 项 | 内容 |
 | --- | --- |
 | Scope | `deployManual`、`registerAutomation`、`stopAutomation`、`claimAll`、`claimEth`；错误映射（`AlreadyDeployedThisRound` 等） |
@@ -164,3 +166,13 @@ Stage 1–2 可以在 Stage 0 未完成时开始，但导航项与 Logo 位置�
 ## 当前页面优先级
 
 About + Points 完整 UI 本轮已通过人工审核；M7 polling/freshness 暂缓，不随页面开发实现。来源与全部设计状态见 [About / Points inventory](./about-points-ui-inventory.md)。
+
+## Mine Requirement Reconciliation — 2026-10-29
+
+[正式范围/数据 owner/最终矩阵](./mine-requirements-reconciliation.md) 已核对七个 Mine frame、历史功能与既有97证据。新产品不继承旧界面；runtime capability 不等于产品许可。当前交付仍为 read-only UI，暂停草稿本轮未修改；M3 限定 Manual Core 的需求已 READY，可在下一阶段恢复实现，不代表已实现或真实交易通过。
+
+保留既有票号：M3 Manual → M4 Auto（先签资金/选择/执行器 Gate）→ M9 lifecycle/countdown/result → M5/M6 ORI rewards → M10 Miners → M7 polling → M8 realtime。M11 Origin 为独立 FUTURE GATE。M7 不再是 M3/M4/M6 的硬依赖；operation 自己负责 fresh preflight 与 receipt 后读取。历史60秒、收益/母矿概率、旧API单位不自动转为产品事实。Stake Real Tx QA 继续 DEFERRED — TEST ORI REQUIRED，不阻塞 Manual。
+
+## M3 Mine Manual Core — 当前实现状态
+
+用户已正式授权恢复并接通限定 Manual Core；正式 /mine 支持本地多选、per-cell BNB、本人round读取与一次Deploy防线，97 simulation→receipt/event→refresh生命周期已实现。无签名浏览器交互与自动测试完成情况见 [实现记录](./mine-manual-implementation-plan.md)。用户最终人工验收已确认Chain97真实Manual Deploy PASS；这是用户提供的真实交易验收结论，不是自动化测试推断。之前章节的 read-only/暂停表述为交付历史；Auto/Rewards/Countdown/Polling/Realtime继续后置，无commit/push/deploy。

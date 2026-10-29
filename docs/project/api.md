@@ -170,3 +170,18 @@ realtime 只在**轮次边界**（开始 / 开奖）推送，并且不可补偿�
 本轮四个登记的 Mine API 均 HTTP 200，但并不代表 Contract 一致：latest/events 返回 flat started 数据；round_started/round 返回 started 对象；round_winners/round 返回带空 list 的 envelope；多个 log_unique_id 已超过 JSON safe integer。样本 round 1654 的 started block hash 与链 97 匹配；不推广为全部接口/Production 链契约。非空 winners 行/金额单位仍未验证，不能继承旧 Rank 的 8 decimals。
 
 字段对照、链上读证据、失败 RPC 与 Mine 数据映射统一见 [M1 Read/Data Gate](./mine-read-data-gate.md)。R0 的历史静态结论保留；当前新增样本不自动批准 adapter、API endpoint 替换或 realtime payload。M1 Gate 仍 BLOCKED；本轮没有 API 业务接入。
+
+## Mine Historical APIs：2026-10-29 只读 smoke 补充
+
+使用当前 Development 配置、公开 zero-address / 存储轮1654作只读参数。本轮六个端点均返回 HTTP200 成功 envelope；没有交易、签名或新增 runtime API owner。
+
+| Endpoint | 本轮观测 | 尚不能证明 |
+| --- | --- | --- |
+| /ori/latest/events | data 为 flat object，round_id:number、timestamp:number；包含 block/log identity | unsafe large ID、时间/轮次契约、reset/start 映射仍需签收 |
+| /ori/round | round_id:string、global、user、last_updated | 未正式登记不等于不可达；非空字段单位/精度仍未签收，不替代链上 board owner |
+| /ori/automation/user | data:null | active 非空 schema、remaining、fee、链上状态一致性 |
+| /ori/round_winners/round | round_id:string、total、list:[]、reset_event | 非空奖励 row、dataset、排序、单位与正式端点命名冲突 |
+| /ori/activity/origin_info | ori_config、chain_asset_config、global、user、my_wallet | allocation/claim/payment；Origin 为独立 FUTURE GATE |
+| /ori/query/chain_asset_config | 数组7项 | 97 price quote 覆盖、价格精度与资产映射 |
+
+A/B/C/D 分类及新架构 owner 见 [需求对齐](./mine-requirements-reconciliation.md)。HTTP200 不关闭 Q-11，不引入旧 DTO 或 Number 大整数；本轮未重测 WS，Q-47 先前502/真实 payload unknown 继续保留。

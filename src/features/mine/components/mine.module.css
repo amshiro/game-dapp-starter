@@ -368,7 +368,7 @@
   min-height: 44px;
   margin-top: 16px;
   border: 0;
-  border-radius: var(--ori-radius-pill);
+  border-radius: 22px;
   padding: 10px 16px;
   background: var(--ori-color-surface-raised);
   color: var(--ori-color-text-secondary);
@@ -608,4 +608,62 @@
 .betting[data-appearance="disconnected"] .betAmount input,
 .betting[data-appearance="no-selection"] .betAmount input {
   color: var(--ori-color-text-muted);
+}
+
+.betting[data-mode="manual"][data-deployed="true"] .betAmount input {
+  color: var(--ori-color-text-primary);
+}
+
+.cellToggle {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+.cellToggle:disabled {
+  cursor: default;
+}
+.cellToggle:focus-visible {
+  outline: 2px solid var(--ori-color-accent);
+  outline-offset: 2px;
+}
+.deployAction:not(:disabled) {
+  cursor: pointer;
+}
+.shortcuts button:not(:disabled) {
+  cursor: pointer;
+}
+.shortcuts button:focus-visible,
+.deployAction:focus-visible,
+.transactionStatus button:focus-visible {
+  outline: 2px solid var(--ori-color-accent);
+  outline-offset: 2px;
+}
+.transactionStatus {
+  margin-top: 12px;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--ori-color-text-secondary);
+  overflow-wrap: anywhere;
+}
+.transactionStatus p + p {
+  margin-top: 4px;
+}
+.transactionStatus button {
+  margin-top: 8px;
+  padding: 6px 10px;
+  border: 1px solid var(--ori-color-border);
+  border-radius: var(--ori-radius-control);
+  background: var(--ori-color-background);
+  color: var(--ori-color-text-primary);
+  cursor: pointer;
+}
+.txHash code {
+  font: inherit;
 }

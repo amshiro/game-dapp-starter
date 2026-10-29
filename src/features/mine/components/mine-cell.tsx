@@ -4,7 +4,7 @@ import { useMineCopy } from "../copy";
 import { mineAmount, mineCount } from "../read/mine-display";
 import styles from "./mine.module.css";
 
-/** Presentation-only Figma variants. No click handler or selection policy belongs here. */
+/** Figma cell presentation; the Mine owner supplies selection policy and actions. */
 export type MineCellProps = Readonly<{
   /** ABI index 0–24; the visible Figma label is #1–#25. */
   index: number;
@@ -15,6 +15,9 @@ export type MineCellProps = Readonly<{
   /** Isolated presentation capability; the formal route currently supplies only default. */
   visual?: MineCellVisual;
   ownAmount?: bigint;
+  onToggle?: () => void;
+  selected?: boolean;
+  selectionDisabled?: boolean;
 }>;
 export function MineCell({
   index,
@@ -22,6 +25,9 @@ export function MineCell({
   miners,
   visual = "default",
   ownAmount,
+  onToggle,
+  selected,
+  selectionDisabled,
 }: MineCellProps) {
   const copy = useMineCopy();
   const value = amount === undefined ? undefined : mineAmount(amount);
@@ -37,8 +43,18 @@ export function MineCell({
     <li
       className={styles.cell}
       data-visual={visual}
-      aria-label={`#${index + 1}; ${copy.states[visual]}; ${copy.count}: ${count}; ${copy.amount}: ${exact}${own ? `; ${copy.ownAmount}: ${own.exact} BNB` : ""}`}
+      aria-label={`#${index + 1}; ${onToggle && visual === "default" ? copy.unselected : copy.states[visual]}; ${copy.count}: ${count}; ${copy.amount}: ${exact}${own ? `; ${copy.ownAmount}: ${own.exact} BNB` : ""}`}
     >
+      {onToggle && (
+        <button
+          type="button"
+          className={styles.cellToggle}
+          aria-label={`${copy.selectCell} #${index + 1}`}
+          aria-pressed={selected ?? false}
+          disabled={selectionDisabled}
+          onClick={onToggle}
+        />
+      )}
       <div className={styles.cellTop} aria-hidden="true">
         <span className={styles.index}>#{index + 1}</span>
         <span className={styles.count} title={count}>

@@ -48,6 +48,10 @@ docs/*.md       → Starter 全局工程规范（如何实现）
 4. `ori-website` 不是新版产品需求来源。只有当前 Figma/用户已经确定需要某项技术能力时，才用于恢复 address、ABI/method、API request/response、chain config 和 historical runtime evidence。
 5. 旧导航、按钮、Wallet 功能、页面结构和线上 About 文案都不得自动继承。品牌参考页、生成的 Design Specification、BURY 与 Origin.fun 历史材料不能提升为新版需求。
 
+**User Confirmed — Mine 限定例外**：从当前 `ori-website` 恢复的 Mine 功能资料作为 **Mine Historical Functional Baseline**，允许恢复 Manual/Auto 产品行为、round 生命周期、reward 结构、API/realtime 技术路径和合约交互。当前人工修正的产品规则最高优先级；Figma 仍决定新版 UI/layout/visual state。不复制旧 UI/PC layout、旧“hash 即成功”语义，不假设旧 API 仍可用，不继承与新版设计冲突的交互。本例外不自动解锁 Auto/Rewards 实现，也不推广到其他 Feature。Manual 当前计划见 [单次 Deploy 修正](./mine-manual-implementation-plan.md)。
+
+Mine requirement reconciliation 的固定优先级：**用户明确产品规则 → 当前 ORI-AI测试 Figma → 已审核 repository requirements/docs → Mine Historical Functional Baseline → Chain 97 runtime/ABI可行性证据**。runtime能调用不成为产品需求。完整 [Mine Reconciliation](./mine-requirements-reconciliation.md) 记录七稿、保留/覆盖/开放项、数据owner、API本轮可达性及沿用票号的实施序列；reconciliation 时 Manual Core 已足够开工；后续正式 M3 已接线，已通过用户最终人工验收，Chain97真实Manual Deploy PASS，见 [实现记录](./mine-manual-implementation-plan.md)。
+
 技术事实仍须区分正式 API Contract、已记录 runtime 与历史调用；冲突保持待核对，不能由 Figma 示例推导接口、金额或链上规则。R0 是静态历史证据，不能替代本原则或新的产品决定。
 
 ## 文档结构
@@ -71,6 +75,7 @@ docs/*.md       → Starter 全局工程规范（如何实现）
 | [open-questions.md](./open-questions.md) | 未确认问题：看到 Unknown 时停止猜测 |
 | [implementation-plan.md](./implementation-plan.md) | Foundation 阶段状态与范围索引 |
 | [feature-task-graph.md](./feature-task-graph.md) | F10 Feature Tickets、依赖、Ready/Blocked、人工 Gate 与下一张任务 |
+| [mine-requirements-reconciliation.md](./mine-requirements-reconciliation.md) | Mine全状态/历史/runtime对齐、正式Scope与owner、Gate和新版实施顺序 |
 | [stake-transaction-slice-1.md](./stake-transaction-slice-1.md) | Development 97 存取交易的人工授权、实现边界与真实交易验收 |
 | [r0-evidence-audit.md](./r0-evidence-audit.md) | 后续 Feature 的静态证据、冲突与未解锁项；不代表新 API/RPC/WS 验证 |
 

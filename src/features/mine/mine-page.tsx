@@ -14,6 +14,7 @@ import type {
   MineResultsDisplay,
   MineCellVisual,
 } from "./model/mine-presentation";
+import type { MineManualUI } from "./transaction/use-mine-manual";
 import styles from "./components/mine.module.css";
 
 export function MinePage({
@@ -23,7 +24,9 @@ export function MinePage({
   actionPresentation,
   results,
   cellPresentation,
+  manual,
 }: Readonly<{
+  manual?: MineManualUI;
   display?: MineBoardDisplay;
   onRefresh?: () => void;
   refreshing?: boolean;
@@ -68,9 +71,10 @@ export function MinePage({
         waiting={snapshot?.transition}
       />
       <p className={styles.notice} role="status" aria-live="polite">
-        {message} · {copy.readOnly}
+        {message}
+        {manual ? "" : ` · ${copy.readOnly}`}
       </p>
-      {/* Q-18/Q-19 are open: cells expose no selection interaction, even when the wallet is connected. */}
+      {/* Public cell deployment never locks another account out of its first Manual selection. */}
       <ol
         className={styles.board}
         aria-label={`${copy.board} · BNB`}
@@ -80,8 +84,23 @@ export function MinePage({
           <MineCell
             key={index}
             index={index}
-            visual={cellPresentation?.[index]?.visual}
-            ownAmount={cellPresentation?.[index]?.ownAmount}
+            visual={
+              cellPresentation?.[index]?.visual ??
+              (manual?.ownMask && manual.ownMask & (BigInt(1) << BigInt(index))
+                ? manual.selected.includes(index)
+                  ? "combined"
+                  : "deployed"
+                : manual?.selected.includes(index)
+                  ? "selected"
+                  : "default")
+            }
+            ownAmount={
+              cellPresentation?.[index]?.ownAmount ??
+              manual?.ownAmounts.get(index)
+            }
+            onToggle={manual ? () => manual.toggle(index) : undefined}
+            selected={manual?.selected.includes(index)}
+            selectionDisabled={manual ? !manual.selectionEnabled : undefined}
             amount={snapshot?.deployedPerSquare[index]}
             miners={snapshot?.minersPerSquare[index]}
           />
@@ -96,7 +115,10 @@ export function MinePage({
           )}
         </>
       ) : (
-        <MineBettingPanel display={actionPresentation?.betting} />
+        <MineBettingPanel
+          display={actionPresentation?.betting}
+          manual={manual}
+        />
       )}
       <MineResults display={results} />
     </section>

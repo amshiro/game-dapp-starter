@@ -28,8 +28,8 @@ Source：用户本轮纠正 → 当前 `ORI-AI测试`（file `M6P7gqrEDANm28YSfv
 ## 业务边界
 
 1. Figma state ≠ approved runtime state。保留 M1 的 stored round 语义，不推导 roundId+1，不把 canDeploy 当 active。
-2. Manual/Auto UI 完整不代表允许下注；正式 Submit、shortcut、selection、轮次执行控件保持 disabled/read-only。Unknown amount/balance/total 为 —；Figma 0.42/0.02/0.84/2.3056 不进入 runtime。
-3. `+0.5/+1/+2` 仅还原禁用控件标签，Q-16 未因此关闭；Auto 总额不按旧逻辑自行计算，Q-15/Q-17 保留。
+2. Manual/Auto UI 完整不代表允许下注；M2阶段 Submit、shortcut、selection、轮次执行控件均为disabled/read-only（历史交付；后续M3已单独启用Manual选择/输入/shortcuts，不解锁Auto）。Unknown amount/balance/total 为 —；Figma 0.42/0.02/0.84/2.3056 不进入 runtime。
+3. `+0.5/+1/+2` 为原始Figma标签；后续Human approved Manual直接替换每格输入，现已启用，Q-16 Manual范围关闭；Auto 总额不按旧逻辑自行计算，Q-15/Q-17 保留。
 4. 用户指出该区域包含 previous-round winners UI；沿用当前 Figma 可见标题 Miners，完成 address/amount row 结构。究竟哪些 rows/round/金额仍由数据 Gate 决定；不使用当前 round 或 roundId-1 冒充上一轮 identity，不自动接旧 Rank。
 5. SOL 与 ORE/BURY 占位不提供当前资产事实；Manual native asset 用已确认 BNB 文本，未知奖励资产不擅自定名或下载占位 token 图。
 6. Fixture 只用于隔离 visual tests，必须明确 TEST/FIXTURE 标识；正式 route 不导入 fixture，不新增 debug route。
@@ -37,3 +37,9 @@ Source：用户本轮纠正 → 当前 `ORI-AI测试`（file `M6P7gqrEDANm28YSfv
 ## M2 覆盖修正
 
 `736af9d` 只完成棋盘和部分只读区域，不能证明 Mine 全页面 UI 已覆盖。当前 FULL MINE read-only UI 已覆盖并验证固定模块与上述状态组件，且已通过人工审核；不因先前 checkpoint 已 push 而把缺失模块视为完成。完整数据、selection、transaction、automation execution、reward 和 realtime Gate 继续保留。
+
+## Requirement reconciliation 全状态复读 — 2026-10-29
+
+本轮重新通过 Figma MCP 完整读取 2003:182、629、1009、1038、1413、1715、1832 及直接内容。逐 frame 模块/visible state/差异/交互含义/demo/规则证据与最终 scope 见 [Mine Requirement Reconciliation](./mine-requirements-reconciliation.md)。两个“4”是同页状态，不是两个 Feature。
+
+重要修正：winning border 为3px；Stats 标注不证明四卡同时切换；Auto 4格/.02/3轮显示 .02/.06 是原始设计证据；后续 Human approved 输入为每格金额，本金应 .08/轮、3轮 .24 BNB，覆盖该示例。执行费/最终 payable 仍待 Gate。Figma 证明视觉状态不等于 runtime enum/时钟/收款语义；本轮没有改实现。

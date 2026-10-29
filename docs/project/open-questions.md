@@ -27,11 +27,11 @@ R0 逐项结论与来源见 [r0-evidence-audit.md](./r0-evidence-audit.md)。`PA
 | Q-47 | Realtime：Development Pusher 路由（`<WS host>/app/<key>`）在 F7 验证中返回 Cloudflare 502（上游不可达，本轮未复测），需要后端启动实时服务；Production WS host 与公开 app key；两个事件的正式 payload schema（是否 `{ data: <JSON string> }` 双层）；轮次内（部署量变化）是否会有推送事件；本机 `NEXT_PUBLIC_REFERRAL_CODE` 中的值是否就是该 Pusher key（已由用户配置到 `NEXT_PUBLIC_PUSHER_APP_KEY`，待服务恢复后验证）。服务恢复后补一次真实 smoke | 实时新鲜度与 polling 间隔 | PARTIALLY CONFIRMED：旧监听解包 eventData.data 并读取 timestamp/winning_square；ABI 与 API 可对照字段，仍无实际 WS 样本。502 是 F7 记录，本轮未复测 | Mine 实时 / schema / Production 配置 / G-R |
 | Q-12 | 交易 UX：签名中、已提交、确认中、成功、失败、取消的视觉？成功是否需要等待后端索引？ | 设计无交易状态 | CONTRADICTORY：旧 Manual/Stake 在 receipt 前提示成功，Auto/Rewards 等 wait 后提示；没有统一 backend completion 契约，见 R0 顺序表 | 所有交易 / G-T、G-P、G-V |
 | Q-14 | Production RPC：专用 provider / endpoint 与凭据边界（凭据不得进入前端）；生产读取是否部分走后端？ | 旧 QuickNode 凭据已泄露、不得复用 | 开发 RPC 已确认（C-08） | 生产 Web3 读写 |
-| Q-15 | Auto：Figma "Total per round" 等于输入金额、未乘方块数，与 `amountPerSquare` 模型矛盾；Auto 的 `botFee` / `executorFee` 是否展示？最大轮数？ | Auto 表单与交易参数 | Figma `2003:1832`；`registerAutomation` | Auto |
-| Q-16 | 金额快捷按钮数值：Figma `+0.5 / +1 / +2`（SOL 占位）还是线上 `+0.02 / +0.05 / +0.1`（BNB）？Stake 百分比按钮是否不变？ | 表单 | Figma vs Live | 部署面板 |
-| Q-17 | 最小 / 最大部署金额、小数位、是否预留 gas、100% 如何计算 | 输入校验 | `InvalidAmount` 错误存在，阈值未知 | 表单校验 |
+| Q-15 | Auto 输入为每格金额已 Human approved；剩余：botFee/executorFee 收取/展示、最终预付、最大轮数 | Auto 表单与交易参数 | Human approved 覆盖 Figma 数字：.02×4=.08 BNB/轮，3轮本金 .24 BNB；历史 funding=(perSquare×cells+executorFee)×rounds 仅技术候选，不能据本金确认 fee。fixed/random 入口、Protocol 7字段/View 6字段与 active remaining owner 待 Auto Gate | Auto；PARTIAL，不阻塞 Manual |
+| Q-16 | Manual 快捷值与行为已 Human approved；Stake 百分比既有签收保留 | 表单 | CONFIRMED（Manual）：当前Figma +0.5/+1/+2，直接替换每格BNB输入，非累加；断连/错链/已部署可编辑，count不变/total重算，busy保持原锁。旧0.02/0.05/0.1不继承；不解锁Auto | Manual不再有此blocker，transaction单轮一次不变 |
+| Q-17 | 最小 / 最大部署金额、小数位、是否预留 gas、100% 如何计算 | 输入校验 | Human approved：18位 bigint，fresh simulation/余额含gas；97 1wei 可调用不是产品 minimum。未知 min/max 不造限制；不以旧6位取代18位 | 表单校验；未知 cap 不阻塞 Core |
 | Q-18 | 已部署金额颜色（绿 / 金）；自动选中半透明变体含义 | 方块视觉 | PARTIALLY CONFIRMED：M1 重读 1078 独立已投注金额金色、823 选中+部署绿色/白边；不同状态不能直接视为同态冲突，完整映射及其他稿差异仍未签收，见 M1 | BlockCell |
-| Q-19 | 当前新版是否需要全选；何时可预选、已下注后重选、round transition 清空、disconnected/wrong chain 可否预选、一轮能否多次参与？ | selection 与链上部署是不同 owner | OPEN：Figma 有 5×5 与已投注+选中组合稿，不能据此决定交互许可；旧全选/清空与 AlreadyDeployedThisRound 错误名都不是完整产品规则；见 [M1](./mine-read-data-gate.md) | Mine selection / M2 |
+| Q-19 | 七稿无全选/清空入口，不继承旧按钮；成功后草稿编辑已 Human approved（选择/取消/多选/金额/总额均可用，仅Deploy禁用）；换轮草稿最终视觉保留仍 OPEN | selection 与链上部署是不同 owner | Manual 单轮一次成功 Deploy 已由用户签收（C-34），不再是开放问题；断连/错链/暂不可提交时允许纯 UI 预选、禁止 submit，其他账户部署不禁选。成功后不得再次提交；真实新轮重新校验且不自动提交旧草稿。尚未签收的视觉细节仍按 Figma/新版规则核对，见 [Manual 计划](./mine-manual-implementation-plan.md) | Mine selection presentation；不改变单次 Deploy 规则 |
 | Q-20 | Points 规则：Figma "每 1 USD 下注得 1 积分" vs 线上文案 "每 10 分钟按未中奖用户投入比例分配 1000 积分"？Points 数据接口？是否包含起源池、起源回购记录（线上 Points 文案包含）？ | 两种规则完全不同 | CONTRADICTORY：Figma `2003:2121` 的 1 USD/point 与旧未使用的 Points.subtitle 的 10 分钟/1000 分分配不同；points wrappers 无页面调用，Contract 示例不定义规则 | Points / G-P、G-D |
 | Q-22 | Wallet 余额资产 / 数据 owner；未来 embedded 功能 | BNB余额已确认 | User Confirmed：设计稿 ORE 错误；余额为目标 BSC 链 native BNB，Wagmi eth_getBalance(account)、18 decimals。external 隐藏 Export / Receive，embedded off | 余额范围已解决；未来 embedded 模型仍需独立 Gate |
 | Q-23 | 旧 Header 来源已确认；新版 ORI 价格在 BSC 97 的数据集、报价单位/时效及多行/缺价策略是什么？ | Header | PARTIALLY CONFIRMED：旧 Header price 来自 getPrice → query/chain_asset_config，以 ORI aux_contract_addr 匹配；不是 origin_info。97 数据集、单位/时效、重复行处理仍未知 | Header price / G-D、G-V |
@@ -80,3 +80,15 @@ R0 逐项结论与来源见 [r0-evidence-audit.md](./r0-evidence-audit.md)。`PA
 - Q-41：当前 About 对应文案由用户明确授权从实际挂载源码恢复。Staking 的 6% 与 Tokenomics 的 10%/50/10/40 等历史口径原样保留；不据此推导合约、交易或修改既有 read owner。
 - Q-30：沿用 en / zh-CN 和当前语言切换。恢复的双语 copy 可用于本工程演示，生产发布语言和费率真实性不因此被认证。
 - 当前 UI 不等待这些生产 Gate；来源与 frame/state 覆盖见 [inventory](./about-points-ui-inventory.md)。
+
+## Mine reconciliation — 2026-10-29：不扩大已签收范围
+
+见 [正式需求对齐](./mine-requirements-reconciliation.md)。固定优先级：用户产品规则 → 当前 Figma → 已审核 docs → Mine Historical Functional Baseline → runtime 可行性。
+
+- Manual 一轮一次成功、首笔多格、18位、value/mask、operationRound 和 receipt/event/refresh 已 Human approved；限定 Core 可开始下一阶段，但本轮不实现。Q-16 Manual shortcuts已签收当前Figma值与替换行为、无新全选，不让后续奖励/名单阻塞 Core。
+- Auto 保留真实自动挖矿 Scope；Human approved：Manual/Auto 输入均为每格金额，Figma 漏乘格数样例不采用。输入含义已解决，executorFee/botFee 与最终 payable funding 仍独立 Gate。
+- Lifecycle/countdown：Figma 需要时间/Waiting/结果 UI；block 配置不是精确60秒，latest.timestamp+60 和历史 enum 不自动采用。候选 UI state 不是协议枚举。
+- Motherlode：ORI treasury 字段仅证明原始读；Origin 双资产、3–6轮与其他旧文案节奏均 Historical behavior — not yet adopted，payout OPEN。Q-25/Q-42 的奖励资产、领取税/时限/完成语义仍 OPEN。
+- Miners：地址/金额/Round UI 已确认，current/previous、participants/winners、单位/排序/本人行 Data Contract OPEN。Origin 为 M11 FUTURE GATE，不混 ORI Claim。
+- Q-11：本轮六个历史只读端点 HTTP200，/ori/round 也可达；空 winners / null automation 不证明非空契约，large IDs、单位与 endpoint 命名冲突保留。Q-47 本轮未重测，旧502/真实 payload unknown 保留。
+- M7/M8 后置；交易前 fresh reads/simulation、receipt 后局部 refetch 属 Manual correctness，不等待持续 polling/realtime。

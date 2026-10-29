@@ -9,6 +9,7 @@ export function useMineBoard(context: MineReadContext) {
   const options = createMineBoardQuery(client, context);
   const query = useQuery(options);
   return {
+    snapshot: query.data,
     display: mineBoardDisplay(query, context, !!client),
     refreshing: query.isFetching,
     canRefresh: options.enabled,

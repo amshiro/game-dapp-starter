@@ -4,6 +4,8 @@
 
 **M1 READ DATA GATE BLOCKED**。97 的若干合约原始读字段已验证，但当前/下一轮呈现、状态映射、Miners 列表语义与选择规则尚不足以签收完整 M2。M1 票据保持 PARTIALLY BLOCKED；M1 审计轮只交付证据与文档。其后用户另行批准限定 M2 Read-only Board；完整 M1 Gate 不因此关闭。
 
+后续 Manual 产品签收以 [Single Deploy Correction](./mine-manual-implementation-plan.md) 为准：每账户每个实际 operation round 最多一次成功 Manual Deploy；技术上允许异格追加不构成产品许可。本报告原始 read/API/timing 的证据限制继续保留，不能用旧的 selection OPEN 描述覆盖新人工决定。
+
 用户确认 → 当前 `ORI-AI测试` → Repository/API Contract/ABI → 旧源码技术事实。旧 Mine UI、60 秒倒计时、名单与选择逻辑都不自动继承。Figma sample values are not runtime data。
 
 ## 证据索引
@@ -81,12 +83,12 @@
 | 问题 | 本轮证据与结论 |
 | --- | --- |
 | 5×5 是否当前设计 | CONFIRMED：当前 Mine frames 均为 25 格，显示 #1–#25；ABI 数组 25 项，技术 squareIndex 为 0–24 |
-| 什么时候可选、active 前/中 | OPEN：设计有等待/正常/选中稿，没有完整交互转换契约；canDeploy 不能单独决定可预选时机 |
-| 已下注能否重选 | OPEN：状态稿有“已投注+选中”，只证明组合视觉存在，不证明可以再次提交 |
-| 新轮是否清空 | OPEN：旧代码清空不构成新版批准；不能把 ticket 旧验收项当新产品事实 |
-| disconnected / wrong chain 是否可预选 | OPEN：Connect 与选中格出现在视觉稿中，不足以证明交互许可；W1 钱包状态 owner 不变 |
+| 什么时候可选、active 前/中 | User Confirmed：暂不可部署时允许纯 UI 预选，但 submit disabled；canDeploy 不等于产品 active label |
+| 已下注能否重选 | 本轮成功后不得第二次 Manual submit；是否保留纯视觉点击仍按 Figma/新版交互核对，不能由 combined 稿推导提交许可 |
+| 新轮是否清空 | 最终视觉保留策略继续核对；旧 selection 不得自动提交，必须 fresh read/validate/simulate，新轮不能继承旧账户轮次锁 |
+| disconnected / wrong chain 是否可预选 | User Confirmed：允许纯 UI 预选，submit disabled；W1 身份 owner 不变，回 97 后 fresh revalidate |
 | selection owner | 草稿选择可由局部 UI 持有（engineering recommendation）；真实已部署 mask/amount 来自链读，不建立钱包/轮次镜像 store |
-| 同一账户一轮多次参与 | OPEN：ABI 有 AlreadyDeployedThisRound / DifferentAmountPerSquareNotSupported，错误名称不足以定义 Manual/Auto 各路径与累计行为；C-34 历史路径不替代新版确认 |
+| 同一账户一轮多次参与 | User Confirmed：Manual 每账户每个实际 operation round 最多一次成功 Deploy，首笔可多格。后续 97 虚拟状态模拟支持不同格追加的技术证据保留，但不得转为产品 UI/第二次提交许可；见 [修正计划](./mine-manual-implementation-plan.md) |
 | 颜色 / Auto 半透明 | PARTIALLY CONFIRMED：1078 独立“已投注”金额金色；823 组合选中+部署金额绿色/白边。不能把不同状态混为一谈；完整映射及其他稿差异仍待 Q-18 签收 |
 | 全选 | OPEN：当前稿没有明确入口，不从旧站补入；Q-19 同时记录选择时机/重选/重置决策，不因旧功能存在就默认保留 |
 
@@ -146,4 +148,10 @@ Q-18/Q-19、Miners 与 timing 的完整产品 Gate 保留；56 继续 Release Ga
 
 ## 后续用户纠正：完整 Mine UI
 
-此前 checkpoint 仅完成棋盘及部分只读区域，不能代表 Mine 全页面 UI 已完成。用户现要求重读全部 1–6（两个4同页），补齐 Manual/Auto、结果 row renderer 与全部局部视觉状态；[完整 inventory](./mine-page-state-inventory.md) 是本轮覆盖索引。新 UI 不改变本文件的原始 read 来源、不新增 current/next round 推导；form/amount/balance/shortcut/selection/Automation/Rewards 的业务语义未获批准，actions 仍 disabled/read-only，未知 data unavailable。Miners/results 的 round 不再复用当前 stored round；旧 API 冲突和各 Gate 仍保留。
+此前 checkpoint 仅完成棋盘及部分只读区域，不能代表 Mine 全页面 UI 已完成。用户现要求重读全部 1–6（两个4同页），补齐 Manual/Auto、结果 row renderer 与全部局部视觉状态；[完整 inventory](./mine-page-state-inventory.md) 是本轮覆盖索引。新 UI 不改变本文件的原始 read 来源、不新增 current/next round 推导；M2阶段 form/amount/balance/shortcut/selection/Automation/Rewards 未获批准，actions 当时 disabled/read-only（历史交付；后续M3已单独启用Manual选择/输入及当前Figma shortcuts，不解锁Auto/Rewards），未知 data unavailable。Miners/results 的 round 不再复用当前 stored round；旧 API 冲突和各 Gate 仍保留。
+
+## Requirement reconciliation 补充 — 2026-10-29
+
+原始审计与完整数据 Gate BLOCKED 的历史结论保留；后续 Human approved Manual 规则、七 frame inventory 与 [正式需求对齐](./mine-requirements-reconciliation.md) 已将限定 Manual Core 标为 READY FOR IMPLEMENTATION，不表示完整 M1 或当前草稿已交付。Public board Query 继续 canonical；account deployment 按 chain/deployment/operationRound/account 隔离。stored round 不推导 +1；执行轮从 matching DeployEvent 确认。
+
+本轮 /ori/round 的只读 HTTP200 返回 round_id:string/global/user/last_updated，修正“未正式登记”可能被误读为“不可达”的判断；并未签收其非空 DTO/单位或替换 Chain owner。其他五端点也仅获得 smoke evidence，见 api.md；WS 本轮未重测。

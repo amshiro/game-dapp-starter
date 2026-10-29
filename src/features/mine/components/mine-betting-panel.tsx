@@ -6,15 +6,27 @@ import {
   type BettingMode,
   type BettingPresentation,
 } from "../model/mine-presentation";
+import { manualAmountShortcuts } from "../transaction/manual-model";
 import { useMineCopy } from "../copy";
+import {
+  MineManualStatus,
+  type ManualPanelControls,
+} from "./mine-manual-status";
 import styles from "./mine.module.css";
 
 export function MineBettingPanel({
-  display = unavailableBetting,
+  display: suppliedDisplay = unavailableBetting,
+  manual,
   initialMode = "manual",
-}: Readonly<{ display?: BettingPresentation; initialMode?: BettingMode }>) {
+}: Readonly<{
+  display?: BettingPresentation;
+  initialMode?: BettingMode;
+  manual?: ManualPanelControls;
+}>) {
   const copy = useMineCopy();
   const [mode, setMode] = useState<BettingMode>(initialMode);
+  const activeManual = mode === "manual" ? manual : undefined;
+  const display: BettingPresentation = activeManual?.display ?? suppliedDisplay;
   const id = useId();
   const tabs = useRef<Record<BettingMode, HTMLButtonElement | null>>({
     manual: null,
@@ -30,6 +42,7 @@ export function MineBettingPanel({
     <section
       className={styles.betting}
       data-mode={mode}
+      data-deployed={activeManual?.hasDeployedThisRound ? "true" : undefined}
       data-appearance={display.appearance}
       aria-label={copy.betting}
     >
@@ -46,8 +59,10 @@ export function MineBettingPanel({
             aria-selected={mode === item}
             aria-controls={`${id}-panel`}
             tabIndex={mode === item ? 0 : -1}
+            disabled={manual?.busy}
             onClick={() => setMode(item)}
             onKeyDown={(event) => {
+              if (manual?.busy) return;
               const next = bettingModeForKey(mode, event.key);
               if (!next) return;
               event.preventDefault();
@@ -76,9 +91,14 @@ export function MineBettingPanel({
             aria-describedby={`${id}-boundary`}
             inputMode="decimal"
             type="text"
-            readOnly
+            readOnly={!activeManual || activeManual.busy}
+            onChange={
+              activeManual
+                ? (event) => activeManual.setInput(event.target.value)
+                : undefined
+            }
             value={display.amount ?? ""}
-            placeholder="—"
+            placeholder={activeManual ? "0.00" : "—"}
           />
         </div>
         <div className={styles.balanceRow}>
@@ -92,10 +112,19 @@ export function MineBettingPanel({
             {copy.balance} {display.balance ?? "—"} BNB
           </span>
           <div className={styles.shortcuts} aria-label={copy.shortcuts}>
-            {/* Q-16/Q-17 are open: the drawn shortcut labels do not authorize BNB increments or amount calculation. */}
-            {["+0.5", "+1", "+2"].map((label) => (
-              <button key={label} type="button" disabled>
-                {label}
+            {/* The Figma + labels are presets, not arithmetic; this never submits a transaction. */}
+            {manualAmountShortcuts.map((value) => (
+              <button
+                key={value}
+                type="button"
+                disabled={!activeManual || activeManual.busy}
+                onClick={
+                  activeManual
+                    ? () => activeManual.setShortcut(value)
+                    : undefined
+                }
+              >
+                +{value}
               </button>
             ))}
           </div>
@@ -169,22 +198,53 @@ export function MineBettingPanel({
             <dd>{display.total ?? "—"} BNB</dd>
           </div>
         </dl>
-        {/* Manual/Auto UI is complete; transaction and selection rules are not authorized. Even ready fixtures cannot submit. */}
+        {/* Only the Manual owner can submit. Auto and isolated Figma fixtures remain non-executable. */}
         <button
           type="button"
           className={styles.deployAction}
-          data-appearance={display.appearance}
+          data-appearance={
+            activeManual?.hasDeployedThisRound
+              ? "unavailable"
+              : display.appearance
+          }
           aria-describedby={`${id}-boundary`}
-          disabled
+          disabled={
+            !activeManual ||
+            activeManual.busy ||
+            activeManual.hasDeployedThisRound === true ||
+            (display.appearance === "disconnected"
+              ? !activeManual.onConnect
+              : !activeManual.canSubmit)
+          }
+          onClick={
+            activeManual
+              ? () => {
+                  if (display.appearance === "disconnected")
+                    activeManual.onConnect?.();
+                  else if (activeManual.hasDeployedThisRound !== true)
+                    activeManual.submit();
+                }
+              : undefined
+          }
         >
-          {action}
-          {display.appearance === "ready" && display.total
+          {activeManual?.busy
+            ? activeManual.stateVisible
+              ? copy.transaction.phases[activeManual.state.phase]
+              : copy.loading
+            : activeManual?.hasDeployedThisRound
+              ? copy.transaction.alreadyDeployed
+              : action}
+          {!activeManual?.busy &&
+          !activeManual?.hasDeployedThisRound &&
+          display.appearance === "ready" &&
+          display.total
             ? ` ${display.total} BNB`
             : ""}
         </button>
       </div>
+      {activeManual && <MineManualStatus manual={activeManual} />}
       <p id={`${id}-boundary`} className={styles.boundary}>
-        {copy.actionsUnavailable}
+        {activeManual ? copy.transaction.perCell : copy.actionsUnavailable}
       </p>
     </section>
   );

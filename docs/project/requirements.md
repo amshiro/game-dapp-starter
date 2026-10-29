@@ -10,6 +10,8 @@
 
 新版需求以用户明确确认 → 当前 `ORI-AI测试` 为准。旧 ORI 源码/UI/线上文案仅提供历史或技术证据，不能自动形成新版 Scope；Figma 未设计且用户未确认时保持 OPEN。只有已确定需要某项能力时才从旧源码恢复 API、ABI、address 等技术事实，详见 [README](./README.md#source-of-truth-优先级)。
 
+Mine限定补充：按用户 → 当前Figma → 已审核docs → Mine Historical Functional Baseline → runtime可行性证据排序，完整范围见 [Mine Reconciliation](./mine-requirements-reconciliation.md)。下方 Live/Source 的秒数、母矿概率、reward比例等仍为 **Historical behavior — not yet adopted**，不能仅因列在表内就按新版规则实现。
+
 下表来自 Live/Source 的历史事实不自动授权新版功能；具体交付范围以当前用户决策、Figma 和对应 Feature Ticket 为准。
 
 来源缩写：`Live` = ori.supply 运行观察；`Live bundle` = 线上公开 JS；`Live About` = 线上 About / i18n 文案；`Source` = ori.supply 源码 `ori-website`；`Figma` = `ORI-AI测试`（`2003:178`）节点；`Legacy` = `origin-website`。详见 [legacy-runtime-audit.md](./legacy-runtime-audit.md)。
@@ -59,26 +61,26 @@
 
 | ID | Requirement | Source | Notes |
 | --- | --- | --- | --- |
-| C-30 | 每轮 1 分钟；5 × 5 共 25 方块；BNB 部署到单个、多个或全部方块 | Live About；Live；OreProtocol | 合约以 `roundLength` 区块数配置 |
+| C-30 | 新版保留5×5共25格、BNB多格部署。历史文案“每轮1分钟”不作为当前精确时钟 | Human approved/Figma（board）；Historical Live About（60s） | 合约roundLength以blocks配置；seconds deadline待M9 Gate；全25格可编码不代表新增全选入口 |
 | C-31 | Manual 一轮；Auto 多轮且 BNB 预先收取 | Live About；`registerAutomation` payable | |
-| C-32 | Manual 总额 = 每方块金额 × 方块数（每个方块金额相同） | Live bundle；`deployManual(mask, amountPerSquare)`；`DifferentAmountPerSquareNotSupported` | 与 Figma `0.42 × 2 = 0.84` 一致 |
-| C-33 | Auto 可选择方块，或随机方块（`randomizeMask`） | Live bundle；`registerAutomation` | 解释了 Figma Autominer 的 `Random x 25` |
-| C-34 | 同一用户不能同时进行 Manual 与 Auto；同一轮不能重复部署 | OreProtocol 错误 `AutomationConflictWithManualBet`、`AlreadyDeployedThisRound` | UI 需给出对应状态 |
-| C-35 | 平台费 1% | Live About | 合约另有 `vaultBps`、`claimFeeBps`，见 Q-41 |
-| C-36 | 开奖由链上随机数（Chainlink VRF）决定获胜方块；无人参与或获胜方块无人部署则本轮作废 | Live About；OreProtocol（VRF、`ResetEvent`） | |
-| C-37 | 未中奖：部署的 BNB 全部损失 | Live About | |
-| C-38 | 中奖：获得本轮奖池 BNB 的 90%，按获胜方块部署比例分配；产生 1 ORI（50% 给随机一人，50% 按比例） | Live About | |
-| C-39 | Motherlode：每轮 +0.2 ORI 进入母矿池，触发概率 1/625，未触发累积 | Live About；`MotherlodeEvent` | 线上母矿卡同时显示 `ORI + 起源`，见 Q-31 |
-| C-40 | 精炼：领取 ORI 挖矿奖励收 10% 精炼费，分配给仍未领取者；精炼池中的 ORI 领取免费 | Live About；`ClaimOre(tax, redistributed)`；`getUserRewards`（`oriDirect`、`oriRefined`） | |
-| C-41 | 领取：全部领取（BNB + ORI）与仅领取 BNB 两种 | OreProtocol `claimAll`、`claimEth` | Figma `Claim` / `Claim only …` 对应此二者 |
-| C-42 | 奖励领取有时限 | OreProtocol `ClaimWindowPassed`、`ExpiredRewardsClaimed` | 时限值未知，见 Q-42 |
+| C-32 | Human approved：Manual / Auto 输入均为每格金额；Manual 本金=每格金额×格数，Auto 每轮本金=每格金额×格数，多轮本金再×轮数 | Live bundle；`deployManual(mask, amountPerSquare)`；`DifferentAmountPerSquareNotSupported` | Manual 与 Figma `0.42 × 2 = 0.84` 一致；Auto `.02/.06` 漏乘格数的样例不采用；执行费/最终预付另 Gate |
+| C-33 | Auto保留fixed/random配置Scope候选，Blocks指cell数量/集合，Rounds指资助轮数 | Figma1832/1413 + Mine Historical Functional Baseline；registerAutomation ABI | random/fixed切换入口、金额/fee/remaining与限制仍OPEN；不是已批准真实Auto write |
+| C-34 | 一个账户每个实际 operation round 最多成功完成一次 Manual Deploy；第一次可一次选择多个格子并合并为一个 mask。成功后本轮 Manual action 禁用，不开放任何异格追加交易。既有 Manual / Auto 互斥约束保留 | User Confirmed：Mine Manual Requirement Correction；Mine Historical Functional Baseline；链上 participation/squares reads | Contract capability ≠ product behavior；当前 97 runtime 可接受异格追加，不构成产品许可。新一轮使用对应 round/account 的新 reads，不沿用旧轮锁 |
+| C-35 | 历史平台费1%；97已读feeBps=100配置；Manual value不额外加1% | Historical Live About；97 Gate；Human approved value公式 | 内部扣费时点/完整分配仍Q-41，不能从配置推导Claim费率或Auto预付公式 |
+| C-36 | Historical behavior — not yet adopted： 开奖由链上随机数（Chainlink VRF）决定获胜方块；无人参与或获胜方块无人部署则本轮作废 | Live About；OreProtocol（VRF、`ResetEvent`） | |
+| C-37 | Historical behavior — not yet adopted： 未中奖：部署的 BNB 全部损失 | Live About | |
+| C-38 | Historical behavior — not yet adopted： 中奖：获得本轮奖池 BNB 的 90%，按获胜方块部署比例分配；产生 1 ORI（50% 给随机一人，50% 按比例） | Live About | |
+| C-39 | Motherlode历史文案有每轮+0.2 ORI、1/625概率；旧Game locale又有每3–6轮触发 | Historical behavior — not yet adopted | 当前Figma单卡；treasury.motherlodeOre原始字段存在不证明节奏、双资产或payout；Q-31/Reward Gate保持OPEN |
+| C-40 | Historical behavior — not yet adopted： 精炼：领取 ORI 挖矿奖励收 10% 精炼费，分配给仍未领取者；精炼池中的 ORI 领取免费 | Live About；`ClaimOre(tax, redistributed)`；`getUserRewards`（`oriDirect`、`oriRefined`） | |
+| C-41 | 新版Rewards有三行与Claim / Claim only两个入口；历史为全部领取与仅BNB | Figma1413；Historical claimAll/claimEth ABI与调用 | 新版asset/label/税/可领语义和recipient策略仍Q-25/Claim Gate，不能仅凭按钮名自动映射；Origin独立FUTURE GATE |
+| C-42 | Historical behavior — not yet adopted： 奖励领取有时限 | OreProtocol `ClaimWindowPassed`、`ExpiredRewardsClaimed` | 时限值未知，见 Q-42 |
 | C-43 | 区块状态：正常、选中、已部署、已部署 + 选中、自动选中、中奖、未中奖、等待开始；人数 > 1000 缩写 | Figma `2003:1038` 标注 | |
 | C-44 | 结果动画：未中奖方块 100%→25% 透明度每块 0.15s 随机依次（3.6s）；获胜方块点亮 0.15s；保持 10s | Figma `2003:1405`–`2003:1408` 标注 | 线上动画未验证 |
 | C-45 | 数据卡：Motherlode、剩余时间（等待中显示 Waiting / 等待中…）、总部署、你的部署；点击切换美金值 / 轮次 | Figma 标注 `2003:1037`；Live | |
 | C-46 | Manual 按钮状态：未连接 → Connect wallet；未选方块 → Deploy 不可用；余额不足 → 余额变红且按钮不可用；可部署 → `Deploy {total} BNB` | Figma 标注 `2003:1715`（文案中 SOL 为占位） | |
 | C-47 | Auto 轮数步进器默认 1 | Figma 标注 `2003:1947` | |
-| C-48 | Auto 运行中可停止（退款） | OreProtocol `stopAutomation`；Figma `Stop autominer` | |
-| C-49 | Miners 列表显示本轮参与者地址与金额 | Figma `2003:508` | 线上数据源见 api.md |
+| C-48 | Auto 运行态有 Stop；退款仅历史路径，尚未签收新版完成条件 | Figma Stop autominer；Historical stopAutomation(to) | recipient、fee、剩余余额与退款 runtime 另 Gate |
+| C-49 | Miners 列表有 Round、地址与金额行；dataset 未签收 | Figma `2003:508` | 线上数据源见 api.md |
 
 ### Stake
 
@@ -113,15 +115,15 @@
 | I-10 | 点击 Header 地址打开 Wallet Sheet；Sheet 内复制地址、断开连接 | Figma | `导出` / `接收` 含义见 Q-22 |
 | I-11 | Wallet Sheet 点遮罩或 ✕ 关闭；无拖拽关闭 | Figma（无拖拽手柄） | |
 | I-20 | 方块可多选、再次点击取消 | Figma；Live（`全选`） | |
-| I-21 | Auto 总额 = 每轮金额 × 轮数 | Figma `2003:1832` | Auto "Total per round" 是否乘方块数见 Q-15 |
+| I-21 | 原输入含义推断已由 Human approved 取代：输入为每格金额，每轮本金=输入×格数，多轮本金=每轮本金×轮数 | 用户明确确认，覆盖 Figma 未乘格数示例 | 执行费与最终 msg.value 仍 Q-15，不把本金合计当含费预付 |
 | I-22 | 已部署金额以绿色显示 | Figma 多数状态稿 | 单态样例为金色，见 Q-18 |
 | I-23 | 余额不足 = 总额 > 钱包 BNB 余额 | Figma；Live bundle 余额比较 | 是否预留 gas 见 Q-17 |
-| I-24 | 金额快捷按钮为累加 | Figma / Live 文案带 "+" | 数值见 Q-16 |
-| I-25 | 部署前需结算上一轮（可能自动处理） | `MustCheckpointPreviousRound`；`batchCheckpoint` 由 bot 调用 | 前端是否需要显式处理见 Q-43 |
+| I-24 | 已由 Human approved 取代：Manual shortcuts +0.5/+1/+2 直接替换每格输入为0.5/1/2 BNB，非累加；count不变，total重算 | 当前 Figma1715 + 用户明确签收 | 断连/错链/已部署可编辑；busy仍禁用；单轮一次提交防线不变，不继承旧快捷数值 |
+| I-25 | 原“可能自动结算”推断撤回；Manual 遇 MustCheckpointPreviousRound 仅提示并刷新 | Human approved；错误及 bot batchCheckpoint 是技术证据 | 不自动追加 checkpoint write，Q-43 其他流程另 Gate |
 | I-30 | Rewards 卡在有可领取奖励时显示 | Figma "有奖金" 稿 | |
 | I-31 | Explore 表格在 H5 横向滚动 | Figma 列溢出 | |
 | I-40 | 轮次开始与开奖由实时频道推送 | Live（`round.new_round`、`round.reset`） | 见 api.md |
 
 ## Unknown
 
-见 [open-questions.md](./open-questions.md)。主要包括：起源与交易挖矿在新版中的去留、Points 规则冲突、金额快捷按钮数值、Logo 与代币图标确认、合约版本与 ABI 来源、RPC、后端 Contract 差异、交易状态 UX、加载 / 空 / 错误状态、Wallet `导出` / `接收`、默认语言。
+见 [open-questions.md](./open-questions.md)。主要包括：起源与交易挖矿在新版中的去留、Points 规则冲突、Logo 与代币图标确认、合约版本与 ABI 来源、RPC、后端 Contract 差异、交易状态 UX、加载 / 空 / 错误状态、Wallet `导出` / `接收`、默认语言。

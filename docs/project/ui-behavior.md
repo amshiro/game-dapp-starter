@@ -2,7 +2,7 @@
 
 每条行为标注 **Confirmed**、**Inferred** 或 **Unknown**，编号对应 [requirements.md](./requirements.md) 与 [open-questions.md](./open-questions.md)。重点记录 Figma 静态画面无法表达、但实现必须知道的行为。
 
-新版 UI、交互与 Feature Scope 按用户明确确认和当前 Figma；旧实现仅在已确定能力需要时恢复技术证据，不自动继承业务。见 [Source of Truth](./README.md#source-of-truth-优先级)。
+新版 UI、交互与 Feature Scope 按用户明确确认和当前 Figma；旧实现默认仅恢复技术证据；Mine 已获授权恢复 Historical Functional Baseline，但历史行为不自动成为新版需求。Mine 固定优先级与本次裁决见 [需求对齐](./mine-requirements-reconciliation.md)。见 [Source of Truth](./README.md#source-of-truth-优先级)。
 
 ## Navigation
 
@@ -39,7 +39,7 @@
 
 - **Confirmed**：Motherlode、剩余时间、总部署、你的部署；点击切换美金值 / 轮次（C-45）。
 - **Confirmed**：等待开始时显示 Waiting（线上 "等待中…"）。
-- **Inferred**：4 张卡同时切换；本地 UI 状态，不持久化。
+- **Correction**：Figma 1037 说明点击数据块切换 USD / Round，不能证明四卡必须同时切换。保持逐卡本地展示状态；USD 缺 quote owner 时为 —。
 - **Unknown**：母矿卡是否显示 `ORI + 起源` 双资产（Q-31）。
 
 ### Block cell states
@@ -54,15 +54,15 @@
 | 已部署 | 显示用户金额（单态样例为金色，其他稿为绿色，Q-18） |
 | 已部署 + 选中 | 白色边框 + 绿色用户金额 |
 | 自动模式选中 | 2px 绿色 `#2ED075` 边框 + 绿色金额；另有半透明变体（含义 Q-18） |
-| 中奖 | 2px 金色边框 + 暗金底 `#23211C` |
+| 中奖 | 3px 金色边框 + 暗金底 `#23211C` |
 | 未中奖 | 约 25% 透明度 |
 | 等待开始 | 人数 0，无金额 |
 
 ### 方块选择
 
-- **Inferred**：点击切换选中、可多选（I-20）。
+- **Human approved**：首次 Manual 提交前可 select / deselect / multi-select；成功后本轮不允许第二次提交。
 - **Confirmed**：选择结果编码为 25 位 `mask`（web3.md）。
-- **Unknown**：线上 `全选` 是否保留（Q-19）；开奖等待期间能否选择。
+- **Human approved**：断连、错链或暂不可提交时允许纯 UI 预选，禁止 submit。全七稿未发现全选/清空入口，不继承旧按钮；新轮草稿视觉保留与成功后纯视觉点击仍 OPEN（Q-19），不得自动提交。
 
 ### 结果动画（Confirmed，C-44）
 
@@ -72,7 +72,7 @@ Step2  获胜方块点亮（颜色变化 0.15s）
 Step3  获胜方块保持点亮 10s
 ```
 
-- **Confirmed**：开奖结果来自 VRF；线上通过实时频道 `round.reset` 推送，并可从链上 / `/ori/round_winners/round` 读取（api.md）。
+- **Technical evidence**：协议使用 VRF；Protocol/View 为可信结果候选。历史 round.reset 仅作 freshness signal；当前 WS payload 未验证，winners API 的 list 不能代替 canonical winning square。
 - **Unknown**：动画结束后的状态衔接；轮次 1 分钟与动画 3.6s + 10s 的时间关系（intermission 区块数决定）。
 
 ### 部署面板 — Manual（Confirmed，C-46）
@@ -85,30 +85,33 @@ Step3  获胜方块保持点亮 10s
 ```
 
 - **Confirmed**：总额 = 每方块金额 × 方块数；所有方块金额相同（C-32）。
-- **Confirmed**：同一轮已部署后不能再次部署；已开启 Auto 时不能 Manual 部署（C-34）。
-- **Inferred**：快捷按钮为累加（I-24）；数值待定（Q-16）。
-- **Unknown**：金额最小 / 最大值、小数位、gas 预留（Q-17）；上一轮未结算时的处理（Q-43）。
+- **User Confirmed**：每账户每个实际 operation round 最多一次成功 Manual Deploy；首笔可多选格子，一次提交最终 mask。已有任意格的本轮部署即禁用本轮 Manual action，即使另一格的合约 simulation 可通过也不开放第二次交易（C-34）。链上 deployed visual 保留；Human approved：成功后仍可点击/取消/多选和修改每格金额，计数/总额继续计算；最终按钮 disabled，文案“本轮已部署”，不增加独立同类提示。已部署后输入值保持 text-primary 白色，包括取消全部选择后；不得因最终按钮禁用而将输入值置灰，空 placeholder 仍用原样式。草稿修改不得使 action 再次可提交。
+- `hasDeployedThisRound` 来自按 deployment/round/account 隔离的链上 `getMinerRoundInfo` / `getMinerSquares`。真实新轮重新读取、不继承旧轮锁；未确认的数据不能当作“尚未部署”。旧草稿不得自动提交，新交易必须重新 read / validate / simulate。
+- **Human approved**：Manual shortcuts 使用当前 Figma1715 的 +0.5 / +1 / +2，点击将每格输入直接替换为字符串0.5 / 1 / 2 BNB，不累加、不改所选格子；total=每格金额×格数。断连/错链/已部署均可编辑本地草稿；仅既有 transaction busy 时禁用。已部署最终按钮继续disabled、文案“本轮已部署”，不能发起第二次交易。历史0.02/0.05/0.1不采用，I-24旧推断/disabled裁决废弃。
+- **Human approved**：BNB 输入最多18位，以 decimal string → parseEther → bigint；value=amountPerSquare×count，不额外加1%。提交前 fresh read/simulation/余额含gas检查。1 wei simulation 不构成产品 minimum；正式 min/max 仍 OPEN。MustCheckpointPreviousRound 仅提示/刷新，不自动 checkpoint（Q-43）。
+
+**M3 implementation**：正式97 Manual已接选择/每格金额与transaction owner；成功后仅本轮最终Deploy action禁用，格子与金额草稿保持可编辑，换账户/已知round变化清空local selection，未知资料不当作新轮。hash不是成功；matching DeployEvent决定operationRound，receipt+1confirmation后刷新原账户与公共Queries；refresh-failed只能Retry Refresh。Auto继续disabled；Manual shortcuts按上述人工决定启用。用户最终人工验收已确认Chain97真实Manual Deploy PASS，见 [实现记录](./mine-manual-implementation-plan.md)。
 
 ### 部署面板 — Auto
 
 - **Confirmed**：轮数默认 1（C-47）；BNB 预先收取；可选方块或随机方块（C-33）。
-- **Inferred**：总额 = 每轮金额 × 轮数（I-21）。
-- **Unknown**：Figma "Total per round" 未乘方块数的含义；执行器费用展示；最大轮数（Q-15）。
+- **Human approved**：Manual / Auto 输入均为每格金额。Auto 每轮本金=输入×选中/执行格数，多轮本金再×轮数；这不包含尚未确认的执行费。
+- **Human approved override**：Figma 4格/.02/3轮的 .02/.06 计算示例不采用，应为每轮本金 .08、3轮本金 .24 BNB。**OPEN**：历史含 executorFee 的 funding 公式尚未验证/签收，不能把本金直接作为最终 msg.value。fixed/random 入口、executor 与 remaining owner、费用及最大轮数需 Auto Gate（Q-15）。
 
 ### Autominer（运行中）
 
-- **Confirmed**：显示方块、剩余轮数、每轮金额与 `Stop autominer`；停止后退款（C-48）。
+- **Figma confirmed**：active Autominer 替换配置卡，显示 Random/格数、剩余轮数、每轮金额与 Stop autominer。**Historical behavior — not yet adopted**：stopAutomation(to) 退款路径；recipient/fee/余额对账需 Auto Gate，不能从截图宣告退款已验证。
 
 ### Rewards
 
-- **Confirmed**：奖励构成为 BNB、直接 ORI、精炼 ORI；领取方式为全部领取或仅领取 BNB（C-40、C-41）；领取有时限（C-42）。
+- **Historical behavior — not yet adopted**：旧 getUserRewards 为 ethAmount/oriDirect/oriRefined，旧 action 为 claimAll/claimEth。Figma 三行与两按钮确认 UI Scope，但 asset/label、税/时限/立即可领和 method 映射仍 Q-25/Reward Gate；Origin 是独立 FUTURE GATE。
 - **Inferred**：有可领取奖励时显示（I-30）。
 - **Unknown**：Figma 文案与命名（Q-25）；时限长度（Q-42）。
 
 ### Miners 列表
 
-- **Confirmed**：显示本轮参与者地址与金额（C-49）。
-- **Unknown**：排序、条数、实时更新方式。
+- **Figma confirmed**：Miners 有 Round、地址与金额 row。旧站 state=4 使用 winners；不能据此把新版定为全部参与者或本轮中奖者，撤回旧 C-49 的 dataset 推断。
+- **OPEN**：dataset、operation/result round、双金额资产/单位、稳定 row identity、本人行、排序和条数。见需求对齐中的 Miners Data Contract；不继承旧 Rank API/排序。
 
 ## Stake
 

@@ -17,6 +17,9 @@ export type MineBoardSnapshot = Readonly<{
   deployedPerSquare: readonly bigint[];
   minersPerSquare: readonly bigint[];
   transition: boolean;
+  canDeploy?: boolean;
+  live?: boolean;
+  randomnessFulfilled?: boolean;
   initialized: boolean;
 }>;
 export const mineReadKeys = { all: ["mine", "stored-board"] as const };
@@ -24,6 +27,7 @@ export const mineReadKeys = { all: ["mine", "stored-board"] as const };
 export function createMineBoardQuery(
   client: MineReadClient | undefined,
   context: MineReadContext,
+  minimumBlock?: bigint,
 ) {
   // Only Development 97 has M1 runtime evidence; never fall back to an unverified deployment.
   const contracts =
@@ -55,6 +59,12 @@ export function createMineBoardQuery(
       if ((await client.getChainId()) !== 97)
         throw new Error("Mine RPC chain mismatch");
       const block = await client.getBlock({ blockTag: "latest" });
+      if (
+        minimumBlock !== undefined &&
+        block.number !== null &&
+        block.number < minimumBlock
+      )
+        throw new Error("Mine RPC head predates receipt");
       if (block.number === null) throw new Error("Mine block unavailable");
       signal.throwIfAborted();
       const at = { blockNumber: block.number };
@@ -92,6 +102,9 @@ export function createMineBoardQuery(
       )
         throw new Error("Inconsistent Mine snapshot");
       return {
+        canDeploy: current[4],
+        live: board[6],
+        randomnessFulfilled: round.randomnessFulfilled,
         initialized:
           roundId > BigInt(0) &&
           round.startBlock > BigInt(0) &&

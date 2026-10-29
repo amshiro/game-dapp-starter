@@ -205,3 +205,11 @@ Query key 包含目标链、token/View 部署地址及个人 account；无 previ
 Rewards 继续 **PARTIALLY CONFIRMED**：`pendingRewards` 可读不等于已证明 immediately claimable ORI；`rewardDebt`、`stakeRewardsFactor` 单位 UNKNOWN，不作为本金或 ORI amount。当前页面没有新增 Claimable Rewards slot；APR / TVL 维持 `—`，无 API 或价格推导。native BNB 仅 gas，与 Stake principal balance 无关。Q-24、Q-26 继续 OPEN；S1 只读阶段的禁用表单已由上述 S2 的 Development 97 存取授权覆盖，其金额、allowance 与 completion 策略已人工签收。Claim 与 Production 不因本授权解锁。
 
 User Confirmed：Development 97 Read Integration 已通过最终人工验收。账户切换、wrong chain → 97、断开、刷新恢复均 PASS；Deposit Balance / Withdraw Staked Balance / Total deposit 正常恢复，无旧账户缓存残留。此结论仅覆盖当前限定 Development Read Scope，不关闭 Production 56、Reward Semantics 或任何交易 Gate。
+
+## Mine 新产品与技术能力的边界 — 2026-10-29
+
+[Mine Requirement Reconciliation](./mine-requirements-reconciliation.md) 为当前 Mine 规则索引。前文读写映射是技术能力/历史调用路径，不代表当前均已授权实现；/ori/round 可达不使其成为完成契约 owner。Mine 固定优先级为用户产品规则 → 当前 Figma → 已审核 docs → Historical Functional Baseline → runtime/ABI 可行性。
+
+Manual Human approved：每账户每个实际 operation round 最多一次成功 Deploy，首笔可多格；合约允许异格追加也不开放产品 UI。无需 ORI approval，native BNB18；mask UI#1→bit0；value=amountPerSquare×count，无额外1%与 roundId 参数。stored round 不能 +1；实际 operationRound 取 matching DeployEvent。每次提交 fresh read/validate/simulate；receipt success + 1 confirmation + matching event + 相关个人/public/native reads 刷新才可称业务成功。已确认后验证/刷新失败只 retry verification/reads，不 resend。
+
+这些是前次97 read/simulation 与人工签收策略，不是本轮真实交易；Manual Core 需求 READY，暂停草稿尚未接入正式页面。Auto payable/fee/conflict、reward asset/claim、Origin backend+AssetManager 各有独立 Gate；Production56不扩大验证。旧 hash 即成功、任意原参数自动重发、固定60秒/旧API8位单位不继承。

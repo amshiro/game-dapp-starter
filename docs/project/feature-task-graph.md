@@ -35,13 +35,15 @@
 | S3 | Stake yield / claim-and-deposit | BLOCKED | S1/W1；先确认 Q-26，再决定是否存在该票据的正式 Scope |
 | M1 | Mine read models / owner Queries | PARTIALLY BLOCKED | Read/Data Gate 证据审计已完成并通过人工审核；97 原始读子集供 M2 使用，完整状态/Miners/单位契约仍未解锁 |
 | M2 | Mine read-only UI / selection | PARTIALLY BLOCKED | 此前仅棋盘的 checkpoint 不代表整页 UI 完成；Full Mine read-only UI correction 已完成并通过人工审核，覆盖 1–6 全状态展示；业务 selection、Miners 数据、timing 与未确认资产仍 gated |
-| M3 | Mine Manual transaction | BLOCKED | W1/M1/M2/M7；Q-12、Q-16、Q-17、Q-43 |
-| M4 | Mine Auto mining start / stop | BLOCKED | W1/M1/M2/M7；Q-15、Q-12、Q-17、Q-43 与执行器联调 |
+| M3 | Mine Manual transaction | READY | 限定 Manual Core COMPLETE；用户最终验收确认 Chain97真实Manual Deploy PASS；W1 + M1/M2 已确认子集，单轮一次；Manual shortcuts已按Figma启用替换输入，不依赖 M7/Reward |
+| M4 | Mine Auto mining start / stop | PARTIALLY BLOCKED | W1/M1/M2；输入每格金额已签收；Q-15 fee/最终预付/remaining/执行器 Gate；不依赖 M7 |
 | M5 | Mine Rewards read/UI | PARTIALLY BLOCKED | W1/M1；Q-10、Q-25、Q-42 与资产/状态待确认 |
-| M6 | Mine Rewards claim | BLOCKED | W1/M5/M7；Q-12、Q-25、Q-42 与完成/领取安全 Gate |
-| M7 | Mine polling / freshness | PARTIALLY BLOCKED | 人工暂缓，不进入实现；当前优先完成 About / Points UI |
+| M6 | Mine Rewards claim | BLOCKED | W1/M5；Q-12、Q-25、Q-42 与完成/领取安全 Gate |
+| M7 | Mine polling / freshness | PARTIALLY BLOCKED | DEFERRED：核心 Mine 功能优先；不阻塞 Manual，持续 freshness 待已有 Query owner 明确 |
 | M8 | Mine realtime invalidation | BLOCKED | M1/M7；Q-47 服务恢复、真实 payload、重连 smoke |
-| M9 | Mine round-result animation | BLOCKED | M2、可信开奖结果；Q-36、开奖与 intermission 衔接，不能直接信任旧 WS 字段 |
+| M9 | Mine lifecycle / countdown / result | BLOCKED | 在原结果动画票扩展；正式 deadline/状态映射、Q-36 与结果 Gate |
+| M10 | Mine Miners / Winners data | BLOCKED | dataset / round / 资产单位 / 排序 Data Gate；不自动继承旧 Rank |
+| M11 | Mine Origin rewards | BLOCKED | DEFERRED — FUTURE GATE；backend + AssetManager 独立于 ORI Claim |
 
 ## Dependency Graph
 
@@ -72,12 +74,11 @@ flowchart TD
   W1 --> M5
   M2 --> M3
   M2 --> M4
-  M7 --> M3
-  M7 --> M4
   M5 --> M6
-  M7 --> M6
   M7 --> M8
   M2 --> M9
+  M1 --> M10
+  M1 --> M11
 ```
 
 R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 仅产出一份“仍未知”报告就自动解锁。M1 的公开 round 查询可先于 W1 实现，账户查询/完整验收需要 W1。M9 可以在 R0/M1 已确认的链上/轮询结果上工作，**不强依赖 M8**；若要用 WS 必须等待 M8 并重新读取 canonical 数据。Stake 与 Manual/Auto 彼此不是强依赖；先完成 Stake 仅是风险递进建议。Realtime 不依赖任一写交易成功。
@@ -300,16 +301,16 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 
 | Field | Ticket |
 | --- | --- |
-| Goal | 一轮多格同金额的 Manual 部署，完成前置校验与确认后的数据对账 |
+| Goal | 每账户每个实际 operation round 最多一次成功 Manual Deploy；首笔可多格同金额，完成前置校验与确认后的数据对账；禁止同轮异格追加 |
 | Route | `/mine` Manual 面板 |
-| Owner / Dependencies | Mining Manual workflow；W1/M1/M2/M7，R0 对应协议证据；不依赖 Stake |
-| Source of Truth | C-31/C-32/C-34/C-46、deployManual ABI、docs/web3.md |
-| API dependencies | M1 canonical round / 我的部署；后端索引是否属于完成契约先明确，不以缺失旧 `/round` 端点当完成条件 |
+| Owner / Dependencies | Mining Manual workflow；W1 与 M1/M2 已确认 round/board/account 读；不依赖 Stake、M7 或未来 Rewards |
+| Source of Truth | 用户规则 → 当前 Figma → 已审核 docs → Mine Historical Functional Baseline → runtime/ABI 可行性；详见 [正式需求对齐](./mine-requirements-reconciliation.md) |
+| API dependencies | Manual Core 无 API 前置；公共与个人 canonical reads 归 Chain 97 Queries；不把旧 /round 索引作为成功条件 |
 | Web3 dependencies | deployManual(mask,amountPerSquare)，value 精确等于 amountPerSquare × selected count；无需 ERC20 approve；读 canDeploy/当前部署/automation conflict，处理 checkpoint 错误 |
-| Realtime dependencies | 不强依赖 M8；确认后明确 invalidation 与 M7 polling 对账 |
-| UI/Figma dependencies | `2003:1715` 及 4 个 Manual 状态；Q-12 待补交易状态 |
-| Open Questions / Blockers | BLOCKED：前置票据，Q-12、Q-16 快捷值、Q-17 min/max/decimals/gas 留存、Q-43 checkpoint owner；不能自行发送 checkpoint 修复失败 |
-| Acceptance Criteria | G-P/G-T/G-V；25 位 mask 合法、总额 bigint、同轮重复/Auto 冲突 fail closed；拒签与链上 revert 不混淆；以批准的 receipt/reconciliation 标准完成并刷新正确账户/轮次 |
+| Realtime dependencies | 不依赖 M7/M8；fresh preflight 与 receipt 后局部 refetch 是本 transaction owner 的正确性职责 |
+| UI/Figma dependencies | 全七稿 inventory + `2003:1715` 四态；沿用已签收 signature→receipt→event→refresh 语义，不继承旧 hash 即成功 |
+| Open Questions / Blockers | COMPLETE（用户最终人工验收：Chain97真实Manual Deploy PASS）：单轮一次、18位、mask/value、operationRound、receipt/event/refresh 已签收。Manual shortcuts按Figma启用替换输入、不新增全选；成功后保留 deployed visual，selection/amount可编辑；仅最终action disabled并显示“本轮已部署”，无独立提示。Q-16 Manual快捷值/替换行为已签收；完整时钟/Rewards/Miners不阻塞Core；MustCheckpoint 只提示刷新。见 [需求对齐](./mine-requirements-reconciliation.md) 与 [实现计划](./mine-manual-implementation-plan.md) |
+| Acceptance Criteria | G-P/G-T/G-V；25 位 mask 合法、总额 bigint；本轮账户 participation/total/mask 任一证明已部署，所有第二次 Manual submit 均 fail closed，与新 mask 是否重叠无关；新轮独立 Query 不沿用旧轮锁；拒签与链上 revert 不混淆；按 receipt + 1 confirmation + matching DeployEvent 得到 operationRound，成功刷新原账户/round reads；确认后验证/刷新失败只 retry、不 resend。见 [修正计划](./mine-manual-implementation-plan.md) |
 | QA | 通用 QA；全部/单格/非法 mask、精度/余额边界、round 在签名前后切换、重复点击、replacement/timeout；真实部署仅 BSC 97 单独授权 |
 | Non-goals | Auto、Rewards、前端代替 bot 结算、设置无限重试或主网 smoke |
 
@@ -319,13 +320,13 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 | --- | --- |
 | Goal | 在明确预付公式与执行器事实后实现多轮自动部署、运行状态和停止退款 |
 | Route | `/mine` Auto 与 Autominer 状态，无新 Route |
-| Owner / Dependencies | Mining Automation workflow；W1/M1/M2/M7；不把 Manual 成功当作技术前置，建议在 M3 审核后推进以降低风险 |
+| Owner / Dependencies | Mining Automation workflow；W1/M1/M2 + Auto-specific Gate；不把 Manual 成功当作技术前置，建议在 M3 审核后推进以降低风险 |
 | Source of Truth | C-31/C-33/C-34/C-47/C-48、registerAutomation/getAutomation/stopAutomation、正式 automation Contract |
 | API dependencies | automation/user 的 user 参数与响应字段/单位；链上 getAutomation 与后端不一致时的 canonical/索引延迟先锁定 |
 | Web3 dependencies | registerAutomation 的 owner/balance/mask/amountPerSquare/randomizeMask/active/botFee 与 msg.value；stopAutomation(to) 收款地址与退款验收；执行器由后端/协议 owner 提供 |
-| Realtime dependencies | M7 首先 polling；M8 后续仅 invalidation，不能用事件推算余额/剩余轮数 |
+| Realtime dependencies | preflight/receipt 后局部刷新由 Auto owner 负责；M7/M8 后置，不能用事件推算余额/剩余轮数 |
 | UI/Figma dependencies | `2003:1832`、`2003:1890`、`2003:1667`、运行中 `2003:1413`；费用/最大轮数状态需补齐 |
-| Open Questions / Blockers | BLOCKED：Q-15 总额/每格/轮次与 botFee/executorFee、Q-12、Q-17、Q-43、执行器可用性与余额退回证明；不得硬编码猜测公式 |
+| Open Questions / Blockers | PARTIALLY BLOCKED：Human approved：Manual/Auto 输入均为每格金额；Auto 示例本金应为 .08/轮、3轮 .24 BNB，覆盖 Figma .02/.06。执行费/最终预付仍待 Gate；Protocol automation 7字段 vs View 6字段；fixed/random 入口、recipient、remaining 与执行器/退款证据待 Gate，不猜公式 |
 | Acceptance Criteria | G-P/G-T/G-V；精确预付拆分、随机/指定 mask 一致、Manual 互斥；start receipt 不等于已执行下一轮；stop 后按批准的链上状态/退款对账，不依据旧 UI 直接显示成功 |
 | QA | 通用 QA；轮数/费用/余额/随机位图、执行器延迟/缺席、停止失败与退款地址、账户/链/round 切换；start/stop 真实调用分项授权 |
 | Non-goals | 自建 executeAutomation bot、后台常驻任务、从前端执行 resetRound |
@@ -334,7 +335,7 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 
 | Field | Ticket |
 | --- | --- |
-| Goal | 显示当前账户 BNB、直接 ORI、精炼 ORI 的真实可领取事实，先完成只读卡片 |
+| Goal | 在 Q-25/Reward Gate 确认 Figma 三行资产与 getUserRewards 字段映射后显示真实奖励，不能先标为立即可领取 |
 | Route | `/mine` Rewards 区 |
 | Owner / Dependencies | Mining Rewards read/UI；W1/M1，R0 对应 ABI；不要求 M3/M4 已发出交易（可以有历史账户数据） |
 | Source of Truth | C-40–C-42、getUserRewards 返回字段与 Q-25/Q-42 |
@@ -351,9 +352,9 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 
 | Field | Ticket |
 | --- | --- |
-| Goal | 独立完成 claimAll 与仅 BNB claimEth 的资金流程 |
+| Goal | 在 Reward Gate 签收后独立完成 Claim / Claim only 对应资金流程；claimAll/claimEth 目前是历史技术候选 |
 | Route | `/mine` Rewards 区 |
-| Owner / Dependencies | Mining claim workflow；W1/M5/M7，已核对的协议证据 |
+| Owner / Dependencies | Mining claim workflow；W1/M5，已核对的协议证据 |
 | Source of Truth | C-40/C-41/C-42、claimAll(to)/claimEth(to)、对应错误与全局 transaction contract |
 | API dependencies | 明确是否有业务索引完成条件；无此依赖时不可发明 claim API |
 | Web3 dependencies | 明确 to、claimFeeBps/税语义、可领取时限；simulation、receipt 与领取后 reward/balance reads；无需擅自 approve |
@@ -398,22 +399,56 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 | QA | 通用 QA；mock 覆盖坏消息/重复/乱序/resync/多订阅者；真实只读 smoke 独立记录结果，不能在测试中发交易制造开奖 |
 | Non-goals | 去掉 polling、事件写入 Zustand/手工 patch Query、修服务器/改 WS security、部署实时基础设施 |
 
-### M9 — Mine round-result animation
+### M9 — Mine round lifecycle / countdown / result（扩展原结果动画票）
 
 | Field | Ticket |
 | --- | --- |
-| Goal | 将可信 round 结果呈现为 Figma 指定结果动画，独立于网络 transport 与资金流程 |
+| Goal | 建立 raw contract / backend event / UI state 分离的 lifecycle adapter、可信 countdown 与 Figma 结果动画，不改变协议轮次 |
 | Route | `/mine` |
 | Owner / Dependencies | Mining 本地 UI；M2 与 R0/M1 已确认的开奖结果；采用 WS 时额外依赖 M8 |
-| Source of Truth | C-44、ui-behavior 结果动画；不能用名称对调的 API 或旧 data.winning_square 直接判定 |
+| Source of Truth | [需求对齐](./mine-requirements-reconciliation.md) 的候选状态机与 countdown Gate；C-44；不能把旧 gameState enum、timestamp+60 或 API 命名直接当当前定义 |
 | API dependencies | 经过验证的结果模型与 round identity；reset_event/round 等端点选用由 M1/G-D 锁定 |
 | Web3 dependencies | 无新增写；链上结果来源也由 M1 抽象 |
 | Realtime dependencies | 可由 polling 驱动，不强依赖 WS；事件仅促使读取结果 |
 | UI/Figma dependencies | `2003:1405`–`2003:1408`；3.6s 淡出、0.15s 点亮、10s 保持，与真实 intermission 的衔接必须另确认 |
-| Open Questions / Blockers | BLOCKED：M2、Q-36 reduced-motion、动画结束/新轮开始/后台恢复时的优先级和重复结果播放策略；这些未确认前不自行截断/延长合约轮次 |
+| Open Questions / Blockers | BLOCKED：deadline owner、block→seconds 语义与 raw state 映射待签收；候选 waiting/live/resolving/revealed/next-round 不是已确认 enum。另有 Q-36、动画/新轮优先级与去重；不截断/延长协议轮次 |
 | Acceptance Criteria | G-P/G-V；同 round 不重复播放，迟到结果不覆盖新轮，离页/后台能清理并恢复；reduced-motion 有批准方案；动画状态不修改账户余额或协议状态 |
 | QA | 通用 QA；可控随机顺序与 fake timers 验证时序、重复/乱序、切页/切轮、reduced-motion；视觉验收不是开奖结果正确性的证明 |
 | Non-goals | 决定中奖方块、客户端模拟开奖结果、以动画结束替代交易/协议完成 |
+
+### M10 — Mine Miners / Winners data
+
+| Field | Ticket |
+| --- | --- |
+| Goal | 为已有 Miners UI 确认 dataset、round identity、资产/单位与真实 row owner |
+| Route | `/mine` Miners/results |
+| Owner / Dependencies | Mine Feature list Query；M1/M2 已确认 round + 独立 Data Gate，不要求 Manual/Auto 成功 |
+| Source of Truth | 用户 → Figma → reviewed docs → historical winners；[Miners Data Contract](./mine-requirements-reconciliation.md) |
+| API dependencies | winners endpoint 候选；空 list HTTP200 不证明非空 schema/排序/单位；不用旧 Rank 定义补需求 |
+| Web3 dependencies | canonical round；participants 投入列表不是 winners/reward rows 的替代 |
+| Realtime dependencies | 未来仅 invalidate；局部手动刷新先于 M7/M8 |
+| UI/Figma dependencies | 1 的 Miners、4 的 results row；已有完整只读结构 |
+| Open Questions / Blockers | BLOCKED：current/previous round、participants/winners、地址/稳定 row key、双金额单位、排序/本人行未签收 |
+| Acceptance Criteria | G-D/G-V；typed display model 隔离 DTO，空/错/加载独立，安全整数和账户/轮次隔离，不假 rows |
+| QA | schema/mapper/空与非空样本、跨 round、375/500、长地址与金额 |
+| Non-goals | ranking 产品、奖励领取、从参与人数推 winners、扩展旧 UI |
+
+### M11 — Mine Origin rewards（FUTURE GATE）
+
+| Field | Ticket |
+| --- | --- |
+| Goal | 独立确认 Origin 后端 allocation + AssetManager 的产品与资金语义 |
+| Route | 未来设计/产品 Gate 决定；不自动新增 Mine workflow |
+| Owner / Dependencies | 未创建实现 owner；先 Product / API / Transaction Gate，不依赖 ORI Claim 实现 |
+| Source of Truth | 用户规则与当前 Figma 优先；historical OriginClaimCard 仅提供功能/技术调查入口 |
+| API dependencies | origin_info 可达不证明额度单位、orderId、幂等与 backend 完成契约 |
+| Web3 dependencies | AssetManager.deposit 历史路径，当前地址/ABI/runtime/value/recipient 必须另验；不继承旧10位金额/时间戳 orderId |
+| Realtime dependencies | 无已批准依赖 |
+| UI/Figma dependencies | 无已签收独立 Origin 资金流程；不把 BURY 占位直接解释为 Origin |
+| Open Questions / Blockers | BLOCKED / DEFERRED — FUTURE GATE；产品 Scope、双端状态和资金安全均待签收 |
+| Acceptance Criteria | 先完成独立 Gate；以后才定义实现 ticket 与业务完成条件 |
+| QA | 本阶段只做证据核对；任何真实 write 必须另获授权 |
+| Non-goals | 本轮实现、与 claimAll 合并、自动 backend/chain 混合交易 |
 
 ## R0 — 支撑票据：只读证据核对
 
@@ -452,8 +487,8 @@ R0 当时的限定交付见 [R0 Evidence Audit](./r0-evidence-audit.md)：仅比
 
 1. W1、W2、R0 已完成并审核。本轮 A1 / P1 页面完整 UI 依用户限定授权实现，等已通过人工审核；生产文案/积分数据 Gate 不因此关闭。
 2. A1 使用当前源码恢复的对应 copy；P1 使用 Figma demo。审核后再决定 checkpoint；不得把当前工程演示授权推广为其他页面的历史内容继承。
-3. 经对应 G-D/G-P 解锁的 E1、H1、S1；M1 → M2 与 M7。M7 不等 WS 恢复，M5 可在数据契约/身份稳定后独立推进。Points 真实数据仍需 Q-20/Q-11 Gate；静态演示已获本轮明确授权。M7 暂缓，不进入实现。
-4. 先评审 S2 的 approve/deposit/withdraw，再按独立 Gate 评审 M3、M6；M4 因预付公式与执行器依赖更强，后置。S3 先决定是否保留；所有真实交易仍逐类授权。
+3. 已审核页面/read 子集保持完成；Points 真实数据仍需 Q-20/Q-11 Gate。Mine 当前优先 M3 限定 Manual Core，M7 暂缓且不作为交易局部刷新前置。
+4. 当前最短 Mine 主线：M3 Manual → M4 Auto（先解决资金/选择/执行器 Gate）→ M9 lifecycle/countdown → M5/M6 ORI rewards → M10 Miners → M7 freshness → M8 realtime。M11 Origin 独立 FUTURE GATE；未来 Rewards/名单不阻塞 Manual，Auto Gate 未通过不能硬做。S2 真实 QA 缺 ORI 暂缓，不是 Mine 前置。所有真实交易逐类授权。
 5. Q-47 恢复且 M1/M7 owner 明确后做 M8，不需等全部交易完成；M9 在结果来源/时序/reduced-motion 明确后执行，不与 transport 或资金流程绑定成巨票据。
 6. W3、起源/ORI 游戏与生产发布均留在对应 Gate 后。Q-01/Q-02 未确认前，本图**不安排起源 swap/trade-to-mine 实现**；这不等于决定下线它们。
 
@@ -466,3 +501,11 @@ R0 当时的限定交付见 [R0 Evidence Audit](./r0-evidence-audit.md)：仅比
 ## Current UI locale / Wallet action correction
 
 用户已授权现有 UI 的 en / zh-CN 切换，32px Header 语言按钮与 request-cookie resolution 见 ui-behavior.md。external Wallet 的 Export / Receive 现在均隐藏；仅 Privy embedded wallet 才有对应私钥导出 / 二维码入口，当前配置仍关闭 embedded。此调整不解锁 W3 的 embedded 模型、资金操作，也不批准正式 About 正文、费率或生产默认语言。
+
+## Mine Requirement Reconciliation — 2026-10-29
+
+完整七 frame、Manual KEEP/FIGMA OVERRIDES/OPEN/DROP、Auto 每格金额签收与剩余费用 Gate、六 API A/B/C/D 分类与新鲜度推荐见 [正式对齐与最终矩阵](./mine-requirements-reconciliation.md)。保留既有编号防止旧 M2/M7 引用歧义；M3 READY 仅表示限定 Core 可进入下一阶段，当前未完成草稿不代表实现已完成。本轮不恢复实现。
+
+## M3 implementation update
+
+M3 正式 Manual selection/input/account Queries 与97 transaction owner 已接线；自动与无签名 browser QA 见 [M3 实现记录](./mine-manual-implementation-plan.md)。M3 已由用户最终人工验收，Development97真实Manual Deploy PASS；READY行标记已交付限定Scope，不解锁其他交易。前文 reconciliation 时“暂停草稿/不恢复实现”为历史阶段范围；本次用户已单独授权实现，仍不授权 Agent 实际签名/广播。Auto/Rewards/Countdown/M7/M8均未实现。
