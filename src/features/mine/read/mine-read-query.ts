@@ -20,6 +20,9 @@ export type MineBoardSnapshot = Readonly<{
   canDeploy?: boolean;
   live?: boolean;
   randomnessFulfilled?: boolean;
+  winningSquare?: number;
+  startBlock?: bigint;
+  endBlock?: bigint;
   initialized: boolean;
 }>;
 export const mineReadKeys = { all: ["mine", "stored-board"] as const };
@@ -101,7 +104,18 @@ export function createMineBoardQuery(
         round.minersPerSquare.length !== 25
       )
         throw new Error("Inconsistent Mine snapshot");
+      if (
+        round.randomnessFulfilled &&
+        (round.winningSquare < 0 || round.winningSquare >= 25)
+      )
+        throw new Error("Invalid fulfilled Mine result");
       return {
+        startBlock: round.startBlock,
+        endBlock: round.endBlock,
+        // An unfulfilled default winner is never a verified result; keep it out of presentation.
+        winningSquare: round.randomnessFulfilled
+          ? round.winningSquare
+          : undefined,
         canDeploy: current[4],
         live: board[6],
         randomnessFulfilled: round.randomnessFulfilled,

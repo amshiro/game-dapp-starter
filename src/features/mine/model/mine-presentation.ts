@@ -1,3 +1,4 @@
+import type { MineRewardsDisplay } from "./mine-rewards";
 // These are Figma presentation variants, not a protocol state machine or transaction permissions.
 export type MineCellVisual =
   | "default"
@@ -55,17 +56,11 @@ export type AutomationPresentation = Readonly<{
   roundsRemaining?: string;
   totalPerRound?: string;
 }>;
-export type RewardPresentation = Readonly<{
-  direct?: string;
-  unrefined?: string;
-  refined?: string;
-}>;
-
-/** Same-page Figma variations. Only a future verified owner may supply running/reward runtime facts. */
+/** Isolated Figma variations; production running/reward facts come from their query owners. */
 export type MineActionPresentation =
   | Readonly<{ kind: "form"; betting?: BettingPresentation }>
   | Readonly<{
       kind: "autominer";
       automation: AutomationPresentation;
-      rewards?: RewardPresentation;
+      rewards?: MineRewardsDisplay;
     }>;

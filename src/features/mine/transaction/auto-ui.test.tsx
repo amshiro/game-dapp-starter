@@ -2,6 +2,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import { MinePage } from "../mine-page";
 import { MineBettingPanel } from "../components/mine-betting-panel";
+import { MineAutoStatus } from "../components/mine-auto-status";
+import type { AutoError } from "./auto-model";
 import { MineAutominerState } from "../components/mine-automation-state";
 import { LocaleProvider } from "../../../shared/i18n/locale-provider";
 import type { MineAutoUI } from "./use-mine-auto";
@@ -117,5 +119,55 @@ describe("Auto configuration and Running Card composition", () => {
     );
     expect(html).toContain("执行费 / 每轮");
     expect(html).toContain("0.12 BNB");
+  });
+});
+
+describe("Auto public failure messages", () => {
+  it.each([
+    "simulation-reverted",
+    "receipt-reverted",
+    "rpc-error",
+    "already-active",
+    "not-active",
+    "user-rejected",
+  ] as const)("uses the same generic message for ordinary %s", (error) => {
+    const a = model({
+      state: {
+        phase: error === "user-rejected" ? "rejected" : "failed",
+        chainConfirmed: false,
+        error,
+      },
+    });
+    const html = renderToStaticMarkup(<MineAutoStatus auto={a} />);
+    expect(html).toContain("Operation failed. Please try again.");
+    expect(a.state.error).toBe(error);
+    expect(html).not.toContain(error);
+  });
+  it.each(["refresh-failed", "verification-failed"] as const)(
+    "preserves confirmed %s recovery and forbids resend",
+    (error) => {
+      const a = model({
+        state: { phase: error, chainConfirmed: true, error },
+        busy: true,
+      });
+      const html = renderToStaticMarkup(<MineAutoStatus auto={a} />);
+      expect(html).toContain("Chain confirmed (1 confirmation)");
+      expect(html).toContain("Retry verification / refresh");
+      expect(html).not.toContain("Operation failed. Please try again.");
+    },
+  );
+  it("keeps confirmation unknown distinct from an ordinary failure", () => {
+    const a = model({
+      state: {
+        phase: "failed",
+        chainConfirmed: false,
+        error: "confirmation-unknown" as AutoError,
+        confirmationUnknown: true,
+      },
+      busy: true,
+    });
+    const html = renderToStaticMarkup(<MineAutoStatus auto={a} />);
+    expect(html).toContain("Check confirmation");
+    expect(html).not.toContain("Operation failed. Please try again.");
   });
 });

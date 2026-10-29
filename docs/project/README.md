@@ -114,3 +114,7 @@ AGENTS.md
 用户明确授权本项目作为工程流程验证项目：About 视觉仍以当前 ORI-AI测试为准，仅对应五项的正文、标题与链接可从当前 `ori-website/pages/about/index.tsx` 实际引用的 en/zh 资源恢复。不得继承旧布局或额外栏目；文案中的费率不成为合约规则。Points 当前没有匹配新版的可用数据 owner，允许集中使用 Figma 静态 demo model，并明确显示演示标记。该授权不推广到其他 Feature，也不关闭生产规则/数据 Gate。参见 [页面 inventory 与来源](./about-points-ui-inventory.md)。M7 polling/freshness 按人工优先级暂缓。
 
 M4当前Development授权与实现范围见[Auto Core实现记录](./mine-auto-core-implementation.md)；execution实际扣费保留RUNTIME QA PENDING，不推广主网。
+
+当前执行节奏见[Fast Autonomous Development Mode](./development-mode.md)。M9结果UI/动画与人工锁定的Waiting/—策略见[实现记录](./mine-result-implementation.md)。
+
+- [Mine Rewards read/UI — M5](./mine-rewards-implementation.md)：人工资产映射/显隐、canonical chain read与M6边界。

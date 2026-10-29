@@ -37,11 +37,11 @@
 | M2 | Mine read-only UI / selection | PARTIALLY BLOCKED | 此前仅棋盘的 checkpoint 不代表整页 UI 完成；Full Mine read-only UI correction 已完成并通过人工审核，覆盖 1–6 全状态展示；业务 selection、Miners 数据、timing 与未确认资产仍 gated |
 | M3 | Mine Manual transaction | READY | 限定 Manual Core COMPLETE；用户最终验收确认 Chain97真实Manual Deploy PASS；W1 + M1/M2 已确认子集，单轮一次；Manual shortcuts已按Figma启用替换输入，不依赖 M7/Reward |
 | M4 | Mine Auto mining start / stop | PARTIALLY BLOCKED | M4只读Gate已执行；人工fixed/random/value/Stop已锁定；产品层closed：轮数1–9999、remaining后端直出/缺失留空；M4 Core已获人工放行实现，execution fee deduction=RUNTIME QA PENDING，待真实QA，不依赖M7 |
-| M5 | Mine Rewards read/UI | PARTIALLY BLOCKED | W1/M1；Q-10、Q-25、Q-42 与资产/状态待确认 |
-| M6 | Mine Rewards claim | BLOCKED | W1/M5；Q-12、Q-25、Q-42 与完成/领取安全 Gate |
+| M5 | Mine Rewards read/UI | READY | Development97 implementation COMPLETE；Q-25/I-30人工CLOSED，零值runtime已核对；非零真实账户及切换验收RUNTIME QA PENDING；M6仍独立 |
+| M6 | Mine Rewards claim | BLOCKED | W1/M5；Q-25已关闭；recipient/税/时限、Q-12/Q-42与领取安全完成Gate独立 |
 | M7 | Mine polling / freshness | PARTIALLY BLOCKED | DEFERRED：核心 Mine 功能优先；不阻塞 Manual，持续 freshness 待已有 Query owner 明确 |
 | M8 | Mine realtime invalidation | BLOCKED | M1/M7；Q-47 服务恢复、真实 payload、重连 smoke |
-| M9 | Mine lifecycle / countdown / result | BLOCKED | 在原结果动画票扩展；正式 deadline/状态映射、Q-36 与结果 Gate |
+| M9 | Mine lifecycle / countdown / result | READY | 当前批准scope：verified result/动画；倒计时Human approved继续Waiting/—等backend deadline。live result transition=RUNTIME QA PENDING；无新协议enum/polling |
 | M10 | Mine Miners / Winners data | BLOCKED | dataset / round / 资产单位 / 排序 Data Gate；不自动继承旧 Rank |
 | M11 | Mine Origin rewards | BLOCKED | DEFERRED — FUTURE GATE；backend + AssetManager 独立于 ORI Claim |
 
@@ -327,7 +327,7 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 | Realtime dependencies | preflight/receipt 后局部刷新由 Auto owner 负责；M7/M8 后置，不能用事件推算余额/剩余轮数 |
 | UI/Figma dependencies | `2003:1832`、`2003:1890`、`2003:1667`、运行中 `2003:1413`；产品输入1–9999、最小执行费说明已签；remaining后端直出/缺失留空 |
 | Open Questions / Blockers | Development Core已Human approved放行；完整execution QA仍PENDING：产品金额/fixed/random/显示fee/self Stop均已签收；当前execution扣费只有历史context、implementation关联未证；产品层Human Decisions全部closed：1–9999为前端限制，remaining直接显示后端字段且缺失留空。七/六字段投影已验证、backend非空未证不改变产品owner。runtime path technically unresolved由人工接受，不阻塞Development Core；[实现/真实QA边界](./mine-auto-core-implementation.md)，不声称成功execution扣费已验证 |
-| Acceptance Criteria | G-P/G-T/G-V；精确预付拆分、随机/指定 mask 一致、Manual 互斥；start receipt 不等于已执行下一轮；stop 后按批准的链上状态/退款对账，不依据旧 UI 直接显示成功 |
+| Acceptance Criteria | G-P/G-T/G-V；精确预付拆分、随机/指定mask一致；Manual已部署不阻塞Auto Register，active Auto整体替换Trade Card；start receipt 不等于已执行下一轮；stop 后按批准的链上状态/退款对账，不依据旧 UI 直接显示成功 |
 | QA | 通用 QA；轮数/费用/余额/随机位图、执行器延迟/缺席、停止失败与退款地址、账户/链/round 切换；start/stop 真实调用分项授权 |
 | Non-goals | 自建 executeAutomation bot、后台常驻任务、从前端执行 resetRound |
 
@@ -335,15 +335,15 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 
 | Field | Ticket |
 | --- | --- |
-| Goal | 在 Q-25/Reward Gate 确认 Figma 三行资产与 getUserRewards 字段映射后显示真实奖励，不能先标为立即可领取 |
+| Goal | 按人工确认BNB/未精炼ORI/已精炼ORI映射显示真实raw奖励；全零隐藏，非零入口按资产条件显隐，不推算净额/到期 |
 | Route | `/mine` Rewards 区 |
 | Owner / Dependencies | Mining Rewards read/UI；W1/M1，R0 对应 ABI；不要求 M3/M4 已发出交易（可以有历史账户数据） |
 | Source of Truth | C-40–C-42、getUserRewards 返回字段与 Q-25/Q-42 |
 | API dependencies | 非必需；若起源奖励需额外 API/AssetManager，先明确边界与 Q-01，不能塞入同一 Rewards model |
 | Web3 dependencies | getUserRewards(miner)、ORI decimals；不能把 ethAmount 命名成 ETH 或把 ORI 显示成 ORE/BURY |
 | Realtime dependencies | M7 刷新已有 owner Query；M8 可后接 |
-| UI/Figma dependencies | `2003:1683` 等 Rewards 卡；是否有奖励才显示是 I-30，需要人工确认 |
-| Open Questions / Blockers | PARTIALLY BLOCKED：mapper 与 read 可核对；正式展示等 Q-10、Q-25 名称、Q-42 时限/过期语义、Q-03 资产与必要状态 |
+| UI/Figma dependencies | frame1413 / card1683 / rows1684–1714；Q-25/I-30人工已确认；BNB图标为人工资产映射替换，其余当前Figma属性保留 |
+| Open Questions / Blockers | M5 Development97 implementation COMPLETE，read/UI无产品blocker。详见 [M5实现](./mine-rewards-implementation.md)；非零真实账户/切换RUNTIME QA PENDING。M6的recipient、税/时限/完成验证独立，不阻塞M5；56仍Release Gate |
 | Acceptance Criteria | G-D/G-P/G-V；金额独立建模、无奖励和读取失败分开；未知到期时间不推造 countdown；本票据 Claim 不可执行 |
 | QA | 通用 QA；三类金额/零/过期/读取失败、地址切换、长数值与卡片显示条件 |
 | Non-goals | M6、AssetManager 的未确认 claim/claim_bnb、起源奖励资金流程 |
@@ -352,7 +352,7 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 
 | Field | Ticket |
 | --- | --- |
-| Goal | 在 Reward Gate 签收后独立完成 Claim / Claim only 对应资金流程；claimAll/claimEth 目前是历史技术候选 |
+| Goal | 独立完成已人工确认的领取→claimAll / 仅领取BNB→claimEth资金流程；方法映射已签收，recipient/税/时限与安全完成验证仍需明确 |
 | Route | `/mine` Rewards 区 |
 | Owner / Dependencies | Mining claim workflow；W1/M5，已核对的协议证据 |
 | Source of Truth | C-40/C-41/C-42、claimAll(to)/claimEth(to)、对应错误与全局 transaction contract |
@@ -360,7 +360,7 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 | Web3 dependencies | 明确 to、claimFeeBps/税语义、可领取时限；simulation、receipt 与领取后 reward/balance reads；无需擅自 approve |
 | Realtime dependencies | M8 非前置；receipt 后主动刷新 M5/Wallet 的真实受影响 owner，不广播全站 invalidation |
 | UI/Figma dependencies | Rewards Claim / Claim only 文案与 Q-12 交易状态补充 |
-| Open Questions / Blockers | BLOCKED：M5、Q-12、Q-25、Q-42；若出现 checkpoint 需要走 Q-43 人工决定，不自动追加 write |
+| Open Questions / Blockers | BLOCKED：Q-12、Q-42与recipient/税/领取安全完成语义；M5 read/UI已实现、Q-25已人工关闭。若出现checkpoint需走Q-43，不自动追加write |
 | Acceptance Criteria | G-P/G-T/G-V；正确领取类别和收款地址，NothingToClaim/ClaimWindowPassed 明确；receipt 与可见余额对账按完成契约区分，旧账户结果不污染新上下文 |
 | QA | 通用 QA；全领/仅 BNB、无奖励/过期/拒签/revert/replacement、税与精度；真实 claim 操作另行授权 |
 | Non-goals | 起源 claim、expired reward sweep、替他人领取、质押收益领取 |
@@ -411,7 +411,7 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 | Web3 dependencies | 无新增写；链上结果来源也由 M1 抽象 |
 | Realtime dependencies | 可由 polling 驱动，不强依赖 WS；事件仅促使读取结果 |
 | UI/Figma dependencies | `2003:1405`–`2003:1408`；3.6s 淡出、0.15s 点亮、10s 保持，与真实 intermission 的衔接必须另确认 |
-| Open Questions / Blockers | BLOCKED：deadline owner、block→seconds 语义与 raw state 映射待签收；候选 waiting/live/resolving/revealed/next-round 不是已确认 enum。另有 Q-36、动画/新轮优先级与去重；不截断/延长协议轮次 |
+| Open Questions / Blockers | 当前产品显示已签收Waiting/—直到backend deadline；不将block换算seconds或定义新协议enum。结果动画/去重/新轮保护/reduced-motion为工程owner负责；[M9实现记录](./mine-result-implementation.md)，真实live transition仅RUNTIME QA PENDING |
 | Acceptance Criteria | G-P/G-V；同 round 不重复播放，迟到结果不覆盖新轮，离页/后台能清理并恢复；reduced-motion 有批准方案；动画状态不修改账户余额或协议状态 |
 | QA | 通用 QA；可控随机顺序与 fake timers 验证时序、重复/乱序、切页/切轮、reduced-motion；视觉验收不是开奖结果正确性的证明 |
 | Non-goals | 决定中奖方块、客户端模拟开奖结果、以动画结束替代交易/协议完成 |

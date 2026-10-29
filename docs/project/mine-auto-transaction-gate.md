@@ -116,7 +116,7 @@ wallet requirement = requiredValue + gas capability
 - underfunded预算、random注册也可 self stop，按实际余额退回。前端不用另发退款交易。
 - 虚拟实验前后真实 synthetic account getAutomation 都全零/inactive，没有链上状态改动。
 
-当前存储 round1655，start/end block=`139552763/139552897`，canDeploy=false、canReset=true，getGameState raw `[2,0]`。注册仍 PASS，足以证明不受“必须 Manual gameState=1”这一条件限制；不把单个状态样本写成所有未来状态都保证成功，仍要 fresh simulation。已知当前存储轮有部署的公开账户 `0x7FB3…e5DC`，register simulation 也 PASS；因此同轮 Manual/Auto 互斥不能假定全由 register runtime 保证，现有产品防线不能删除。
+当前存储 round1655，start/end block=`139552763/139552897`，canDeploy=false、canReset=true，getGameState raw `[2,0]`。注册仍 PASS，足以证明不受“必须 Manual gameState=1”这一条件限制；不把单个状态样本写成所有未来状态都保证成功，仍要 fresh simulation。已知当前存储轮有部署的公开账户 `0x7FB3…e5DC`，register simulation 也 PASS；这与最新Human Decision“Manual已部署不阻塞Auto Register”一致；不添加hasDeployedThisRound注册限制。只有链上active Auto整体替换Trade Card，Manual单轮一次规则单独保留。
 
 ### 历史上下文：执行费、random 执行、执行后 stop
 

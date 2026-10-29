@@ -1,10 +1,8 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { MineBettingPanel } from "./components/mine-betting-panel";
-import {
-  MineAutominerState,
-  MineRewardState,
-} from "./components/mine-automation-state";
+import { MineAutominerState } from "./components/mine-automation-state";
+import { MineRewardState } from "./components/mine-rewards";
 import { MineResults } from "./components/mine-results";
 import { MineCell } from "./components/mine-cell";
 import { MineMetrics } from "./components/mine-metrics";
@@ -161,7 +159,7 @@ describe("Frame 4 static visual variants", () => {
       if (visual === "waiting") expect(html).not.toContain(">1.4308</span>");
     },
   );
-  it("renders Autominer / reward shells with all actions disabled and unknown data", () => {
+  it("renders an unknown Autominer without invented reward rows or claim entries", () => {
     const html = renderToStaticMarkup(
       <>
         <MineAutominerState />
@@ -170,9 +168,9 @@ describe("Frame 4 static visual variants", () => {
     );
     expect(html).toContain("Stop autominer");
     expect(html).toContain("Rounds remaining");
-    expect(html).toContain("Rewards");
+    expect(html).not.toContain("Rewards");
     expect(html).not.toMatch(/ORE|BURY|1,560,253|12\.56/);
-    expect(html.match(/<button[^>]*disabled=""/g)).toHaveLength(3);
+    expect(html.match(/<button[^>]*disabled=""/g)).toHaveLength(1);
   });
   it("renders the Waiting metric separately from a fixture-only countdown", () => {
     const waiting = renderToStaticMarkup(

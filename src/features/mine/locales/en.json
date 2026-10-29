@@ -54,11 +54,11 @@
   "roundsRemaining": "Rounds remaining",
   "stopAutominer": "Stop autominer",
   "rewards": "Rewards",
-  "rewardAsset": "Reward asset —",
-  "unrefined": "Unrefined —",
-  "refined": "Refined —",
+  "rewardAsset": "BNB",
+  "unrefined": "Unrefined ORI",
+  "refined": "Refined ORI",
   "claim": "Claim",
-  "claimOnly": "Claim only —",
+  "claimOnly": "Claim only BNB",
   "selectCell": "Select cell",
   "transaction": {
     "phases": {
@@ -133,6 +133,10 @@
       "failed": "Automation operation not completed",
       "refresh-failed": "Chain confirmed · refresh failed",
       "verification-failed": "Chain confirmed · verification failed"
-    }
-  }
+    },
+    "failure": "Operation failed. Please try again."
+  },
+  "resultRound": "Result round",
+  "winningCell": "Winning cell",
+  "rewardsReadOnly": "Read-only rewards. Claim transactions are not enabled."
 }

@@ -10,10 +10,20 @@ export function MineAutoStatus({ auto }: Readonly<{ auto: MineAutoUI }>) {
       <p role="status">{copy.transaction.otherPending}</p>
     ) : null;
   const errors = { ...copy.transaction.errors, ...copy.autoFlow.errors };
+  // Confirmation uncertainty and confirmed verification/refresh failures retain recovery semantics.
+  // Ordinary failures use one public message; decoded categories remain in the operation owner.
+  const ordinaryFailure =
+    !state.confirmationUnknown &&
+    !state.chainConfirmed &&
+    (state.phase === "failed" || state.phase === "rejected");
   return (
     <div className={styles.transactionStatus}>
       <p role="status" aria-live="polite">
-        {state.error ? errors[state.error] : copy.autoFlow.phases[state.phase]}
+        {ordinaryFailure
+          ? copy.autoFlow.failure
+          : state.error
+            ? errors[state.error]
+            : copy.autoFlow.phases[state.phase]}
       </p>
       {state.chainConfirmed && <p>{copy.transaction.chainConfirmed}</p>}
       {state.hash && (

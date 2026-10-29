@@ -31,7 +31,7 @@
 | 2 `2003:629` | connected Header、本人金额、selected/combined、Manual 可投注 | #8/#14 等个人金额/白边；0.42×2=0.84 示例；截稿未重复 Miners | 证明组合视觉、多格 total；不能以该图允许同轮第二次提交 | demo；不证明同轮追加、成功后可点击/再次 submit；Human approved single-deploy 覆盖所有视觉推断 |
 | 3 `2003:1009` | 四卡 alternate state，注释 `2003:1037` | Motherlode/Total/You 的美元 secondary，Time 的 Round secondary | 点击数据卡切换美元值/轮次；无需桌面 hover redesign | 金额/轮次为 demo；不定义报价 owner，也不证明四卡必须同时切换 |
 | 4a `2003:1038` | 单格 default、>1000 count、selected、deployed、combined、Auto selected/muted、winning/lost、Waiting；结果动画注释 | cells `1039–1133`；Waiting `1409`；结果图 `1152`；动画 `1405–1408` | Figma 规定静态 variants 与 0.15s、3.6s、10s 视觉时序；非协议计时 | 证明视觉，不证明 enum mapping、selection 提交许可或 round 必须等待动画完成 |
-| 4b `2003:1413` | board + Autominer `1667` + Rewards `1682–1714` | active Auto 替换下注表单；Random×25、Round remaining、Total per round、Stop autominer；三行 rewards 与两按钮 | 证明真实 Auto 的配置后运行/停止 UI Scope；reward 行/按钮存在 | active/reward 数值为 demo；ORE/BURY 占位不能自行定成 BNB/ORI/起源映射 |
+| 4b `2003:1413` | board + Autominer `1667` + Rewards `1682–1714` | active Auto 替换下注表单；Random×25、Round remaining、Total per round、Stop autominer；三行 rewards 与两按钮 | 证明真实 Auto 的配置后运行/停止 UI Scope；reward 行/按钮存在 | active/reward数值为demo；后续人工明确ORE/BURY对应BNB/未精炼ORI/已精炼ORI（Q-25 CLOSED），不是起源 |
 | 5 `2003:1715` | Manual 四态 `1716/1745/1776/1804` | 未登录、未选、余额不足红色、可投注白色；Blocks/Total、input、shortcuts | Connect wallet；未选/不足禁止 Deploy；可投注显示 Deploy total | `0.42`、`2.3056` 等为 demo；不定义 min/max、gas 规则或旧 quick amounts |
 | 6 `2003:1832` | Auto 未选/rounds=1 与已选/rounds=3 | Blocks 数量、Rounds stepper、selected list、Total per round/Total；4 cells、input .02、显示 .02/.06 | fixed selection 与 rounds config 存在；结合 4b/历史支持 random 模式，但具体切换入口待确认 | **Human approved override**：输入是每格金额，原稿漏乘4；应为每轮本金 .08、3轮本金 .24 BNB。费用/最终 payable 另 Gate |
 
@@ -69,7 +69,7 @@ Figma Auto **代表真实自动挖矿功能 Scope**，不只是永久静态展�
 | fixed / random | 历史selected位图/无selected随机count；4b Random、6固定列表 | M4 Human approved：有selected用fixed mask，无selected用random count；当前97 register编码验证通过，不再OPEN；不是本轮实现授权 |
 | Rounds | 6 stepper 1/3；历史 roundsToFund | 计划资助/运行轮数；不是 roundId。UI default1；当前人工确认1–9999为前端产品限制，不描述为已验证contract maximum |
 | active presentation | 4b Autominer替换Trade；历史backend id换卡 | M4 Human approved：active=true整体替换Manual/Auto form，无tabs/全选/二次register；当前97 P.getAutomation为owner，不能用backend id或balance>0替代active |
-| active 可否修改 | active 稿只显示摘要/Stop；历史替换后不再有 Trade config | KEEP 不提供运行中原地编辑；取消后能否同轮切 Manual 需行为/安全 Gate，不能自动重新注册 |
+| active 可否修改 | active 稿只显示摘要/Stop；历史替换后不再有 Trade config | KEEP 不提供运行中原地编辑；最新Human Decision：active时整个Trade不可见；Stop刷新inactive后恢复Trade，Manual仍由独立单轮一次资格判断；已Manual部署不阻塞Auto注册 |
 | per-round total / total prepaid | 历史提交 `(perSquare×cells + executorFee)×rounds`；旧 UI total 又漏 fee；Figma 4 cells/.02/3 rounds 显示 .02/.06 | M4 Human approved：页面每轮/总计/按钮只显示本金，4格/.02/3轮=.08/.24 BNB；实际value=(perSquare×cells+executorFee)×rounds，余额加gas。当前exact/±1均接受；当前版本执行扣款补证仍PARTIAL，不把已签产品公式继续标OPEN |
 | executorFee / botFee | P.config index8；P.getAutomation七字段/View六字段 | 当前97 config=10^12 wei，register覆盖botFee为该值，六字段投影匹配；历史execution每次额外扣fee证据与当前implementation关联未证；remaining显示已人工锁定backend extend_data.round_remaining原样展示、缺失留空 |
 | prepaid BNB | Figma Total/按钮；历史payable预存 | 人工已签本金与含fee value分离、gas能力、退款属合约；remaining由backend字段直出、缺失留空；仅current implementation execution扣费补证仍是技术Gate |
@@ -142,16 +142,18 @@ Figma `2003:1037` 是“点击数据块切换展示美金价值、当前轮次�
 | every 3–6 rounds trigger | HISTORICAL ONLY | 当前旧 locale Game.rule5/rule8 有此说法；没有当前部署规则证明，不写成未来 cadence/倒计时 |
 | payout / recipient / timing | OPEN | round.motherlodePayout、motherlode flag 是技术候选，实际收益分配、触发概率与领取路径未签收；不借此开启 Claim |
 
-## 8. Rewards Scope（不实现）
+## 8. Rewards Scope（M5 read/UI已实现；M6写入独立）
 
 | 行 / 动作 | Figma | 历史与技术候选 | 新版决定 |
 | --- | --- | --- | --- |
-| BNB reward | 4b 首行 ORE、token icon | getUserRewards.ethAmount；旧 Rewards 显示 BNB | 保留三行 reward card 的 Scope；BNB 具体替换文案/图标映射待 Q-25，不把 ORE 自动解释为 ORI principal |
-| unrefined ORI | Unrefined BURY 占位 | oriDirect；旧文案称未精炼；整数不自动等于立即可提现 amount | PARTIAL，raw owner候选有，label/unit/税费/可领语义需签收 |
-| refined ORI | Refined BURY 占位 | oriRefined；旧使用 formatUnits18 | PARTIAL，同上；不把 BURY 解释为已批准 Origin workflow |
-| claim all | Claim 按钮 | P.claimAll(to)；旧 Rewards 真有调用 | Scope candidate 保留，M6 独立 transaction semantics/runtime Gate，不承诺每次 Deploy 即可领取 |
-| claim BNB only | Claim only ORE 按钮 | P.claimEth(to)；旧 BNB-only | Scope candidate 保留，最终asset wording与recipient/fee/完成契约待签收 |
+| BNB reward | 4b 首行 ORE、token icon | getUserRewards.ethAmount；旧 Rewards 显示 BNB | Human Confirmed：ethAmount→BNB；raw>0显示此行和仅领取BNB→claimEth入口 |
+| unrefined ORI | Unrefined BURY 占位 | oriDirect；旧文案称未精炼；整数不自动等于立即可提现 amount | Human Confirmed：oriDirect→未精炼ORI；raw>0显示此行及领取→claimAll入口；税/时限仍M6 |
+| refined ORI | Refined BURY 占位 | oriRefined；旧使用 formatUnits18 | Human Confirmed：oriRefined→已精炼ORI；raw>0显示此行及领取→claimAll入口；不是Origin |
+| claim all | Claim 按钮 | P.claimAll(to)；旧 Rewards 真有调用 | Human Confirmed：任一ORI>0显示领取→claimAll；M5只读disabled，M6独立资金流程，不承诺每次Deploy即有奖励 |
+| claim BNB only | Claim only ORE 按钮 | P.claimEth(to)；旧 BNB-only | Human Confirmed：BNB>0显示仅领取BNB→claimEth；BNB-only仅此入口。recipient/fee/完成契约仍M6 |
 | Origin Rewards | 无可识别的独立 backend+AssetManager 新版流程 | origin_info + OriginClaimCard 的 AssetManager.deposit(orderId,'claim',...,nativeAmount)，混合链下分配与链上付款 | **FUTURE GATE / M11**；不与 ORI claimAll 合并，不从占位 BURY 两行补此功能，不沿用 Date.now orderId、旧10位金额转换或旧收费算法 |
+
+人工确认三项raw全零时整区隐藏；读取失败不当作零。Development97 Protocol getUserRewards为M5唯一canonical read owner，账户/链query隔离，无polling。
 
 Protocol/View getUserRewards 三字段的结构已有技术资料；前次公开账户 claimAll simulation 的非零返回仅证明该账户已有奖励的调用路径，不证明新参与必有奖励，更不证明完整税费/单位/时点。Stake 的 pendingRewards/claim 也是另一 Gate，不能混入 Mine Rewards。
 
@@ -223,7 +225,7 @@ M7 不是 Manual 的硬前置；fresh preflight + receipt-driven refetch 必须�
 | M3 | Manual selection +一次真实deploy；account reads/strict transaction completion | 示例M2 | READY FOR IMPLEMENTATION，未完成实现/QA |
 | M4 | Auto config、fixed/random、register/stop、active替换卡 | 示例M3 | Development Core已放行实现；产品公式已签收，execution实际扣费待真实QA |
 | M9 | round lifecycle、countdown、verified result与动画 | 示例M4 | OPEN，时间/状态映射Gate |
-| M5 + M6 | ORI/BNB rewards read与claim分票 | 示例M5 | PARTIAL / OPEN，不混Origin或Stake |
+| M5 + M6 | ORI/BNB rewards read与claim分票 | 示例M5 | M5 read/UI COMPLETE，映射/显隐人工CLOSED；M6资金Gate独立，不混Origin或Stake |
 | M11 | Origin rewards read/AssetManager流程 | 示例M6 | DEFERRED — FUTURE GATE |
 | M10 | Miners/winners明确dataset/rows | 示例M7 | OPEN — Data Gate |
 | M7 | polling/freshness | 示例M8 | DEFERRED，不再硬阻塞M3/M4 |
@@ -257,3 +259,7 @@ Status 在此表指需求/数据/实施准备度：READY=限定Scope可开工或
 | Miners/Winners | Miners+Round+地址/双金额 | state4 winners/You置顶 | participants投入可读、API winners空 | dataset/金额/排序/本人行OPEN，不叫Rank，不假rows | future M10 list contract | OPEN |
 | Polling | 无频率规定 | 1/3/4/5/10s | Query现有refetch可用 | Mandatory fresh preflight/receipt先做；持续轮询后置 | 各Feature Query的有界refetch策略 | DEFERRED |
 | Realtime | 不定义protocol | Echo/Pusher两频道 | Foundation有；last WS502/真实payload未验证 | freshness-only，不patch真相、不发交易 | F7 transport →相关Query invalidation | DEFERRED |
+
+## Latest Human Decision — asymmetric Manual / Auto
+
+hasDeployedThisRound仅禁止本轮再次Manual Deploy，不进入Auto eligibility。Manual已部署仍可切换/配置/Register Auto；getAutomation.active=true整体替换Trade Card，无Manual/Auto tabs或第二注册入口。两者保持独立；只有正在进行的transaction阻止并发签名。Auto普通Register/Stop失败统一通用提示，内部decoded category保留；confirmed后的verify/refresh失败与confirmation unknown维持原只读重试安全语义，不resend。

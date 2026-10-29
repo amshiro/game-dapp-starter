@@ -118,3 +118,7 @@ M2 Full Mine UI correction 另导出当前 Auto frame1833 的 rounds/plus/minus 
 ## Points 本轮资产
 
 `public/ori/points/points.svg`：当前 Figma `2003:2117` 原始 40×40 金色积分图标，供 My Points 卡使用；MCP asset 原样下载，无截图裁剪。没有导入 SOL placeholder、手机 chrome 或其他 Feature 资产。
+
+## M5 Rewards assets
+
+当前Figma frame1413的info1691复用 `/ori/mine/info.svg`（12px）；ORI1713原始资源sha256 `c4321bde352af8dd735743ea6d00446dc83123e37ba4f67f905b14aea6e7de77` 与既有 `/ori/explore/ori-token.png` 完全一致，直接复用14px，不重复保存或替Q-03决定品牌。首行Figma仍为占位ORE图标，按人工BNB资产映射替换为 `/ori/mine/reward-bnb.svg`：从historical `ori-website/components/icons.tsx` 的标准BNBIcon恢复，仅符号path/颜色，未复制旧UI布局。BNB原生18decimals，ORI97 metadata18；图标不决定金额或claim语义。

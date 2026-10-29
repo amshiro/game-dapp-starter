@@ -36,7 +36,7 @@ R0 逐项结论与来源见 [r0-evidence-audit.md](./r0-evidence-audit.md)。`PA
 | Q-22 | Wallet 余额资产 / 数据 owner；未来 embedded 功能 | BNB余额已确认 | User Confirmed：设计稿 ORE 错误；余额为目标 BSC 链 native BNB，Wagmi eth_getBalance(account)、18 decimals。external 隐藏 Export / Receive，embedded off | 余额范围已解决；未来 embedded 模型仍需独立 Gate |
 | Q-23 | 旧 Header 来源已确认；新版 ORI 价格在 BSC 97 的数据集、报价单位/时效及多行/缺价策略是什么？ | Header | PARTIALLY CONFIRMED：旧 Header price 来自 getPrice → query/chain_asset_config，以 ORI aux_contract_addr 匹配；不是 origin_info。97 数据集、单位/时效、重复行处理仍未知 | Header price / G-D、G-V |
 | Q-24 | Info 图标说明内容（线上 i18n 有 Stake 各项说明） | Tooltip | Live i18n `Stake.*Desc` | InfoHint |
-| Q-25 | Rewards 命名：Figma `ORE / Unrefined BURY / Refined BURY / Claim only ORE` 应为 BNB、ORI（直接）、ORI（精炼）与 "仅领取 BNB"？ | 文案与合约字段对应 | `getUserRewards` → `ethAmount`、`oriDirect`、`oriRefined`；`claimEth` | Rewards |
+| Q-25 | CLOSED — Human Confirmed：ethAmount→BNB；oriDirect→未精炼ORI；oriRefined→已精炼ORI；三项全零隐藏整区；ORI任一>0显示领取→claimAll；BNB>0显示仅领取BNB→claimEth，BNB-only只有后者 | 映射/入口显隐已确认，不等于授权Claim交易 | 当前人工签收；historical rewards.tsx；97 getUserRewards runtime | M5 read/UI已实现；M6 recipient/税/时限/写入安全独立 |
 | Q-26 | Stake 是否需要线上的 Account / Yield / Claim / Claim and deposit？ | Figma 只画了表单与 Summary | PARTIALLY CONFIRMED：旧 Stake 实际有 Account/Yield/Claim，调用 claimStakeYield；claimAndDeposit 仅见 locale，无页面动作绑定或对应原子 ABI 方法 | Stake 扩展 Scope / G-P、G-T |
 | Q-27 | Explore 新版是否保留线上的多标签统计（ORI / ORI 游戏 / 起源挖矿 / 起源游戏）与两张回购表？ | Figma 简化为 4 卡 + 3 表 | PARTIALLY CONFIRMED：现稿四卡/三表；旧 Explore 四分支，两类回购 table/type 尚不能映射到新版单表；F6.1 缺 circulating_supply | Explore scope / G-P、G-D |
 
@@ -50,7 +50,7 @@ R0 逐项结论与来源见 [r0-evidence-audit.md](./r0-evidence-audit.md)。`PA
 | Q-33（Resolved） | 用户确认 Mine 使用 `/mine`，`/` 跳转到 `/mine`；其余为 `/points`、`/stake`、`/explore`、`/about` | F9 shell URL | User Confirmed；起源后续入口仍见 Q-01 | — |
 | Q-34 | Production domain（是否仍为 `ori.supply`）与各环境 | 部署、Privy Origins | Live | 部署 |
 | Q-35 | 地区限制（旧项目限制 CN）是否保留？在 Cloudflare 上如何实现？ | 合规 | Legacy middleware | 部署 |
-| Q-36 | 结果动画是否支持 `prefers-reduced-motion` 简化 | 可访问性 | — | 动画 |
+| Q-36（工程范围已处理） | 结果动画prefers-reduced-motion | 可访问性 | Fast Mode明确由AI负责accessibility；M9直接呈现静态结果、清理后台timer，不改变winner/交易资格 | 非产品blocker |
 | Q-41 | 费率口径：About 的 1% 平台费、90% 奖池、6% / 10% / 4% 回购表述，与合约 `feeBps`、`vaultBps`、`claimFeeBps` 的对应关系；展示文案以哪个为准 | 文案与合约一致性 | CONTRADICTORY：旧 About 实际引用 en/zh 的 1%、90%、6%/10%/4% 与 50/10/40 文案；6+4=10 不能独自解释分母/扣费与再分配，Figma 仍有占位文案 | About 正式正文 / 费率口径 / G-P、G-D |
 | Q-42 | 奖励领取时限是多久？UI 是否提示即将过期？ | `ClaimWindowPassed` | OreProtocol | Rewards |
 | Q-43 | 上一轮结算（checkpoint）由 bot 完成，还是前端需要在部署前触发？ | `MustCheckpointPreviousRound` | OreProtocol | Deploy |
@@ -88,7 +88,7 @@ R0 逐项结论与来源见 [r0-evidence-audit.md](./r0-evidence-audit.md)。`PA
 - Manual 一轮一次成功、首笔多格、18位、value/mask、operationRound 和 receipt/event/refresh 已 Human approved；限定 Core 可开始下一阶段，但本轮不实现。Q-16 Manual shortcuts已签收当前Figma值与替换行为、无新全选，不让后续奖励/名单阻塞 Core。
 - Auto当前人工规则与技术补证以[M4 Gate](./mine-auto-transaction-gate.md)为准；输入、fixed/random、fees/value显示策略与self Stop已签收，不继续标OPEN。1–9999产品输入限制与backend remaining直出/缺失留空已签；仅当前implementation execution实际扣费技术证据保留；不新增Auto implementation授权。
 - Lifecycle/countdown：Figma 需要时间/Waiting/结果 UI；block 配置不是精确60秒，latest.timestamp+60 和历史 enum 不自动采用。候选 UI state 不是协议枚举。
-- Motherlode：ORI treasury 字段仅证明原始读；Origin 双资产、3–6轮与其他旧文案节奏均 Historical behavior — not yet adopted，payout OPEN。Q-25/Q-42 的奖励资产、领取税/时限/完成语义仍 OPEN。
+- Motherlode：ORI treasury 字段仅证明原始读；Origin 双资产、3–6轮与其他旧文案节奏均 Historical behavior — not yet adopted，payout OPEN。Q-25 的资产/label/方法入口与全零显隐已人工CLOSED；Q-42 时限及M6税/recipient/完成语义仍OPEN，不阻塞M5 raw read/UI。
 - Miners：地址/金额/Round UI 已确认，current/previous、participants/winners、单位/排序/本人行 Data Contract OPEN。Origin 为 M11 FUTURE GATE，不混 ORI Claim。
 - Q-11：本轮六个历史只读端点 HTTP200，/ori/round 也可达；空 winners / null automation 不证明非空契约，large IDs、单位与 endpoint 命名冲突保留。Q-47 本轮未重测，旧502/真实 payload unknown 保留。
 - M7/M8 后置；交易前 fresh reads/simulation、receipt 后局部 refetch 属 Manual correctness，不等待持续 polling/realtime。
@@ -98,3 +98,7 @@ R0 逐项结论与来源见 [r0-evidence-audit.md](./r0-evidence-audit.md)。`PA
 当前P.getAutomation七字段与View六字段已验证，ABI中的automations(address)却直接revert（code3、空revert data），Q-10仅关闭已列路径，不认证整份ABI/implementation。Q-11 automation/user三个HTTP200/null样本仍为PARTIAL — populated contract unverified。Q-12 Auto沿用receipt+1confirmation+matching AutomationUpdated+原账户相关reads，confirmed+refresh-failed只retry reads、不resend；注册成功不等于bot已下注。当前版本execution的RoundNotLive与历史版本存储missing trie node是最小技术补证边界；不升级为生产验收。
 
 M4 Human Decisions现已全部CLOSED：rounds输入1–9999只是前端产品限制；剩余回合原样展示POST /ori/automation/user的extend_data.round_remaining，backend负责计算，字段缺失留空，不补—、不从链上balance/fee计算。HUMAN DECISIONS REQUIRED=NONE。当前定点复核block139572425，同一implementation执行仍RoundNotLive、虚拟balance未变；runtime path technically unresolved已人工接受为Development非阻塞项，execution实际扣费待真实QA，见[M4 Gate](./mine-auto-transaction-gate.md)。
+
+## M9 countdown — Human confirmed
+
+正式页面继续Waiting / —，等待backend deadline；不展示剩余区块或估算秒数。该显示选择CLOSED，不因当前缺真实live-round样本重新开Product Gate。M9 live result transition=RUNTIME QA PENDING，工程动画/去重/cleanup/reduced-motion由Agent自主完成，见[记录](./mine-result-implementation.md)。

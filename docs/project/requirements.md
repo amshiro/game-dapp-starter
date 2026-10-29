@@ -65,14 +65,14 @@ Mine限定补充：按用户 → 当前Figma → 已审核docs → Mine Historic
 | C-31 | Manual 一轮；Auto 多轮且 BNB 预先收取 | Live About；`registerAutomation` payable | |
 | C-32 | Human approved：Manual / Auto 输入均为每格金额；Manual 本金=每格金额×格数，Auto 每轮本金=每格金额×格数，多轮本金再×轮数 | Live bundle；`deployManual(mask, amountPerSquare)`；`DifferentAmountPerSquareNotSupported` | Manual 与 Figma `0.42 × 2 = 0.84` 一致；Auto `.02/.06` 漏乘格数的样例不采用；页面本金不含执行费；实际 value=(每轮本金+executorFee)×rounds，余额另需gas；Human approved，当前执行扣费RUNTIME QA PENDING，人工允许Development实现，见M4 Gate |
 | C-33 | Human approved：有board selection用fixed位图；无selection用random格数；Blocks是每轮格数，Rounds是资助轮数。active automation替换整个Manual/Auto form，不显示切换/全选/第二次注册 | 当前用户M4规则；Figma1832/1413；[M4 Gate](./mine-auto-transaction-gate.md) | 当前97 fixed位图/random count编码已验证；提交count1–25；rounds产品限制1–9999，非合约maximum；remaining原样使用backend extend_data.round_remaining，缺失留空、不计算/不补—；M4 Core已获本轮实现授权；execution扣费仅待真实QA，不声称VERIFIED |
-| C-34 | 一个账户每个实际 operation round 最多成功完成一次 Manual Deploy；第一次可一次选择多个格子并合并为一个 mask。成功后本轮 Manual action 禁用，不开放任何异格追加交易。既有 Manual / Auto 互斥约束保留 | User Confirmed：Mine Manual Requirement Correction；Mine Historical Functional Baseline；链上 participation/squares reads | Contract capability ≠ product behavior；当前 97 runtime 可接受异格追加，不构成产品许可。新一轮使用对应 round/account 的新 reads，不沿用旧轮锁 |
+| C-34 | 一个账户每个实际 operation round 最多成功完成一次 Manual Deploy；第一次可一次选择多个格子并合并为一个 mask。成功后本轮 Manual action 禁用，不开放任何异格追加交易。最新Human Decision为非对称关系：本轮已Manual Deploy不阻塞Auto Register；仅active Auto整体替换Trade Card，禁止Manual/Auto配置入口 | User Confirmed：Mine Manual Requirement Correction；Mine Historical Functional Baseline；链上 participation/squares reads | Contract capability ≠ product behavior；当前 97 runtime 可接受异格追加，不构成产品许可。新一轮使用对应 round/account 的新 reads，不沿用旧轮锁 |
 | C-35 | 历史平台费1%；97已读feeBps=100配置；Manual value不额外加1% | Historical Live About；97 Gate；Human approved value公式 | 内部扣费时点/完整分配仍Q-41，不能从配置推导Claim费率或Auto预付公式 |
 | C-36 | Historical behavior — not yet adopted： 开奖由链上随机数（Chainlink VRF）决定获胜方块；无人参与或获胜方块无人部署则本轮作废 | Live About；OreProtocol（VRF、`ResetEvent`） | |
 | C-37 | Historical behavior — not yet adopted： 未中奖：部署的 BNB 全部损失 | Live About | |
 | C-38 | Historical behavior — not yet adopted： 中奖：获得本轮奖池 BNB 的 90%，按获胜方块部署比例分配；产生 1 ORI（50% 给随机一人，50% 按比例） | Live About | |
 | C-39 | Motherlode历史文案有每轮+0.2 ORI、1/625概率；旧Game locale又有每3–6轮触发 | Historical behavior — not yet adopted | 当前Figma单卡；treasury.motherlodeOre原始字段存在不证明节奏、双资产或payout；Q-31/Reward Gate保持OPEN |
 | C-40 | Historical behavior — not yet adopted： 精炼：领取 ORI 挖矿奖励收 10% 精炼费，分配给仍未领取者；精炼池中的 ORI 领取免费 | Live About；`ClaimOre(tax, redistributed)`；`getUserRewards`（`oriDirect`、`oriRefined`） | |
-| C-41 | 新版Rewards有三行与Claim / Claim only两个入口；历史为全部领取与仅BNB | Figma1413；Historical claimAll/claimEth ABI与调用 | 新版asset/label/税/可领语义和recipient策略仍Q-25/Claim Gate，不能仅凭按钮名自动映射；Origin独立FUTURE GATE |
+| C-41 | 新版Rewards有三行与Claim / Claim only两个入口；历史为全部领取与仅BNB | Figma1413；Historical claimAll/claimEth ABI与调用 | 人工已确认 ethAmount=BNB、oriDirect=未精炼ORI、oriRefined=已精炼ORI；任一ORI>0显示领取→claimAll；BNB>0显示仅领取BNB→claimEth；全零隐藏整卡。M5仅read/UI，recipient/税/时限/交易完成仍M6；Origin独立FUTURE GATE |
 | C-42 | Historical behavior — not yet adopted： 奖励领取有时限 | OreProtocol `ClaimWindowPassed`、`ExpiredRewardsClaimed` | 时限值未知，见 Q-42 |
 | C-43 | 区块状态：正常、选中、已部署、已部署 + 选中、自动选中、中奖、未中奖、等待开始；人数 > 1000 缩写 | Figma `2003:1038` 标注 | |
 | C-44 | 结果动画：未中奖方块 100%→25% 透明度每块 0.15s 随机依次（3.6s）；获胜方块点亮 0.15s；保持 10s | Figma `2003:1405`–`2003:1408` 标注 | 线上动画未验证 |
@@ -120,7 +120,7 @@ Mine限定补充：按用户 → 当前Figma → 已审核docs → Mine Historic
 | I-23 | 余额不足 = 总额 > 钱包 BNB 余额 | Figma；Live bundle 余额比较 | 是否预留 gas 见 Q-17 |
 | I-24 | 已由 Human approved 取代：Manual shortcuts +0.5/+1/+2 直接替换每格输入为0.5/1/2 BNB，非累加；count不变，total重算 | 当前 Figma1715 + 用户明确签收 | 断连/错链/已部署可编辑；busy仍禁用；单轮一次提交防线不变，不继承旧快捷数值 |
 | I-25 | 原“可能自动结算”推断撤回；Manual 遇 MustCheckpointPreviousRound 仅提示并刷新 | Human approved；错误及 bot batchCheckpoint 是技术证据 | 不自动追加 checkpoint write，Q-43 其他流程另 Gate |
-| I-30 | Rewards 卡在有可领取奖励时显示 | Figma "有奖金" 稿 | |
+| I-30 | 人工确认：三项raw reward全零隐藏整个Rewards区域；非零行显示；任一ORI>0显示领取，BNB>0显示仅领取BNB，BNB-only不显示全领 | Figma "有奖金" 稿、当前人工签收、historical rewards.tsx | M5读取失败不等于零，Claim写入属于M6 |
 | I-31 | Explore 表格在 H5 横向滚动 | Figma 列溢出 | |
 | I-40 | 轮次开始与开奖由实时频道推送 | Live（`round.new_round`、`round.reset`） | 见 api.md |
 

@@ -184,3 +184,11 @@ About + Points 完整 UI 本轮已通过人工审核；M7 polling/freshness 暂�
 ## M4 Auto Core — Development Human-approved implementation
 
 人工明确接受RoundNotLive造成的execution扣费证据缺口，不再阻塞Development97 Auto Core；产品层全部closed。当前已接Auto config、fixed/random、含fee value、getAutomation owner、backend remaining原样/缺失空白、register/RunningCard/Stop和严格receipt/event/read lifecycle，见[实现记录](./mine-auto-core-implementation.md)。**AUTO EXECUTION FEE DEDUCTION = RUNTIME QA PENDING**，只在真实有效轮次execution QA后关闭；不声称已真实注册/停止/执行。无Rewards/新Miners/polling/realtime/Production56；本轮不签名、广播、commit/push/deploy。
+
+## Fast Mode / M9
+
+本项目已切换[Fast Autonomous Development Mode](./development-mode.md)。M4本地checkpoint=cba3635，execution fee deduction仍RUNTIME QA PENDING，未push/deploy。M9已推进verified result来源、Figma结果动画、去重/新轮取消/可访问性；人工已签倒计时继续Waiting / —直到backend deadline，不额外造block/秒含义。[实现与QA记录](./mine-result-implementation.md)。
+
+## M5 — Mine Rewards read/UI
+
+Development97 implementation COMPLETE；最新人工映射/显隐决策已应用并测试，Q-25/I-30 CLOSED。Protocol getUserRewards为唯一owner，raw bigint、18decimals、无polling；all-zero隐藏，BNB-only仅claimEth入口，ORI有值显示claimAll入口，两者当前均disabled/read-only。未新增Claim写入。非零真实账户与账户/链切换验收记RUNTIME QA PENDING；Production56与M6 recipient/税/时限/资金完成语义独立。详见 [M5](./mine-rewards-implementation.md)。

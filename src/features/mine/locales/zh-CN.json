@@ -54,11 +54,11 @@
   "roundsRemaining": "剩余轮次",
   "stopAutominer": "停止自动挖矿",
   "rewards": "奖励",
-  "rewardAsset": "奖励资产 —",
-  "unrefined": "未精炼 —",
-  "refined": "已精炼 —",
+  "rewardAsset": "BNB",
+  "unrefined": "未精炼 ORI",
+  "refined": "已精炼 ORI",
   "claim": "领取",
-  "claimOnly": "仅领取 —",
+  "claimOnly": "仅领取 BNB",
   "selectCell": "选择格子",
   "transaction": {
     "phases": {
@@ -133,6 +133,10 @@
       "failed": "自动挖矿操作未完成",
       "refresh-failed": "链上已确认 · 刷新失败",
       "verification-failed": "链上已确认 · 事件核验失败"
-    }
-  }
+    },
+    "failure": "操作失败，请重试。"
+  },
+  "resultRound": "结果回合",
+  "winningCell": "中奖格子",
+  "rewardsReadOnly": "当前仅展示奖励，领取交易尚未启用。"
 }

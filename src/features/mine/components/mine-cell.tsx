@@ -18,6 +18,7 @@ export type MineCellProps = Readonly<{
   onToggle?: () => void;
   selected?: boolean;
   selectionDisabled?: boolean;
+  result?: "winning" | "lost";
 }>;
 export function MineCell({
   index,
@@ -28,6 +29,7 @@ export function MineCell({
   onToggle,
   selected,
   selectionDisabled,
+  result,
 }: MineCellProps) {
   const copy = useMineCopy();
   const value = amount === undefined ? undefined : mineAmount(amount);
@@ -43,7 +45,8 @@ export function MineCell({
     <li
       className={styles.cell}
       data-visual={visual}
-      aria-label={`#${index + 1}; ${onToggle && visual === "default" ? copy.unselected : copy.states[visual]}; ${copy.count}: ${count}; ${copy.amount}: ${exact}${own ? `; ${copy.ownAmount}: ${own.exact} BNB` : ""}`}
+      data-result={result}
+      aria-label={`#${index + 1}; ${result ? copy.states[result] : onToggle && visual === "default" ? copy.unselected : copy.states[visual]}; ${copy.count}: ${count}; ${copy.amount}: ${exact}${own ? `; ${copy.ownAmount}: ${own.exact} BNB` : ""}`}
     >
       {onToggle && (
         <button

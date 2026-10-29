@@ -74,3 +74,9 @@ Account query key包含chain97、Protocol deployment、account与chain/enrichmen
 ## Fast Autonomous Development checkpoint
 
 用户已授权在automated QA / browser QA通过且无已知implementation blocker时创建本地checkpoint；仅缺真实环境验收记RUNTIME QA PENDING，不再要求implementation长期悬挂。此授权覆盖M4本地提交，取代上文原轮次的commit=NO限制；没有自动签名、广播、push或deploy授权。AUTO EXECUTION FEE DEDUCTION保持RUNTIME QA PENDING，不写成VERIFIED。
+
+## Manual / Auto interaction audit — latest Human Decision
+
+Audit确认Auto hook的eligibility不读取hasDeployedThisRound；otherBusy只表示Manual transaction仍在进行，不是Manual已部署。原active-card整体替换与Stop后恢复符合要求，无重写register/stop/query owner。必要修正只有Auto普通失败的公共提示收口；内部AutoState.error保持decoded category，confirmed+verify/refresh失败及confirmation unknown维持原安全恢复，不resend。
+
+新增actual-hook/SSR测试证明Manual deployed=true/false不改变Auto eligibility、已部署仍可派发register intent；active removes entire Trade/tabs，inactive restores Trade而Manual单轮锁保留。普通失败统一提示，确认/核验/刷新异常仍专门引导read-only retry。本次补充不签名、广播、commit或push；M9既有未提交工作保留。

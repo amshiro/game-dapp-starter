@@ -548,10 +548,14 @@
 }
 .rewardCard {
   margin-top: 16px;
-  min-height: 188px;
-  padding: 12px;
+  padding: 11px 11px 15px;
+  background: var(--ori-color-background);
+  overflow: clip;
   border: 1px dashed var(--ori-color-border);
   border-radius: var(--ori-radius-card);
+}
+.rewardCard[data-layout="complete"] {
+  min-height: 188px;
 }
 .rewardCard dl {
   display: grid;
@@ -579,9 +583,10 @@
   display: block;
   width: 100%;
   height: 44px;
+  line-height: 18px;
   margin-top: 15px;
   border: 1px solid var(--ori-color-accent);
-  border-radius: var(--ori-radius-pill);
+  border-radius: 22px;
   color: var(--ori-color-accent);
   font-size: 15px;
   font-weight: 500;
@@ -693,4 +698,45 @@
 }
 .betting[data-mode="auto"][data-appearance="ready"] .roundStepper input {
   color: var(--ori-color-text-primary);
+}
+
+/* Results overlay existing draft/deployed visuals; they never rewrite participation or submit eligibility. */
+.board[data-result-phase="eliminating"] .cell,
+.board[data-result-phase="revealing"] .cell {
+  transition:
+    opacity 150ms linear,
+    border-color 150ms linear,
+    background-color 150ms linear;
+}
+.cell[data-result="lost"] {
+  opacity: 0.25;
+}
+.cell[data-result="winning"] {
+  border: 3px solid var(--ori-color-accent);
+  background: #23211c;
+}
+@media (prefers-reduced-motion: reduce) {
+  .board[data-result-phase] .cell {
+    transition: none;
+  }
+}
+
+.rewardValue {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+.rewardValue img {
+  flex: none;
+  display: block;
+  width: 14px;
+  height: 14px;
+  margin-top: 1px;
+  object-fit: contain;
+}
+.rewardValue span {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }

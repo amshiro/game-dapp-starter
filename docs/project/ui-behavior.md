@@ -73,7 +73,8 @@ Step3  获胜方块保持点亮 10s
 ```
 
 - **Technical evidence**：协议使用 VRF；Protocol/View 为可信结果候选。历史 round.reset 仅作 freshness signal；当前 WS payload 未验证，winners API 的 list 不能代替 canonical winning square。
-- **Unknown**：动画结束后的状态衔接；轮次 1 分钟与动画 3.6s + 10s 的时间关系（intermission 区块数决定）。
+- **M9 current**：动画只展示同一实际round的verified winner；重复刷新不重播，真实新round优先。initial fulfilled/reduced-motion直接显示终局；观察到fulfillment变化才按C-44播放。10s后保留静态终局，不能据动画时间建立下一round或改变交易资格，见[实现记录](./mine-result-implementation.md)。
+- **Human approved countdown**：当前继续Waiting / —，等backend提供deadline。不显示“剩余区块”或估算秒数，不用timestamp+60；当前显示策略已CLOSED。
 
 ### 部署面板 — Manual（Confirmed，C-46）
 
@@ -105,9 +106,9 @@ Step3  获胜方块保持点亮 10s
 
 ### Rewards
 
-- **Historical behavior — not yet adopted**：旧 getUserRewards 为 ethAmount/oriDirect/oriRefined，旧 action 为 claimAll/claimEth。Figma 三行与两按钮确认 UI Scope，但 asset/label、税/时限/立即可领和 method 映射仍 Q-25/Reward Gate；Origin 是独立 FUTURE GATE。
-- **Inferred**：有可领取奖励时显示（I-30）。
-- **Unknown**：Figma 文案与命名（Q-25）；时限长度（Q-42）。
+- **Human Confirmed**：Protocol getUserRewards(account) 的 ethAmount→BNB、oriDirect→未精炼ORI、oriRefined→已精炼ORI；三项全零不渲染整个Rewards区域。历史非零行显隐规则保留；ORI任一>0显示领取（claimAll），BNB>0显示仅领取BNB（claimEth），BNB-only只有后者。Q-25 / I-30 CLOSED。
+- **M5 implemented**：Development97的三项raw bigint read，18 decimals exact展示；账户/链隔离、loading/error/重试。两个入口只读disabled，未启用M6交易；Rewards独立于active Auto，不要求当前Auto运行。
+- **M6 Unknown**：收款地址、税/时限与写入完成验证；Q-42仍OPEN，不在M5推算expiry或净可领取值。详见 [M5](./mine-rewards-implementation.md)。
 
 ### Miners 列表
 
@@ -161,3 +162,7 @@ Step3  获胜方块保持点亮 10s
 User Confirmed：钱包入口右侧提供单个 32×32 `中` / `EN` 切换按钮；显示当前语言，点击切换另一语言。13px / 400，radius 8px、2px border、项目背景色。支持 `en` / `zh-CN`；保留 EN 默认值，显式选择优先，不检测浏览器语言。
 
 `app_locale` cookie（Path=/、SameSite=Lax、1 年；HTTPS 下 Secure）是服务端可见偏好。`app/request-locale.ts` 每请求统一解析；RootLayout 将同一 locale 交给 html lang、App Shell 与 LocaleProvider。切换写 cookie 后 `router.refresh()` 刷新 RSC，不 reload，不 key/remount Wallet Provider，不修改钱包、链或查询 identity。资源按 App Shell / Feature / Shared owner 存放；Client 使用 Context 中的同一 resolved locale，无 localStorage / Zustand locale 镜像。现有 Stake、Explore、Wallet 与占位标题可切换；正式 About 正文、Points 规则、Privy SDK 自有弹窗文案不在此资源中推造。
+
+## Latest Human Decision — Manual / Auto interaction
+
+Manual→Auto允许：hasDeployedThisRound仅影响Manual最终action，不影响Auto配置/eligibility。Active Auto→Manual不允许：chain active整体替换Trade Card，移除两个form/tabs/注册入口；Stop确认并刷新inactive后恢复Trade，独立Manual单轮一次限制仍生效。Auto普通Register/Stop失败用户侧只显示“操作失败，请重试。”；decoded error仅留内部分类。输入校验仍可提供明确字段提示；confirmation unknown和confirmed后verify/refresh失败保留专用安全提示，只读Retry，不resend。

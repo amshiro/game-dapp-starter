@@ -1,5 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import { presentMineRewards } from "./model/mine-rewards";
 import { MinePage } from "./mine-page";
 import { MineCell } from "./components/mine-cell";
 import { LocaleProvider } from "../../shared/i18n/locale-provider";
@@ -72,7 +73,15 @@ describe("Mine read-only page", () => {
     const html = renderToStaticMarkup(
       <MinePage
         display={{ status: "populated", snapshot }}
-        actionPresentation={{ kind: "autominer", automation: {}, rewards: {} }}
+        actionPresentation={{
+          kind: "autominer",
+          automation: {},
+          rewards: presentMineRewards({
+            ethAmount: BigInt(1),
+            oriDirect: BigInt(1),
+            oriRefined: BigInt(1),
+          }),
+        }}
         cellPresentation={{ 13: { visual: "winning" } }}
       />,
     );

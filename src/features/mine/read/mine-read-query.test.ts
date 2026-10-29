@@ -48,6 +48,7 @@ function harness() {
     roundId: BigInt("9007199254740993"),
     mismatch: false,
     fulfilled: false,
+    winningSquare: 23,
     end: BigInt(120),
     count: BigInt("9007199254740993123"),
     fail: false,
@@ -147,7 +148,7 @@ function harness() {
               totalDeployed: BigInt("1000000000000000"),
               winningsPool: BigInt(0),
               vaultShare: BigInt(0),
-              winningSquare: 23,
+              winningSquare: state.winningSquare,
               topMiner: "0x0000000000000000000000000000000000000000",
               oreReward: BigInt(0),
               topMinerReward: BigInt(0),
@@ -224,6 +225,19 @@ describe("Mine atomic public snapshot", () => {
       h.cache.clear();
     },
   );
+  it("exposes a winner only after fulfillment and validates the 0–24 ABI index", async () => {
+    const h = harness();
+    const first = await h.cache.fetchQuery(h.options());
+    expect(first.winningSquare).toBeUndefined();
+    h.state.fulfilled = true;
+    const done = await h.cache.fetchQuery({ ...h.options(), staleTime: 0 });
+    expect(done.winningSquare).toBe(23);
+    h.state.winningSquare = 25;
+    await expect(
+      h.cache.fetchQuery({ ...h.options(), staleTime: 0 }),
+    ).rejects.toThrow("Invalid fulfilled Mine result");
+    h.cache.clear();
+  });
   it("rejects mismatched identity and malformed ABI instead of publishing partial data", async () => {
     const h = harness();
     h.state.mismatch = true;
