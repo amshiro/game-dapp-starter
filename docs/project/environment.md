@@ -38,10 +38,10 @@ pnpm format:check
 pnpm test
 pnpm build --mode development
 git diff --check
-pnpm deploy --env development --skip-build
+pnpm run deploy --env development --skip-build
 ```
 
-`--skip-build` 仅可用于已通过检查且没有后续源码变更的同一 development 构建。现有 workflow 为 `vinext-cloudflare deploy`，目标来自 `cloudflare.config.ts` 的 `game-dapp-starter` Worker；本项目 Demo 使用该 Worker 的 `workers.dev` 站点，不配置生产域名或切换主网。部署后必须验证真实 URL、刷新路由、静态资源、Privy、API / RPC 和 Chain 97；未完成的真实钱包或交易验收仍记为 RUNTIME QA PENDING。
+`--skip-build` 仅可用于已通过检查且没有后续源码变更的同一 development 构建。必须写 `pnpm run deploy`，避免命中 pnpm 自带的同名 `deploy` 命令。现有 workflow 为 `vinext-cloudflare deploy`，目标来自 `cloudflare.config.ts` 的 `game-dapp-starter` Worker；本项目 Demo 使用该 Worker 的 `workers.dev` 站点，不配置生产域名或切换主网。部署后必须验证真实 URL、刷新路由、静态资源、Privy、API / RPC 和 Chain 97；未完成的真实钱包或交易验收仍记为 RUNTIME QA PENDING。
 
 Privy Dev App 的 Allowed origins 必须包含 Demo 的完整 origin；本地预览也必须使用已允许的端口（如 `http://localhost:3000`）。该配置控制 iframe 的 `frame-ancestors`，缺失时可能出现 iframe 初始化超时，即使连接弹窗仍能打开。新增 origin 属于认证权限变更，需要人工明确授权，不能通过关闭安全限制或改用 Production App 绕过。
 
