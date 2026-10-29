@@ -36,7 +36,7 @@ R0 逐项结论与来源见 [r0-evidence-audit.md](./r0-evidence-audit.md)。`PA
 | Q-22 | Wallet 余额资产 / 数据 owner；未来 embedded 功能 | BNB余额已确认 | User Confirmed：设计稿 ORE 错误；余额为目标 BSC 链 native BNB，Wagmi eth_getBalance(account)、18 decimals。external 隐藏 Export / Receive，embedded off | 余额范围已解决；未来 embedded 模型仍需独立 Gate |
 | Q-23 | 旧 Header 来源已确认；新版 ORI 价格在 BSC 97 的数据集、报价单位/时效及多行/缺价策略是什么？ | Header | PARTIALLY CONFIRMED：旧 Header price 来自 getPrice → query/chain_asset_config，以 ORI aux_contract_addr 匹配；不是 origin_info。97 数据集、单位/时效、重复行处理仍未知 | Header price / G-D、G-V |
 | Q-24 | Info 图标说明内容（线上 i18n 有 Stake 各项说明） | Tooltip | Live i18n `Stake.*Desc` | InfoHint |
-| Q-25 | CLOSED — Human Confirmed：ethAmount→BNB；oriDirect→未精炼ORI；oriRefined→已精炼ORI；三项全零隐藏整区；ORI任一>0显示领取→claimAll；BNB>0显示仅领取BNB→claimEth，BNB-only只有后者 | 映射/入口显隐已确认，不等于授权Claim交易 | 当前人工签收；historical rewards.tsx；97 getUserRewards runtime | M5 read/UI已实现；M6 recipient/税/时限/写入安全独立 |
+| Q-25 | CLOSED — Human Confirmed：ethAmount→BNB；oriDirect→未精炼ORI；oriRefined→已精炼ORI；三项全零隐藏整区；ORI任一>0显示领取→claimAll；BNB>0显示仅领取BNB→claimEth，BNB-only只有后者 | 映射/入口显隐已确认，不等于授权Claim交易 | 当前人工签收；historical rewards.tsx；97 getUserRewards runtime | M5 read/UI及后续人工授权97 Claim已实现；self recipient与相关reads完成已签收；真实Claim QA PENDING，56独立 |
 | Q-26 | Stake 是否需要线上的 Account / Yield / Claim / Claim and deposit？ | Figma 只画了表单与 Summary | PARTIALLY CONFIRMED：旧 Stake 实际有 Account/Yield/Claim，调用 claimStakeYield；claimAndDeposit 仅见 locale，无页面动作绑定或对应原子 ABI 方法 | Stake 扩展 Scope / G-P、G-T |
 | Q-27 | Explore 新版是否保留线上的多标签统计（ORI / ORI 游戏 / 起源挖矿 / 起源游戏）与两张回购表？ | Figma 简化为 4 卡 + 3 表 | PARTIALLY CONFIRMED：现稿四卡/三表；旧 Explore 四分支，两类回购 table/type 尚不能映射到新版单表；F6.1 缺 circulating_supply | Explore scope / G-P、G-D |
 
@@ -70,7 +70,7 @@ R0 逐项结论与来源见 [r0-evidence-audit.md](./r0-evidence-audit.md)。`PA
 ## Stake 97 Transaction Slice 1 人工签收（不关闭其他范围）
 
 - Q-10：Approve 与 Withdraw 正向 simulation、Deposit 的 `ERC20InsufficientAllowance(P,0,1)` runtime path 已由人工接受为当前 97 实现依据，不再要求额外寻找公开成功 Deposit。完整 implementation/artifact 一致性与 Production 56 仍未验证；Deposit 正向交易待用户实际验收。
-- Q-12：Stake 97 限定策略已确认：exact approval to Registry Protocol proxy；withdraw recipient=self；1 confirmation + receipt success + 相关个人 reads 重读成功。refresh failure 保留 chain confirmed，只 retry reads、不重发；其他交易与生产范围继续 OPEN。
+- Q-12：Stake 97 限定策略已确认：exact approval to Registry Protocol proxy；withdraw recipient=self；1 confirmation + receipt success + 相关个人 reads 重读成功。refresh failure 保留 chain confirmed，只 retry reads、不重发；Mine Manual/Auto按已签收票据执行，后续人工另批准Mine Rewards97 currentAccount领取、1确认+交易/event+相关reads完成，真实Claim QA PENDING；生产范围继续OPEN。
 - Q-16：当前 Stake Figma 的 25% / 50% / 100% 按钮保留，100%=Max，bigint helper 同时支持 75%；不修改 Mine 金额规则。Claim / reward semantics 继续 BLOCKED。
 - Stake Tx implementation 已完成。用户确认测试账户 ORI 为 0，Real Tx QA = **DEFERRED — TEST ORI REQUIRED**；允许 implementation checkpoint，不阻塞当前 Development 主线。实现与人工真实交易验收边界见 [Stake Transaction Slice 1](./stake-transaction-slice-1.md)。以上签收不声称真实 Approve / Deposit / Withdraw 已通过，Production 56 / Claim Gate 不变。
 
@@ -88,8 +88,8 @@ R0 逐项结论与来源见 [r0-evidence-audit.md](./r0-evidence-audit.md)。`PA
 - Manual 一轮一次成功、首笔多格、18位、value/mask、operationRound 和 receipt/event/refresh 已 Human approved；限定 Core 可开始下一阶段，但本轮不实现。Q-16 Manual shortcuts已签收当前Figma值与替换行为、无新全选，不让后续奖励/名单阻塞 Core。
 - Auto当前人工规则与技术补证以[M4 Gate](./mine-auto-transaction-gate.md)为准；输入、fixed/random、fees/value显示策略与self Stop已签收，不继续标OPEN。1–9999产品输入限制与backend remaining直出/缺失留空已签；仅当前implementation execution实际扣费技术证据保留；不新增Auto implementation授权。
 - Lifecycle/countdown：Figma 需要时间/Waiting/结果 UI；block 配置不是精确60秒，latest.timestamp+60 和历史 enum 不自动采用。候选 UI state 不是协议枚举。
-- Motherlode：ORI treasury 字段仅证明原始读；Origin 双资产、3–6轮与其他旧文案节奏均 Historical behavior — not yet adopted，payout OPEN。Q-25 的资产/label/方法入口与全零显隐已人工CLOSED；Q-42 时限及M6税/recipient/完成语义仍OPEN，不阻塞M5 raw read/UI。
-- Miners：地址/金额/Round UI 已确认，current/previous、participants/winners、单位/排序/本人行 Data Contract OPEN。Origin 为 M11 FUTURE GATE，不混 ORI Claim。
+- Motherlode：ORI treasury 字段仅证明原始读；Origin 双资产、3–6轮与其他旧文案节奏均 Historical behavior — not yet adopted，payout OPEN。Q-25 的资产/label/方法入口与全零显隐已人工CLOSED；Q-42窗口时长仍未知，不推算净额/到期；后续人工已批准97 Claim/currentAccount与receipt+相关reads完成策略，真实Claim QA PENDING，不阻塞Development主线。
+- Miners/M10 Human Confirmed：当前开奖轮winners、/round_winners/round、round_id/viewer、10秒、后端顺序、只首行You+白字虚线、ore_reward/eth_reward 8位/截断6位、空整区隐藏均CLOSED。nonempty runtime QA PENDING；正式reference错位仍Q-11，不重开产品Gate。Origin为M11 FUTURE GATE。
 - Q-11：本轮六个历史只读端点 HTTP200，/ori/round 也可达；空 winners / null automation 不证明非空契约，large IDs、单位与 endpoint 命名冲突保留。Q-47 本轮未重测，旧502/真实 payload unknown 保留。
 - M7/M8 后置；交易前 fresh reads/simulation、receipt 后局部 refetch 属 Manual correctness，不等待持续 polling/realtime。
 
@@ -102,3 +102,5 @@ M4 Human Decisions现已全部CLOSED：rounds输入1–9999只是前端产品限
 ## M9 countdown — Human confirmed
 
 正式页面继续Waiting / —，等待backend deadline；不展示剩余区块或估算秒数。该显示选择CLOSED，不因当前缺真实live-round样本重新开Product Gate。M9 live result transition=RUNTIME QA PENDING，工程动画/去重/cleanup/reduced-motion由Agent自主完成，见[记录](./mine-result-implementation.md)。
+
+- M7/M8最新限定实现：已有Query的有界freshness与F7 signal-only adapter已完成；不读取任何payload字段。Q-47真实订阅/payload/resync仍RUNTIME QA PENDING；不能因开发工具WebSocket有frame而认定Pusher业务可用。M11起源最新人工确认继续后置（DEFERRED — FUTURE GATE），不纳入当前Mine主线；不是等待本轮Scope决定，也不阻塞已完成模块。

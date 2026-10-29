@@ -46,9 +46,9 @@
   "insufficient": "Insufficient BNB",
   "deploy": "Deploy",
   "actionsUnavailable": "Read-only · Actions unavailable",
-  "results": "Previous round / Miners results",
+  "results": "Current result round winners",
   "address": "Address",
-  "resultAmount": "Amount",
+  "resultAmount": "Winner rewards",
   "empty": "No data",
   "autominer": "Autominer",
   "roundsRemaining": "Rounds remaining",
@@ -138,5 +138,23 @@
   },
   "resultRound": "Result round",
   "winningCell": "Winning cell",
-  "rewardsReadOnly": "Read-only rewards. Claim transactions are not enabled."
+  "rewardsReadOnly": "Read-only rewards. Claim transactions are not enabled.",
+  "claimFlow": {
+    "failure": "Operation failed. Please try again.",
+    "phases": {
+      "idle": "Ready",
+      "preparing": "Checking rewards…",
+      "awaiting-signature": "Awaiting wallet confirmation…",
+      "submitted": "Transaction submitted",
+      "confirming": "Waiting for 1 confirmation…",
+      "confirmed": "Chain confirmed",
+      "refreshing": "Refreshing rewards…",
+      "success": "Rewards refreshed",
+      "rejected": "Wallet request cancelled",
+      "failed": "Operation failed",
+      "refresh-failed": "Chain confirmed · refresh failed. Retry refresh only.",
+      "verification-failed": "Chain confirmed · verification failed. Do not resend."
+    }
+  },
+  "you": "You"
 }

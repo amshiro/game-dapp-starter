@@ -9,8 +9,9 @@ export function MineResults({
 }: Readonly<{ display?: MineResultsDisplay }>) {
   const copy = useMineCopy();
   const id = useId();
-  // Previous-round / winners rows still have no approved data owner. Never reuse the current round or legacy Rank data.
+  // Unknown/empty lists are not placeholder participants. Only the current fulfilled round query can supply winners.
   const rows = display.status === "populated" ? display.rows : [];
+  if (!rows.length) return null;
   return (
     <section className={styles.miners} aria-labelledby={`${id}-title`}>
       <div className={styles.minersHeader}>
@@ -24,7 +25,6 @@ export function MineResults({
         role="region"
         aria-label={copy.results}
         tabIndex={0}
-        aria-busy={display.status === "loading"}
       >
         <table className={styles.resultsTable}>
           <caption className="sr-only">{copy.results}</caption>
@@ -39,38 +39,49 @@ export function MineResults({
             </tr>
           </thead>
           <tbody>
-            {rows.length ? (
-              rows.map((row) => (
-                <tr key={row.id}>
-                  <th scope="row" title={row.addressText}>
-                    {row.addressText}
-                  </th>
-                  <td>
-                    <span className={styles.resultAmounts}>
-                      {row.amounts.map((amount, index) => (
-                        <span key={index} className={styles.resultAmount}>
-                          {index > 0 && (
-                            <span className={styles.amountSeparator}>+</span>
-                          )}
-                          <span className={styles.resultUnit}>
-                            {amount.unit}
-                          </span>
-                          <span>{amount.text}</span>
+            {rows.map((row) => (
+              <tr
+                key={row.id}
+                data-current-user={row.isCurrentUser || undefined}
+              >
+                <th scope="row" title={row.address ?? row.addressText}>
+                  {row.isCurrentUser ? copy.you : row.addressText}
+                </th>
+                <td>
+                  <span className={styles.resultAmounts}>
+                    {row.amounts.map((amount, index) => (
+                      <span key={index} className={styles.resultAmount}>
+                        {index > 0 && (
+                          <span className={styles.amountSeparator}>+</span>
+                        )}
+                        {/* Human-confirmed BNB/ORI replaces Figma's SOL placeholder; keep each icon's 14px slot. */}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={
+                            amount.unit === "BNB"
+                              ? "/ori/mine/reward-bnb.svg"
+                              : "/ori/explore/ori-token.png"
+                          }
+                          width={14}
+                          height={14}
+                          alt=""
+                        />
+                        <span className="sr-only">{amount.unit}</span>
+                        <span
+                          title={
+                            amount.exact
+                              ? `${amount.exact} ${amount.unit}`
+                              : undefined
+                          }
+                        >
+                          {amount.text}
                         </span>
-                      ))}
-                    </span>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={2} className={styles.resultsMessage}>
-                  {display.status === "populated"
-                    ? copy.empty
-                    : copy[display.status]}
+                      </span>
+                    ))}
+                  </span>
                 </td>
               </tr>
-            )}
+            ))}
           </tbody>
         </table>
       </div>

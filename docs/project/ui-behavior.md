@@ -107,8 +107,8 @@ Step3  获胜方块保持点亮 10s
 ### Rewards
 
 - **Human Confirmed**：Protocol getUserRewards(account) 的 ethAmount→BNB、oriDirect→未精炼ORI、oriRefined→已精炼ORI；三项全零不渲染整个Rewards区域。历史非零行显隐规则保留；ORI任一>0显示领取（claimAll），BNB>0显示仅领取BNB（claimEth），BNB-only只有后者。Q-25 / I-30 CLOSED。
-- **M5 implemented**：Development97的三项raw bigint read，18 decimals exact展示；账户/链隔离、loading/error/重试。两个入口只读disabled，未启用M6交易；Rewards独立于active Auto，不要求当前Auto运行。
-- **M6 Unknown**：收款地址、税/时限与写入完成验证；Q-42仍OPEN，不在M5推算expiry或净可领取值。详见 [M5](./mine-rewards-implementation.md)。
+- **M5 implemented**：Development97的三项raw bigint read，18 decimals exact展示；账户/链隔离、loading/error/重试。后续人工已授权并实现97 Claim owner，领取/仅领取BNB的normal/pending/success/error接入原card，独立于active Auto，不要求当前Auto运行。
+- **Human approved Claim**：currentAccount收款，fresh reward+simulation、1确认、交易/event与相关reads完成；confirmed+refresh失败只能Retry Refresh。未推算expiry/税后到账额，普通失败通用提示，取消可恢复。真实Claim QA PENDING；详见[M5 read](./mine-rewards-implementation.md)、[Claim](./mine-claim-implementation.md)。
 
 ### Miners 列表
 
@@ -166,3 +166,7 @@ User Confirmed：钱包入口右侧提供单个 32×32 `中` / `EN` 切换按钮
 ## Latest Human Decision — Manual / Auto interaction
 
 Manual→Auto允许：hasDeployedThisRound仅影响Manual最终action，不影响Auto配置/eligibility。Active Auto→Manual不允许：chain active整体替换Trade Card，移除两个form/tabs/注册入口；Stop确认并刷新inactive后恢复Trade，独立Manual单轮一次限制仍生效。Auto普通Register/Stop失败用户侧只显示“操作失败，请重试。”；decoded error仅留内部分类。输入校验仍可提供明确字段提示；confirmation unknown和confirmed后verify/refresh失败保留专用安全提示，只读Retry，不resend。
+
+## M10 Miners — latest Human Decision
+
+当前开奖轮的winners，仅verified result阶段展示；非所有下注者/非猜测上一轮。backend顺序不改；只有第一行是本人时显示「你」/白字/下方虚线。ore_reward>0显示ORI+，总有BNB eth_reward，API8位缩放截断6位。空list含标题整区隐藏，wrong-chain/unknown/error不保留旧名单；10秒query仅相关route/result前台运行。见[M10](./mine-winners-implementation.md)。

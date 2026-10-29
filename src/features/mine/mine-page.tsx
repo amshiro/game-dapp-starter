@@ -17,6 +17,8 @@ import type { MineManualUI } from "./transaction/use-mine-manual";
 import type { MineAutoUI } from "./transaction/use-mine-auto";
 import { MineAutoStatus } from "./components/mine-auto-status";
 import { useMineResult } from "./result/use-mine-result";
+import type { MineClaimUI } from "./transaction/use-mine-claim";
+import { MineClaimStatus } from "./components/mine-claim-status";
 import styles from "./components/mine.module.css";
 
 export function MinePage({
@@ -30,9 +32,11 @@ export function MinePage({
   auto,
   rewards,
   onRewardsRefresh,
+  claim,
 }: Readonly<{
   manual?: MineManualUI;
   auto?: MineAutoUI;
+  claim?: MineClaimUI;
   rewards?: MineRewardsDisplay;
   onRewardsRefresh?: () => void;
   display?: MineBoardDisplay;
@@ -149,7 +153,9 @@ export function MinePage({
         />
       )}
       {auto && <MineAutoStatus auto={auto} />}
+      {claim && <MineClaimStatus claim={claim} />}
       <MineRewardState
+        claim={claim}
         display={
           rewards ??
           (actionPresentation?.kind === "autominer"

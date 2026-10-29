@@ -191,4 +191,20 @@ About + Points 完整 UI 本轮已通过人工审核；M7 polling/freshness 暂�
 
 ## M5 — Mine Rewards read/UI
 
-Development97 implementation COMPLETE；最新人工映射/显隐决策已应用并测试，Q-25/I-30 CLOSED。Protocol getUserRewards为唯一owner，raw bigint、18decimals、无polling；all-zero隐藏，BNB-only仅claimEth入口，ORI有值显示claimAll入口，两者当前均disabled/read-only。未新增Claim写入。非零真实账户与账户/链切换验收记RUNTIME QA PENDING；Production56与M6 recipient/税/时限/资金完成语义独立。详见 [M5](./mine-rewards-implementation.md)。
+Development97 implementation COMPLETE；最新人工映射/显隐决策已应用并测试，Q-25/I-30 CLOSED。Protocol getUserRewards为唯一owner，raw bigint、18decimals、无polling；all-zero隐藏，BNB-only仅claimEth入口，ORI有值显示claimAll入口，后续用户授权的Claim owner已接入正式runtime，缺owner的isolated presentation仍disabled。非零真实账户与账户/链切换验收记RUNTIME QA PENDING；Production56独立；后续97 self-recipient/receipt+相关reads完成策略已签收，不推算税/时限。详见 [M5](./mine-rewards-implementation.md)。
+
+## Rewards Claim Transactions（用户本轮M5命名 / task graph M6）
+
+Development97 implementation COMPLETE：claimAll/claimEth currentAccount、fresh read/simulation/gas检查、冻结context、1确认+交易/event验证、rewards/native/ORI相关reads成功；confirmed失败只retry verify/refresh，不resend。REWARDS REAL CLAIM QA = RUNTIME QA PENDING，不伪造真实领取已验证。无Production56/Stake Claim/Origin/自动checkpoint扩展，详见[Claim实现](./mine-claim-implementation.md)。
+
+## M10 — Miners current result winners
+
+Human decisions CLOSED，Development97 implementation COMPLETE：当前开奖轮winners、viewer/后端顺序/只首行You/空隐藏、API8位双奖励、10秒前台读取、account/round隔离。当前1655尚未开奖，1654诊断API空；M10 NON-EMPTY WINNERS QA = RUNTIME QA PENDING。未签名/广播，未接参与者或realtime，见[M10](./mine-winners-implementation.md)。
+
+## M7 / M8 — known-owner freshness
+
+按Fast Autonomous连续推进，M7 route-only budgets / failure backoff / hidden pause / focus-reconnect refresh与M8 F7 signal-only exact invalidation已实现。M8不读取payload字段，不重建round/selection owner。Q-47及真实订阅/payload/resync保持RUNTIME QA PENDING，不宣称协议验证；原有write/结果/非空read pending保持。见[M7/M8](./mine-freshness-implementation.md)。
+
+## Mine Development checkpoint — runtime QA boundary
+
+M4 Auto Core、M5 Rewards Read/Claim、M9 Result/Animation、M10 Winners、M7 bounded freshness、M8 signal-only实现与自动QA完成。以下均保持 **RUNTIME QA PENDING**：Auto successful execution fee deduction；Auto real Register/Stop；Rewards non-zero real Claim；Winners non-empty real dataset；realtime real event/subscription/resync；result real lifecycle。不能把simulation、fixture、socket/HMR或build通过写为VERIFIED，不阻塞本Development checkpoint。Production56独立Release Gate；M11继续后置，当前仅允许需求review。

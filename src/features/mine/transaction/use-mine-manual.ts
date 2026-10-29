@@ -1,5 +1,6 @@
 "use client";
 import { useLayoutEffect, useState, useSyncExternalStore } from "react";
+import { mineReadFreshness } from "../read/mine-freshness";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useBalance, useConfig, usePublicClient } from "wagmi";
 import type { PublicClient } from "viem";
@@ -89,12 +90,19 @@ export function useMineManual(
     roundId: snapshot?.roundId,
     enabled: connected && snapshot !== undefined,
   });
-  const info = useQuery(personal.info),
-    squares = useQuery(personal.squares);
+  const info = useQuery({
+      ...personal.info,
+      ...mineReadFreshness("account", personal.info.enabled === true),
+    }),
+    squares = useQuery({
+      ...personal.squares,
+      ...mineReadFreshness("account", personal.squares.enabled === true),
+    });
   const native = useBalance({
     address: context.address,
     chainId: 97,
     query: {
+      ...mineReadFreshness("nativeBalance", connected && !!context.address),
       enabled: connected && !!context.address,
       staleTime: 30_000,
       retry: 1,
@@ -211,8 +219,8 @@ export function useMineManual(
     refresh: () => {
       if (connected) {
         void native.refetch();
-        if (personal.info.enabled) void info.refetch();
-        if (personal.squares.enabled) void squares.refetch();
+        if (personal.info.enabled === true) void info.refetch();
+        if (personal.squares.enabled === true) void squares.refetch();
       }
     },
   };

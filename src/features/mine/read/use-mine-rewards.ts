@@ -1,4 +1,5 @@
 "use client";
+import { mineReadFreshness } from "./mine-freshness";
 import { useQuery } from "@tanstack/react-query";
 import { usePublicClient } from "wagmi";
 import type { ManualContext } from "../transaction/manual-transaction";
@@ -29,13 +30,16 @@ export function mineRewardsDisplay(
 export function useMineRewards(context: ManualContext) {
   const client = usePublicClient({ chainId: context.targetChainId });
   const options = createMineRewardsQuery(client, context);
-  const query = useQuery(options);
+  const query = useQuery({
+    ...options,
+    ...mineReadFreshness("rewards", options.enabled === true),
+  });
   return {
     display: mineRewardsDisplay(query, context, !!client),
     refreshing: query.isFetching,
     canRefresh: options.enabled,
     refresh: () => {
-      if (options.enabled) void query.refetch();
+      if (options.enabled === true) void query.refetch();
     },
   };
 }

@@ -172,11 +172,12 @@
 .minersHeader h2 {
   font-size: 20px;
   font-weight: 500;
-  line-height: 24px;
+  line-height: 23px;
 }
 .minersHeader span {
   font-size: 12px;
-  line-height: 16px;
+  font-weight: 500;
+  line-height: 14px;
   color: var(--ori-color-text-secondary);
   overflow-wrap: anywhere;
 }
@@ -471,7 +472,6 @@
 .resultsScroll {
   margin-top: 12px;
   max-height: 300px;
-  min-height: 300px;
   overflow: auto;
 }
 .resultsTable {
@@ -479,7 +479,7 @@
   table-layout: fixed;
   border-collapse: collapse;
   font-size: 12px;
-  line-height: 15px;
+  line-height: 14px;
 }
 .addressColumn {
   width: 40%;
@@ -487,7 +487,8 @@
 .resultsTable th,
 .resultsTable td {
   height: 30px;
-  padding: 7px 0 8px;
+  padding: 7px 0;
+  background: var(--ori-color-background);
   vertical-align: middle;
 }
 .resultsTable th {
@@ -504,7 +505,7 @@
   display: flex;
   justify-content: end;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   flex-wrap: wrap;
 }
 .resultAmount {
@@ -521,11 +522,7 @@
 .resultUnit {
   font-size: 10px;
 }
-.resultsTable .resultsMessage {
-  height: 300px;
-  text-align: center;
-  color: var(--ori-color-text-secondary);
-}
+
 .autominer h2 {
   min-height: 32px;
   display: grid;
@@ -739,4 +736,18 @@
 .rewardValue span {
   min-width: 0;
   overflow-wrap: anywhere;
+}
+
+.resultsTable tr[data-current-user="true"] {
+  border-bottom: 1px dashed var(--ori-color-surface-raised);
+}
+.resultsTable tr[data-current-user="true"] th {
+  color: var(--ori-color-text-primary);
+}
+.resultAmount img {
+  display: block;
+  flex: none;
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
 }

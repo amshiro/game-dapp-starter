@@ -1,7 +1,7 @@
 {
   "title": "挖矿",
   "storedRound": "已存储轮次",
-  "round": "轮次",
+  "round": "回合",
   "board": "挖矿棋盘",
   "motherlode": "母矿",
   "remaining": "剩余时间",
@@ -46,9 +46,9 @@
   "insufficient": "BNB 不足",
   "deploy": "部署",
   "actionsUnavailable": "只读 · 操作暂不可用",
-  "results": "上一轮 / 矿工结果",
+  "results": "当前开奖轮中奖者",
   "address": "地址",
-  "resultAmount": "金额",
+  "resultAmount": "中奖奖励",
   "empty": "暂无数据",
   "autominer": "自动挖矿",
   "roundsRemaining": "剩余轮次",
@@ -138,5 +138,23 @@
   },
   "resultRound": "结果回合",
   "winningCell": "中奖格子",
-  "rewardsReadOnly": "当前仅展示奖励，领取交易尚未启用。"
+  "rewardsReadOnly": "当前仅展示奖励，领取交易尚未启用。",
+  "claimFlow": {
+    "failure": "操作失败，请重试。",
+    "phases": {
+      "idle": "就绪",
+      "preparing": "正在检查奖励…",
+      "awaiting-signature": "等待钱包确认…",
+      "submitted": "交易已提交",
+      "confirming": "等待 1 次链上确认…",
+      "confirmed": "链上已确认",
+      "refreshing": "正在刷新奖励…",
+      "success": "奖励已刷新",
+      "rejected": "钱包请求已取消",
+      "failed": "操作失败",
+      "refresh-failed": "链上已确认 · 刷新失败，请仅重试刷新。",
+      "verification-failed": "链上已确认 · 验证失败，请勿重新发送。"
+    }
+  },
+  "you": "你"
 }

@@ -38,12 +38,12 @@
 | M3 | Mine Manual transaction | READY | 限定 Manual Core COMPLETE；用户最终验收确认 Chain97真实Manual Deploy PASS；W1 + M1/M2 已确认子集，单轮一次；Manual shortcuts已按Figma启用替换输入，不依赖 M7/Reward |
 | M4 | Mine Auto mining start / stop | PARTIALLY BLOCKED | M4只读Gate已执行；人工fixed/random/value/Stop已锁定；产品层closed：轮数1–9999、remaining后端直出/缺失留空；M4 Core已获人工放行实现，execution fee deduction=RUNTIME QA PENDING，待真实QA，不依赖M7 |
 | M5 | Mine Rewards read/UI | READY | Development97 implementation COMPLETE；Q-25/I-30人工CLOSED，零值runtime已核对；非零真实账户及切换验收RUNTIME QA PENDING；M6仍独立 |
-| M6 | Mine Rewards claim | BLOCKED | W1/M5；Q-25已关闭；recipient/税/时限、Q-12/Q-42与领取安全完成Gate独立 |
-| M7 | Mine polling / freshness | PARTIALLY BLOCKED | DEFERRED：核心 Mine 功能优先；不阻塞 Manual，持续 freshness 待已有 Query owner 明确 |
-| M8 | Mine realtime invalidation | BLOCKED | M1/M7；Q-47 服务恢复、真实 payload、重连 smoke |
+| M6 | Mine Rewards claim | READY | 用户以M5 Rewards Claim名称授权；Development97 implementation COMPLETE，self recipient、1确认+event/transaction验证+相关reads；REWARDS REAL CLAIM QA=RUNTIME QA PENDING，56独立Gate |
+| M7 | Mine polling / freshness | READY | 当前核心owner明确后按Fast Autonomous连续推进；route-only 15/30/60s预算、M10 10s、hidden暂停/恢复/backoff/dedup已实现，不修改交易安全 |
+| M8 | Mine realtime invalidation | READY | F7 signal-only adapter implementation COMPLETE；不解释payload，只invalidate当前owners。REAL SUBSCRIPTION/PAYLOAD/RESYNC QA PENDING，Q-47不伪造已解决 |
 | M9 | Mine lifecycle / countdown / result | READY | 当前批准scope：verified result/动画；倒计时Human approved继续Waiting/—等backend deadline。live result transition=RUNTIME QA PENDING；无新协议enum/polling |
-| M10 | Mine Miners / Winners data | BLOCKED | dataset / round / 资产单位 / 排序 Data Gate；不自动继承旧 Rank |
-| M11 | Mine Origin rewards | BLOCKED | DEFERRED — FUTURE GATE；backend + AssetManager 独立于 ORI Claim |
+| M10 | Mine Miners / Winners data | READY | 人工确认当前开奖轮winners、8位BNB/ORI、backend顺序/首行You/空整区隐藏；implementation COMPLETE，nonempty runtime QA PENDING |
+| M11 | Mine Origin rewards | BLOCKED | Human Confirmed：继续后置，DEFERRED — FUTURE GATE；不纳入当前Mine主线，backend + AssetManager 独立于 ORI Claim |
 
 ## Dependency Graph
 
@@ -343,7 +343,7 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 | Web3 dependencies | getUserRewards(miner)、ORI decimals；不能把 ethAmount 命名成 ETH 或把 ORI 显示成 ORE/BURY |
 | Realtime dependencies | M7 刷新已有 owner Query；M8 可后接 |
 | UI/Figma dependencies | frame1413 / card1683 / rows1684–1714；Q-25/I-30人工已确认；BNB图标为人工资产映射替换，其余当前Figma属性保留 |
-| Open Questions / Blockers | M5 Development97 implementation COMPLETE，read/UI无产品blocker。详见 [M5实现](./mine-rewards-implementation.md)；非零真实账户/切换RUNTIME QA PENDING。M6的recipient、税/时限/完成验证独立，不阻塞M5；56仍Release Gate |
+| Open Questions / Blockers | M5 Development97 implementation COMPLETE，read/UI无产品blocker。详见 [M5实现](./mine-rewards-implementation.md)；非零真实账户/切换RUNTIME QA PENDING。后续97 Claim/currentAccount与完成策略已签收并实现，真实Claim QA PENDING；不推算税/时限，56仍Release Gate |
 | Acceptance Criteria | G-D/G-P/G-V；金额独立建模、无奖励和读取失败分开；未知到期时间不推造 countdown；本票据 Claim 不可执行 |
 | QA | 通用 QA；三类金额/零/过期/读取失败、地址切换、长数值与卡片显示条件 |
 | Non-goals | M6、AssetManager 的未确认 claim/claim_bnb、起源奖励资金流程 |
@@ -352,15 +352,15 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 
 | Field | Ticket |
 | --- | --- |
-| Goal | 独立完成已人工确认的领取→claimAll / 仅领取BNB→claimEth资金流程；方法映射已签收，recipient/税/时限与安全完成验证仍需明确 |
+| Goal | Development97领取→claimAll(currentAccount) / 仅领取BNB→claimEth(currentAccount)；不推算净额/税/时限；按fresh simulation与合约实际结果处理 |
 | Route | `/mine` Rewards 区 |
 | Owner / Dependencies | Mining claim workflow；W1/M5，已核对的协议证据 |
 | Source of Truth | C-40/C-41/C-42、claimAll(to)/claimEth(to)、对应错误与全局 transaction contract |
 | API dependencies | 明确是否有业务索引完成条件；无此依赖时不可发明 claim API |
-| Web3 dependencies | 明确 to、claimFeeBps/税语义、可领取时限；simulation、receipt 与领取后 reward/balance reads；无需擅自 approve |
+| Web3 dependencies | self recipient人工签收；Registry P，fresh reward+simulation，1确认及交易/event验证后refresh rewards/native balance（all另ORI）；无approve或前端费用推导 |
 | Realtime dependencies | M8 非前置；receipt 后主动刷新 M5/Wallet 的真实受影响 owner，不广播全站 invalidation |
 | UI/Figma dependencies | Rewards Claim / Claim only 文案与 Q-12 交易状态补充 |
-| Open Questions / Blockers | BLOCKED：Q-12、Q-42与recipient/税/领取安全完成语义；M5 read/UI已实现、Q-25已人工关闭。若出现checkpoint需走Q-43，不自动追加write |
+| Open Questions / Blockers | Development97 implementation COMPLETE；人工已批准self recipient/Claim映射/receipt+相关reads成功策略，不另开Gate。[Claim实现](./mine-claim-implementation.md)；真实Claim QA PENDING不阻塞主线。Q-42未知时长不推算，若合约要求checkpoint则失败，不自动追加write；56仍Release Gate |
 | Acceptance Criteria | G-P/G-T/G-V；正确领取类别和收款地址，NothingToClaim/ClaimWindowPassed 明确；receipt 与可见余额对账按完成契约区分，旧账户结果不污染新上下文 |
 | QA | 通用 QA；全领/仅 BNB、无奖励/过期/拒签/revert/replacement、税与精度；真实 claim 操作另行授权 |
 | Non-goals | 起源 claim、expired reward sweep、替他人领取、质押收益领取 |
@@ -377,7 +377,7 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 | Web3 dependencies | M1 合约读 Query；明确 RPC 负载与 round/账户/链变化的启停条件 |
 | Realtime dependencies | 不依赖连接成功；disabled/unavailable 时 polling 不停止 |
 | UI/Figma dependencies | 无新增组件；stale/error 对应已批准的 UI 状态 |
-| Open Questions / Blockers | PARTIALLY BLOCKED：M1 未交付前无法定义所有 keys/来源；后端/协议 owner 须签收频率、限流、时间语义。Q-47 不阻塞本票据独立完成 |
+| Open Questions / Blockers | 现有owner明确，按Fast Autonomous工程自治设定有界Development预算，implementation COMPLETE；[M7/M8实现](./mine-freshness-implementation.md)。无未知round API或协议时钟；Production56不扩大 |
 | Acceptance Criteria | G-D；逐数据 owner 写明 freshness budget 与执行策略，离页无泄漏，聚焦/重连刷新，旧请求不覆盖新 round；不复制全局 timer/server state |
 | QA | 通用 QA；fake timers/请求计数验证启停与退避、后台恢复、离页、账户/链/round 切换；真实只读压力以批准的频率验证 |
 | Non-goals | 把旧轮询间隔固化为默认、WS 实现、定时后台执行交易 |
@@ -394,7 +394,7 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 | Web3 dependencies | 只 invalidate 已确认相关 read；无 write |
 | Realtime dependencies | round.new_round / round.data.started；round.reset / round.data.reset；F7 event/resync；schema 确认后在事件定义 parse 边界校验 |
 | UI/Figma dependencies | 无新 UI；动画另由 M9 接管，不与 transport 合并 |
-| Open Questions / Blockers | BLOCKED：Q-47 Development 502、真实订阅与 payload 未观察；还需确认事件 round identity、重复/乱序、是否有轮内推送。不在未恢复时用 mock 宣布真实接入完成 |
+| Open Questions / Blockers | signal-only adapter implementation COMPLETE；F7已登记channel/event合理证据，所有payload忽略，不推断identity/winner。Q-47 / REAL SUBSCRIPTION/PAYLOAD/RESYNC QA PENDING，不标VERIFIED；M7独立fallback |
 | Acceptance Criteria | G-R；实际服务连接/两个订阅/真实样本/断线重连均有证据；event/resync 只 invalidate 受影响 keys，重复/坏 payload 不跨 round；WS 关闭时 M7 正常，离页无残留 |
 | QA | 通用 QA；mock 覆盖坏消息/重复/乱序/resync/多订阅者；真实只读 smoke 独立记录结果，不能在测试中发交易制造开奖 |
 | Non-goals | 去掉 polling、事件写入 Zustand/手工 patch Query、修服务器/改 WS security、部署实时基础设施 |
@@ -424,11 +424,11 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 | Route | `/mine` Miners/results |
 | Owner / Dependencies | Mine Feature list Query；M1/M2 已确认 round + 独立 Data Gate，不要求 Manual/Auto 成功 |
 | Source of Truth | 用户 → Figma → reviewed docs → historical winners；[Miners Data Contract](./mine-requirements-reconciliation.md) |
-| API dependencies | winners endpoint 候选；空 list HTTP200 不证明非空 schema/排序/单位；不用旧 Rank 定义补需求 |
+| API dependencies | 人工确认/round_winners/round，round_id exact string、winner_address optional；ore_reward/eth_reward 8位缩放。非空runtime仍QA PENDING，无endpoint自动交换 |
 | Web3 dependencies | canonical round；participants 投入列表不是 winners/reward rows 的替代 |
 | Realtime dependencies | 未来仅 invalidate；局部手动刷新先于 M7/M8 |
 | UI/Figma dependencies | 1 的 Miners、4 的 results row；已有完整只读结构 |
-| Open Questions / Blockers | BLOCKED：current/previous round、participants/winners、地址/稳定 row key、双金额单位、排序/本人行未签收 |
+| Open Questions / Blockers | Human decisions CLOSED；Development97 implementation COMPLETE。[M10实现](./mine-winners-implementation.md)；非空真实记录QA PENDING，不阻塞主线。56独立Release Gate |
 | Acceptance Criteria | G-D/G-V；typed display model 隔离 DTO，空/错/加载独立，安全整数和账户/轮次隔离，不假 rows |
 | QA | schema/mapper/空与非空样本、跨 round、375/500、长地址与金额 |
 | Non-goals | ranking 产品、奖励领取、从参与人数推 winners、扩展旧 UI |

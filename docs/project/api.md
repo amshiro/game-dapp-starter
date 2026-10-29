@@ -185,3 +185,11 @@ realtime 只在**轮次边界**（开始 / 开奖）推送，并且不可补偿�
 | /ori/query/chain_asset_config | 数组7项 | 97 price quote 覆盖、价格精度与资产映射 |
 
 A/B/C/D 分类及新架构 owner 见 [需求对齐](./mine-requirements-reconciliation.md)。HTTP200 不关闭 Q-11，不引入旧 DTO 或 Number 大整数；本轮未重测 WS，Q-47 先前502/真实 payload unknown 继续保留。
+
+## M10 Human-confirmed winners contract
+
+后续人工明确采用`/ori/round_winners/round`，当前开奖轮round_id exact string与winner_address（无账户留空），list原顺序、不sort/filter；ore_reward/eth_reward均8位API缩放、最多6位截断。M1当时“不能自行继承8位”的未知项已被本次人工签收覆盖；不影响其他API金额单位与unsafe JSON number要求。当前1655未开奖query disabled，已知1654诊断仍list空；nonempty runtime QA PENDING。source/reference错位仍记录，不自动交换端点。见[M10](./mine-winners-implementation.md)。
+
+## Mine freshness implementation
+
+M7按已存在Query owners执行有界route-only read预算，M10维持人工10s；M8复用F7两个注册wire events/resync，只invalidate精确当前keys。payload全部忽略，不能作为round/winner/balance/state真相。真实connection/subscription/payload/resync仍RUNTIME QA PENDING（Q-47），不以mock或polling成功关闭。见[M7/M8](./mine-freshness-implementation.md)。

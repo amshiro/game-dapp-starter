@@ -5,7 +5,7 @@
 - `ethAmount` → BNB；`oriDirect` → 未精炼 ORI；`oriRefined` → 已精炼 ORI。Q-25 CLOSED。
 - 三项raw全零隐藏整个Rewards区域，不展示三行零值/禁用领取按钮；未知/失败不当零。I-30 CLOSED。
 - 沿用人工确认的historical规则：非零行显示；任一ORI>0显示领取→`claimAll`；BNB>0显示仅领取BNB→`claimEth`；BNB-only只有后者。
-- M5仅read/UI，两个入口的visible与可执行分离：目前原生disabled，有可访问的只读说明。未实现Claim writes，不承诺raw等于扣税后的立即到账金额。税/窗口/recipient/资金完成验证属于M6，不重新打开已签收的映射/显隐问题。
+- M5最初为read/UI；后续人工已授权同一Rewards的Development97 Claim实现：recipient=currentAccount，claimAll/claimEth、1确认+相关reads完成；详见[Claim实现](./mine-claim-implementation.md)。未配置Claim owner的isolated presentation仍disabled；正式runtime按fresh check/simulation提交，不承诺raw等于税后到账额。
 
 ## Canonical owner / architecture
 

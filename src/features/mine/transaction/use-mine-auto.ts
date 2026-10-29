@@ -1,5 +1,6 @@
 "use client";
 import { useLayoutEffect, useState, useSyncExternalStore } from "react";
+import { mineReadFreshness } from "../read/mine-freshness";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useBalance, useConfig, usePublicClient } from "wagmi";
 import type { PublicClient } from "viem";
@@ -72,13 +73,36 @@ export function useMineAuto(
     !context.wrongChain &&
     !!context.address;
   const q = createAutomationQueries(client, context.address, connected);
-  const chain = useQuery(q.account),
-    fee = useQuery(q.config),
-    backend = useQuery(q.enrichment);
+  const chain = useQuery({
+      ...q.account,
+      ...mineReadFreshness("automation", q.account.enabled === true),
+    }),
+    fee = useQuery({
+      ...q.config,
+      ...mineReadFreshness("executorFee", q.config.enabled === true),
+    }),
+    backend = useQuery({
+      ...q.enrichment,
+      enabled:
+        q.enrichment.enabled === true &&
+        !chain.isError &&
+        chain.data?.active === true,
+      ...mineReadFreshness(
+        "enrichment",
+        q.enrichment.enabled === true &&
+          !chain.isError &&
+          chain.data?.active === true,
+      ),
+    });
   const native = useBalance({
     address: context.address,
     chainId: 97,
-    query: { enabled: connected, staleTime: 30_000, retry: 1 },
+    query: {
+      ...mineReadFreshness("nativeBalance", connected),
+      enabled: connected,
+      staleTime: 30_000,
+      retry: 1,
+    },
   });
   const [input, setInput] = useState(""),
     [blocks, setBlocks] = useState("0"),

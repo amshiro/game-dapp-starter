@@ -118,15 +118,11 @@ describe("Mine results rows", () => {
     expect(html).not.toContain("Rank");
   });
   it.each(["empty", "unavailable", "error", "loading"] as const)(
-    "has explicit %s layout without fabricated miners or a previous-round ID",
-    (status) => {
-      const html = renderToStaticMarkup(<MineResults display={{ status }} />);
-      expect(html).toContain("<table");
-      expect(html).toContain('colSpan="2"');
-      expect(html).not.toContain('scope="row"');
-      expect(html).not.toMatch(/0xAB|1654|1653/);
-      if (status === "loading") expect(html).toContain('aria-busy="true"');
-    },
+    "hides %s results without inventing a list or round",
+    (status) =>
+      expect(renderToStaticMarkup(<MineResults display={{ status }} />)).toBe(
+        "",
+      ),
   );
 });
 

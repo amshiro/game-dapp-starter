@@ -149,29 +149,28 @@ Figma `2003:1037` 是“点击数据块切换展示美金价值、当前轮次�
 | BNB reward | 4b 首行 ORE、token icon | getUserRewards.ethAmount；旧 Rewards 显示 BNB | Human Confirmed：ethAmount→BNB；raw>0显示此行和仅领取BNB→claimEth入口 |
 | unrefined ORI | Unrefined BURY 占位 | oriDirect；旧文案称未精炼；整数不自动等于立即可提现 amount | Human Confirmed：oriDirect→未精炼ORI；raw>0显示此行及领取→claimAll入口；税/时限仍M6 |
 | refined ORI | Refined BURY 占位 | oriRefined；旧使用 formatUnits18 | Human Confirmed：oriRefined→已精炼ORI；raw>0显示此行及领取→claimAll入口；不是Origin |
-| claim all | Claim 按钮 | P.claimAll(to)；旧 Rewards 真有调用 | Human Confirmed：任一ORI>0显示领取→claimAll；M5只读disabled，M6独立资金流程，不承诺每次Deploy即有奖励 |
-| claim BNB only | Claim only ORE 按钮 | P.claimEth(to)；旧 BNB-only | Human Confirmed：BNB>0显示仅领取BNB→claimEth；BNB-only仅此入口。recipient/fee/完成契约仍M6 |
+| claim all | Claim 按钮 | P.claimAll(to)；旧 Rewards 真有调用 | Human Confirmed：任一ORI>0显示领取→claimAll；后续人工已批准并实现97 self-recipient Claim，fresh simulation+receipt+相关reads完成；不承诺每次Deploy即有奖励 |
+| claim BNB only | Claim only ORE 按钮 | P.claimEth(to)；旧 BNB-only | Human Confirmed：BNB>0显示仅领取BNB→claimEth；BNB-only仅此入口。后续人工已批准recipient=currentAccount、1确认及相关reads成功；不做fee/净额推导，真实Claim QA PENDING |
 | Origin Rewards | 无可识别的独立 backend+AssetManager 新版流程 | origin_info + OriginClaimCard 的 AssetManager.deposit(orderId,'claim',...,nativeAmount)，混合链下分配与链上付款 | **FUTURE GATE / M11**；不与 ORI claimAll 合并，不从占位 BURY 两行补此功能，不沿用 Date.now orderId、旧10位金额转换或旧收费算法 |
 
 人工确认三项raw全零时整区隐藏；读取失败不当作零。Development97 Protocol getUserRewards为M5唯一canonical read owner，账户/链query隔离，无polling。
 
 Protocol/View getUserRewards 三字段的结构已有技术资料；前次公开账户 claimAll simulation 的非零返回仅证明该账户已有奖励的调用路径，不证明新参与必有奖励，更不证明完整税费/单位/时点。Stake 的 pendingRewards/claim 也是另一 Gate，不能混入 Mine Rewards。
 
-## 9. Miners Data Contract（owner OPEN）
+## 9. Miners Data Contract（Human Confirmed / M10）
 
-已确认新版名称为 **Miners**，结构含 Round、地址、金额，部分行双资产+separator；不继续使用代码/产品名 Rank。历史 parent 在 gameState=4 时显示 Rank；请求 winners endpoint，可带 winner_address，把第一条本人行显示 You。这些是 **Historical behavior — not yet adopted**。
+当前人工明确：当前开奖这一轮的中奖账户，非所有参与者、非自动current-1。开奖阶段请求`/ori/round_winners/round`，round_id为当前result round string，winner_address为当前账户/无账户留空，每10秒读取。空list整区隐藏含标题。
 
-| 字段 / 决策 | 正式需求边界 |
+| 字段 / 决策 | 已签收需求 |
 | --- | --- |
-| dataset | current-round miners / winners-only / all participants 仍 OPEN；历史 winners 支持候选但不覆盖 Figma 模糊语义。此前用户指出含 previous-round winners UI，完成其结构不等于数据集已签收 |
-| roundId | 必须是列表实际对应 round，与展示result round一致；不假设 current-1；string/bigint |
-| row identity | 未来按 chain/deployment/round + account + 经确认条目 identity；不使用数组index或不安全 JSON log_unique_id作为正式唯一键 |
-| address / current user | 地址标准化后供显示缩写；是否本人置顶/You/特殊分隔仍 OPEN，不继承旧 winner_address 的未登记过滤参数 |
-| row amount(s) | 必须确认是部署本金还是 payout，明确每列资产/单位；winningSquareParticipants 的 amount 是投入，不等于个人奖励 |
-| order / pagination | Figma未定义排名算法/额外分页，不加排名号；排序、重复账户聚合、数据量策略 OPEN |
-| owner | public list Query（若本人行确实变化再加account identity）；contract participants 或 API enriched winners 只能在数据集签收后选一个canonical mapper。当前不造 rows |
+| dataset / round | 当前verified fulfilled result的winners；不从participants或旧API latest另造owner，不推导round+/-1 |
+| order / viewer | backend list原顺序，不sort/filter/聚合；只有第一行匹配本人时显示You/你、白字、下虚线；后续本人不特殊处理，不自行置顶 |
+| amounts | ore_reward>0显示ORI及+；始终显示eth_reward BNB；两者按8位API缩放、最多6小数截断，raw/exact bigint保留，非18位链上值 |
+| row identity | round+address+同地址出现次数，保留重复行；不使用不安全JSON ID |
+| owner | Mine feature-local TanStack Query；key含chain/deployment/backend/round/viewer。wrong-chain/非result禁用、旧请求取消，后台暂停 |
+| runtime | implementation COMPLETE；当前1655未开奖不请求名单；已知1654诊断list空。nonempty runtime QA PENDING，不再把已签收产品字段标OPEN |
 
-本轮 winners API 可达但空 list，仍不能验证真实行。Miners 的数据 Gate 不阻塞 Manual 或 Auto 配置。
+完整实现/属性/QA见[M10](./mine-winners-implementation.md)。正式reference中started/winners错位仍Q-11，不自动交换路径。
 
 ## 10. Backend endpoint reconciliation
 
@@ -190,7 +189,7 @@ A=可能需要链上不能完整提供的 enrichment；B=已有或可用的链�
 
 正式 API reference 未列 /round；latest/events flat-vs-nested、started/winners错位、unsafe IDs与金额number/string/8位缩放仍 Q-11。HTTP200 不是 Data Gate PASS；本轮不写新 DTO adapter、不接 route、不创建 API fallback双 owner。
 
-## 11. Realtime 与 polling 策略（不实现）
+## 11. Realtime 与 polling 策略（M7/M8限定实现）
 
 Realtime 只作为 freshness signal；Query/read owner 才是真相。现有 Foundation 是 pusher-js（不是移植 Echo singleton），最后一次 endpoint 证据为502/未取得真实payload；**本轮未重测 WS**，Q-47不关闭。
 
@@ -227,8 +226,8 @@ M7 不是 Manual 的硬前置；fresh preflight + receipt-driven refetch 必须�
 | M9 | round lifecycle、countdown、verified result与动画 | 示例M4 | OPEN，时间/状态映射Gate |
 | M5 + M6 | ORI/BNB rewards read与claim分票 | 示例M5 | M5 read/UI COMPLETE，映射/显隐人工CLOSED；M6资金Gate独立，不混Origin或Stake |
 | M11 | Origin rewards read/AssetManager流程 | 示例M6 | DEFERRED — FUTURE GATE |
-| M10 | Miners/winners明确dataset/rows | 示例M7 | OPEN — Data Gate |
-| M7 | polling/freshness | 示例M8 | DEFERRED，不再硬阻塞M3/M4 |
+| M10 | 当前开奖轮winners/read/UI | 示例M7 | Human decisions CLOSED / implementation COMPLETE，非空真实QA PENDING |
+| M7 | polling/freshness | 示例M8 | known-owner调度已实现，不影响交易fresh preflight/receipt |
 | M8 | realtime freshness signals | 示例M9 | DEFERRED，Q-47与owner依赖 |
 
 最短推荐主线：**M3 Manual → M4 Auto（先通过Auto-specific资金/选择/执行器Gate）→ M9 lifecycle/countdown → M5/M6 ORI rewards → M10 Miners/winners → M7 freshness → M8 realtime**。M11 Origin独立后置，Motherlode/price补充可按各自数据Gate并行规划，不让未来奖励阻塞Manual。流程顺序不是依赖全部前项交付：Miners仅依赖已确认round+dataset，Realtime不依赖任何write成功；Auto不能在执行费/最终预付 Gate 未通过时硬做。
@@ -256,10 +255,12 @@ Status 在此表指需求/数据/实施准备度：READY=限定Scope可开工或
 | Motherlode | 单卡单值+USD | ORI+Origin、3–6轮/其他概率旧口径 | ORI字段可读，payout未签收 | 保留单卡，Origin/节奏仅历史，不混资产或推claim | 候选treasury；Origin另Gate | OPEN |
 | ORI Rewards | 三行+Claim/Claim only | ethAmount/oriDirect/oriRefined、claimAll/Eth | 结构与部分simulation，不证明完整领取语义 | 保留reward Scope candidate；asset/税/时限/claim Gate | future Mine rewards Query / mapper | PARTIAL |
 | Origin Rewards | 无独立混合workflow设计 | origin_info + AssetManager deposit | ABI/接口可达不是付款许可 | FUTURE GATE，与ORI Claim隔离 | future isolated Origin workflow | DEFERRED |
-| Miners/Winners | Miners+Round+地址/双金额 | state4 winners/You置顶 | participants投入可读、API winners空 | dataset/金额/排序/本人行OPEN，不叫Rank，不假rows | future M10 list contract | OPEN |
+| Miners/Winners | Miners+Round+地址/双金额 | state4 winners/You置顶 | API winners空 | 当前人工确认当前开奖轮winners、8位双奖励、backend顺序、只首行You，空整区隐藏 | M10 Query | COMPLETE / nonempty QA PENDING |
 | Polling | 无频率规定 | 1/3/4/5/10s | Query现有refetch可用 | Mandatory fresh preflight/receipt先做；持续轮询后置 | 各Feature Query的有界refetch策略 | DEFERRED |
 | Realtime | 不定义protocol | Echo/Pusher两频道 | Foundation有；last WS502/真实payload未验证 | freshness-only，不patch真相、不发交易 | F7 transport →相关Query invalidation | DEFERRED |
 
 ## Latest Human Decision — asymmetric Manual / Auto
 
 hasDeployedThisRound仅禁止本轮再次Manual Deploy，不进入Auto eligibility。Manual已部署仍可切换/配置/Register Auto；getAutomation.active=true整体替换Trade Card，无Manual/Auto tabs或第二注册入口。两者保持独立；只有正在进行的transaction阻止并发签名。Auto普通Register/Stop失败统一通用提示，内部decoded category保留；confirmed后的verify/refresh失败与confirmation unknown维持原只读重试安全语义，不resend。
+
+最新Fast Autonomous主线：M10人工语义已closed；后续M7/M8仅对已存在owners实现有界freshness，具体budget/信号不可驱动state/QA边界见[mine-freshness-implementation](./mine-freshness-implementation.md)，不是全量协议schema已验证。

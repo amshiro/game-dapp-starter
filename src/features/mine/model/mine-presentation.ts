@@ -39,7 +39,14 @@ export function bettingModeForKey(
 export type MineResultRow = Readonly<{
   id: string;
   addressText: string;
-  amounts: readonly Readonly<{ text: string; unit: string }>[];
+  address?: `0x${string}`;
+  isCurrentUser?: boolean;
+  amounts: readonly Readonly<{
+    text: string;
+    unit: "BNB" | "ORI";
+    raw?: bigint;
+    exact?: string;
+  }>[];
 }>;
 export type MineResultsDisplay =
   | Readonly<{

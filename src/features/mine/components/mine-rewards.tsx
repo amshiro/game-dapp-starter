@@ -2,11 +2,17 @@
 import { useId } from "react";
 import { useMineCopy } from "../copy";
 import type { MineRewardsDisplay } from "../model/mine-rewards";
+import type { MineClaimUI } from "../transaction/use-mine-claim";
 import styles from "./mine.module.css";
 export function MineRewardState({
   display,
   onRetry,
-}: Readonly<{ display?: MineRewardsDisplay; onRetry?: () => void }>) {
+  claim,
+}: Readonly<{
+  display?: MineRewardsDisplay;
+  onRetry?: () => void;
+  claim?: MineClaimUI;
+}>) {
   const copy = useMineCopy(),
     id = useId();
   if (
@@ -77,17 +83,22 @@ export function MineRewardState({
             </div>
           ))}
         </dl>
-        {/* M5 defines entry visibility only. Claim writes, tax/window semantics and signing remain M6. */}
+        {/* Eligibility never replaces the runtime fresh read + simulation before signing. */}
         {display.showClaimAll && (
           <button
             type="button"
             className={styles.claimVisual}
             data-claim-method="claimAll"
-            disabled
-            aria-describedby={`${id}-readonly`}
-            title={copy.rewardsReadOnly}
+            disabled={!claim?.canClaimAll}
+            onClick={() => claim?.submit("claimAll")}
+            aria-describedby={!claim ? `${id}-readonly` : undefined}
+            title={!claim ? copy.rewardsReadOnly : undefined}
           >
-            {copy.claim}
+            {claim?.busy &&
+            claim.stateVisible &&
+            claim.state.operation?.kind === "claimAll"
+              ? copy.claimFlow.phases[claim.state.phase]
+              : copy.claim}
           </button>
         )}
         {display.showClaimEth && (
@@ -95,16 +106,23 @@ export function MineRewardState({
             type="button"
             className={styles.claimSecondary}
             data-claim-method="claimEth"
-            disabled
-            aria-describedby={`${id}-readonly`}
-            title={copy.rewardsReadOnly}
+            disabled={!claim?.canClaimEth}
+            onClick={() => claim?.submit("claimEth")}
+            aria-describedby={!claim ? `${id}-readonly` : undefined}
+            title={!claim ? copy.rewardsReadOnly : undefined}
           >
-            {copy.claimOnly}
+            {claim?.busy &&
+            claim.stateVisible &&
+            claim.state.operation?.kind === "claimEth"
+              ? copy.claimFlow.phases[claim.state.phase]
+              : copy.claimOnly}
           </button>
         )}
-        <span id={`${id}-readonly`} className="sr-only">
-          {copy.rewardsReadOnly}
-        </span>
+        {!claim && (
+          <span id={`${id}-readonly`} className="sr-only">
+            {copy.rewardsReadOnly}
+          </span>
+        )}
       </div>
     </section>
   );

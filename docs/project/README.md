@@ -118,3 +118,9 @@ M4当前Development授权与实现范围见[Auto Core实现记录](./mine-auto-c
 当前执行节奏见[Fast Autonomous Development Mode](./development-mode.md)。M9结果UI/动画与人工锁定的Waiting/—策略见[实现记录](./mine-result-implementation.md)。
 
 - [Mine Rewards read/UI — M5](./mine-rewards-implementation.md)：人工资产映射/显隐、canonical chain read与M6边界。
+
+- [Rewards Claim Transactions](./mine-claim-implementation.md)：用户授权的97领取/仅领取BNB、生命周期与真实QA边界。
+
+- [M10 Miners / Current Result Winners](./mine-winners-implementation.md)：人工确认的名单语义、8位API单位与非空QA边界。
+
+- [M7/M8 Mine Read Freshness](./mine-freshness-implementation.md)：现有Query的有界调度与仅freshness signal的F7适配；真实WS验收pending。
