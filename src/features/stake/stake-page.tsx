@@ -8,6 +8,7 @@ import {
   type StakeReadValue,
 } from "./model/stake-display";
 import { useStakeCopy } from "./copy";
+import type { StakeTransactionUI } from "./transaction/use-stake-transaction";
 import styles from "./components/stake.module.css";
 
 export function StakePage({
@@ -16,18 +17,25 @@ export function StakePage({
   staked = { status: "unavailable" },
   onRefresh,
   refreshing = false,
+  transaction,
+  draftScope,
 }: Readonly<{
   summary?: StakeSummaryDisplay;
   available?: StakeReadValue;
   staked?: StakeReadValue;
   onRefresh?: () => void;
   refreshing?: boolean;
+  transaction?: StakeTransactionUI;
+  draftScope?: string;
 }>) {
   const copy = useStakeCopy();
   return (
     <div className={styles.page}>
       <h1 className="text-page-title font-bold">{copy.title}</h1>
+      <p className={styles.subtitle}>{copy.subtitle}</p>
       <StakePanel
+        transaction={transaction}
+        draftScope={draftScope}
         available={available}
         staked={staked}
         onRefresh={onRefresh}

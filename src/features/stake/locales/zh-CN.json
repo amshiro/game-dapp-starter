@@ -1,5 +1,6 @@
 {
   "title": "质押",
+  "subtitle": "分享协议收入。",
   "mode": "质押模式",
   "deposit": "存入",
   "withdraw": "取出",
@@ -19,5 +20,50 @@
   "wrongChain": "网络错误",
   "refresh": "刷新",
   "availableBalance": "可用 ORI 余额",
-  "stakedBalance": "已质押 ORI 余额"
+  "stakedBalance": "已质押 ORI 余额",
+  "transaction": {
+    "phases": {
+      "idle": "就绪",
+      "preparing": "准备中",
+      "awaiting-signature": "请在钱包确认",
+      "submitted": "已提交",
+      "confirming": "链上确认中",
+      "confirmed": "链上已确认",
+      "refreshing": "正在刷新余额",
+      "success": "成功",
+      "rejected": "已取消",
+      "failed": "未完成",
+      "refresh-failed": "状态刷新失败"
+    },
+    "errors": {
+      "invalid-amount": "请输入最多18位小数的十进制金额。",
+      "zero-amount": "数量必须大于0。",
+      "insufficient-ori": "ORI余额不足。",
+      "insufficient-staked": "数量超过已质押ORI。",
+      "disconnected": "请先连接钱包。",
+      "wrong-chain": "请切换至BSC测试网（97）。",
+      "account-changed": "钱包账户已改变，本次操作已停止。",
+      "insufficient-gas": "BNB不足以支付gas。",
+      "insufficient-allowance": "授权额度仍不足，未发送存入交易。",
+      "simulation-reverted": "合约预检查被拒绝，未发送交易。",
+      "rpc-error": "网络请求失败，请先核对钱包或浏览器记录再重试。",
+      "user-rejected": "钱包请求已取消。",
+      "receipt-reverted": "交易在链上被回滚。",
+      "confirmation-unknown": "确认结果未定，请检查原交易，不要重复发送。",
+      "replaced": "交易已被替换或取消，质押操作未完成。",
+      "refresh-failed": "交易已确认，但状态刷新失败。"
+    },
+    "steps": {
+      "approve": "授权",
+      "deposit": "存入",
+      "withdraw": "取出"
+    },
+    "approveAndDeposit": "授权并存入",
+    "approvalReady": "授权已确认，可以继续存入。",
+    "retryRefresh": "重试刷新",
+    "checkTransaction": "检查交易",
+    "viewTransaction": "查看交易",
+    "allowanceError": "授权额度读取失败，请刷新重试。",
+    "enterAmount": "请输入数量。"
+  }
 }

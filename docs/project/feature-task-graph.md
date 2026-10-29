@@ -30,8 +30,8 @@
 | H1 | Header ORI price | PARTIALLY BLOCKED | 已有 transport/mapper；旧 ORI/getPrice 来源已确认，97 数据集/价格单位与 Q-11 字段语义待确认 |
 | E1 | Explore read/UI | PARTIALLY BLOCKED | 用户已批准 E1 Core UI 正式接入 /explore；四卡/三表、受控分页与中性读取状态已完成并通过人工审核；真实数据仍受 Q-27/Q-11 阻塞 |
 | P1 | Points read/UI | PARTIALLY BLOCKED | 本轮已授权 Figma static demo，正式 /points 完整 UI 已实现待审核；真实规则/API 仍阻塞，不计算积分 |
-| S1 | Stake read/UI | PARTIALLY BLOCKED | 低风险 Core UI 子集已接入 /stake：Deposit/Withdraw 只切展示，金额只读、percent/action 禁用、Summary —；Development 97 principal read 已完成并通过最终人工验收；Info / rewards / production / 资金流程仍 gated |
-| S2 | Stake deposit / withdraw | BLOCKED | S1/W1；Q-10、Q-12、金额/allowance/完成契约与安全 Gate |
+| S1 | Stake read/UI | READY | 当前 UI COMPLETE；Development 97 principal read VERIFIED、已通过人工验收。额外 Info / APR / TVL / rewards / production 数据仍有独立 Gate，不阻塞当前 Development 主线 |
+| S2 | Stake deposit / withdraw | READY | Development 97 Tx implementation COMPLETE；Real Tx QA = DEFERRED — TEST ORI REQUIRED，不代表真实交易通过、不阻塞主线 checkpoint。Claim / Production 56 不解锁，见 [实现边界](./stake-transaction-slice-1.md) |
 | S3 | Stake yield / claim-and-deposit | BLOCKED | S1/W1；先确认 Q-26，再决定是否存在该票据的正式 Scope |
 | M1 | Mine read models / owner Queries | PARTIALLY BLOCKED | Read/Data Gate 证据审计已完成并通过人工审核；97 原始读子集供 M2 使用，完整状态/Miners/单位契约仍未解锁 |
 | M2 | Mine read-only UI / selection | PARTIALLY BLOCKED | 此前仅棋盘的 checkpoint 不代表整页 UI 完成；Full Mine read-only UI correction 已完成并通过人工审核，覆盖 1–6 全状态展示；业务 selection、Miners 数据、timing 与未确认资产仍 gated |
@@ -223,7 +223,7 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 | Web3 dependencies | Registry OreProtocolView `getStakeInfo` / `getTreasuryState`、ORI `balanceOf`；97 的 decimals=18 已 runtime 确认，56 未验证；不 approve、不 deposit/withdraw |
 | Realtime dependencies | 无订阅或 interval polling；账户/链 key 与 Query invalidation/手动 Refresh 由 Stake read owner 负责 |
 | UI/Figma dependencies | `2003:1949`、`2003:1961`、`2003:2078`；AmountInput/percentage 的共享只在真实需求出现时评估 |
-| Open Questions / Blockers | PARTIALLY BLOCKED：用户连续页面开发授权下已实现 Figma 明确的 Core UI，并通过人工审核；97 三条 principal read 已接入并通过最终人工验收（账户/错链往返/断开/刷新恢复，无旧账户缓存残留）；无 API，不推导 APR/TVL/rewards，金额只读、百分比与 action 禁用。Q-10、Q-26、Q-24、Q-16、Q-03 继续 OPEN；不能以 97 principal read 扩大至 56、收益或资金能力 |
+| Open Questions / Blockers | 当前批准的 UI COMPLETE、97 三条 principal read VERIFIED（账户/错链往返/断开/刷新恢复，无旧账户缓存残留）；无 API，不推导 APR/TVL/rewards。S2 97 transaction implementation COMPLETE，真实交易 QA 因测试 ORI 缺失暂缓、不阻塞主线。Q-10、Q-26、Q-24、Q-16、Q-03 其他范围继续 OPEN；不能扩大至 56 或收益 |
 | Acceptance Criteria | G-D/G-P/G-V；显示真实 ORI/decimals，百分比 bigint 安全；未知收益字段不补零；表单不产生写调用；账户/链切换不串数据 |
 | QA | 通用 QA；余额/单位/精度、Summary DTO、Tab 键盘语义、断网/身份切换、长数值 |
 | Non-goals | 质押资金操作、yield 领取、收益率估算算法或跨 Feature Query deep import |
@@ -240,7 +240,7 @@ R0 的对应证据必须通过才允许下游读取；图中的边不代表 R0 �
 | Web3 dependencies | ORI allowance / approve(OreProtocol) → approval receipt → depositStake；withdrawStake(amount,to)。先 simulation、上下文冻结与资产/收款地址校验 |
 | Realtime dependencies | 无；不得等待 Mine WS 才刷新账户数据 |
 | UI/Figma dependencies | S1 表单加签名/pending/reverted/cancel/timeout/完成状态；Q-12 无设计时不得自行造全局 toast 系统 |
-| Open Questions / Blockers | BLOCKED：S1、Q-10、Q-12、存取上下限与 allowance 授权额度策略/确认次数等完成契约；不默认 unlimited approval |
+| Open Questions / Blockers | Development 97 implementation COMPLETE：人工已签收 runtime path、exact approval、self recipient、1 confirmation 与 receipt→reads 完成契约。Real Tx QA = DEFERRED — TEST ORI REQUIRED（ORI 为 0），用户批准 checkpoint 且不阻塞主线；不声称真实交易已验证。未证实的 runtime 限制仍由每次 simulation 防护，不能推广到 Claim 或 Production 56。详见 [Slice 1](./stake-transaction-slice-1.md) |
 | Acceptance Criteria | 每个操作明确状态、确认阈值与失败语义；approve 后重读 allowance，拒签/失败不进入 deposit；切链/切账户使未签操作失效，旧 receipt 不更新新账户；G-T/G-W/G-V |
 | QA | 通用 QA；模拟所有失败/替换/超时与 approval 分阶段路径；真实 BSC 97 approve/deposit/withdraw 仅在明确授权后验证并报告余额变化 |
 | Non-goals | yield、自动复投、主网测试、一次批准全部未来额度 |

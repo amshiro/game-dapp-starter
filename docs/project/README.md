@@ -71,6 +71,7 @@ docs/*.md       → Starter 全局工程规范（如何实现）
 | [open-questions.md](./open-questions.md) | 未确认问题：看到 Unknown 时停止猜测 |
 | [implementation-plan.md](./implementation-plan.md) | Foundation 阶段状态与范围索引 |
 | [feature-task-graph.md](./feature-task-graph.md) | F10 Feature Tickets、依赖、Ready/Blocked、人工 Gate 与下一张任务 |
+| [stake-transaction-slice-1.md](./stake-transaction-slice-1.md) | Development 97 存取交易的人工授权、实现边界与真实交易验收 |
 | [r0-evidence-audit.md](./r0-evidence-audit.md) | 后续 Feature 的静态证据、冲突与未解锁项；不代表新 API/RPC/WS 验证 |
 
 ## Agent 推荐阅读顺序

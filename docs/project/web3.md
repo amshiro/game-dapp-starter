@@ -157,6 +157,14 @@ Figma 中的 SOL 图标、SOL 文案与 Solana 叙述是**设计占位**，不�
 
 新项目按 Starter 规范：Privy 负责认证与钱包事实，Wagmi / Viem 负责 EVM 交互；不得复制线上 Zustand 地址副本、ethers 封装或 `estimateGas × 1.2` 约定。
 
+## Stake Transaction Slice 1 — Development 97 授权
+
+User Confirmed：Approve simulation、Withdraw 正向 simulation、Deposit 的 `ERC20InsufficientAllowance(P,0,1)` 路径证据足够实现当前 97 Approve / Deposit / Withdraw，不再寻找公开成功 Deposit 作为实现前置条件。后者仅 RUNTIME PATH VERIFIED，真实正向交易必须由用户测试网验收，不代表 artifact 完全匹配或 Production 56 已验证。
+
+使用 Registry 的 ORI Token / OreProtocol proxy；exact amount approval、withdraw recipient=self、1 confirmation receipt success 后相关 personal reads 重读成功才算业务完成。confirmed + refresh failure 保持 chain confirmed，Retry 只读取、不重发；已提交交易继续追踪原 account/chain/hash。Claim、reward unit/semantics、56 Release Gate 不变。实现 owner、状态、Query 隔离和人工验收步骤见 [Stake Transaction Slice 1](./stake-transaction-slice-1.md)。
+
+当前签收：Stake UI COMPLETE；Stake Read VERIFIED ON CHAIN 97；Stake Tx implementation COMPLETE。用户确认测试账户 ORI 为 0，真实交易 QA = **DEFERRED — TEST ORI REQUIRED**，不阻塞 Development implementation checkpoint；不得标记为真实写入已验证。Production 56 继续 RELEASE GATE，Claim 继续 BLOCKED / LATER。
+
 ## Transaction concepts
 
 | Feature | Write | Value | Approval | Completion |
@@ -194,6 +202,6 @@ Read owner：`features/stake/read`；`app/stake` 组合 W1 SDK 身份与 Stake p
 
 Query key 包含目标链、token/View 部署地址及个人 account；无 previous-account placeholder。身份恢复中不读个人数据，断开后个人值立即隐藏；wrong/unknown chain 隐藏全部三项并禁用读取；切回正确链、账户变化由 Query 生命周期收敛。实际 RPC chain ID 在每次读取前校验。取消过时 query 时不接纳迟到结果。每项独立 loading/error，error 不回显旧值；Query staleTime 30s、retry 1，无 interval polling，支持窗口重新聚焦、Refresh 与 `stakeReadKeys.all` invalidation。
 
-Rewards 继续 **PARTIALLY CONFIRMED**：`pendingRewards` 可读不等于已证明 immediately claimable ORI；`rewardDebt`、`stakeRewardsFactor` 单位 UNKNOWN，不作为本金或 ORI amount。当前页面没有新增 Claimable Rewards slot；APR / TVL 维持 `—`，无 API 或价格推导。native BNB 仅 gas，与 Stake principal balance 无关。Q-24、Q-26、Q-12、金额与 allowance / completion gate 均未关闭；Deposit / Withdraw / percentage 保持禁用。
+Rewards 继续 **PARTIALLY CONFIRMED**：`pendingRewards` 可读不等于已证明 immediately claimable ORI；`rewardDebt`、`stakeRewardsFactor` 单位 UNKNOWN，不作为本金或 ORI amount。当前页面没有新增 Claimable Rewards slot；APR / TVL 维持 `—`，无 API 或价格推导。native BNB 仅 gas，与 Stake principal balance 无关。Q-24、Q-26 继续 OPEN；S1 只读阶段的禁用表单已由上述 S2 的 Development 97 存取授权覆盖，其金额、allowance 与 completion 策略已人工签收。Claim 与 Production 不因本授权解锁。
 
 User Confirmed：Development 97 Read Integration 已通过最终人工验收。账户切换、wrong chain → 97、断开、刷新恢复均 PASS；Deposit Balance / Withdraw Staked Balance / Total deposit 正常恢复，无旧账户缓存残留。此结论仅覆盖当前限定 Development Read Scope，不关闭 Production 56、Reward Semantics 或任何交易 Gate。

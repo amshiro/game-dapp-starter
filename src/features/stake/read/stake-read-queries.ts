@@ -15,6 +15,7 @@ export const VERIFIED_ORI_DECIMALS = 18;
 export function createStakeReadQueries(
   client: StakeReadClient | undefined,
   context: StakeReadContext,
+  blockNumber?: bigint,
 ) {
   const contracts =
     context.targetChainId === VERIFIED_STAKE_CHAIN
@@ -81,6 +82,7 @@ export function createStakeReadQueries(
             abi: contracts.oriToken.abi,
             functionName: "balanceOf",
             args: [address],
+            blockNumber,
           });
         }),
     }),
@@ -98,6 +100,7 @@ export function createStakeReadQueries(
             abi: contracts.oreProtocolView.abi,
             functionName: "getStakeInfo",
             args: [address],
+            blockNumber,
           });
           // pendingRewards is not proven immediately claimable ORI. Only the principal crosses this boundary.
           return result[0];
@@ -116,6 +119,7 @@ export function createStakeReadQueries(
             address: contracts.oreProtocolView.address,
             abi: contracts.oreProtocolView.abi,
             functionName: "getTreasuryState",
+            blockNumber,
           });
           // stakeRewardsFactor/rewardDebt are accounting fields, never ordinary ORI amounts.
           return result[0];

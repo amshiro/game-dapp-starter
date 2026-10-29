@@ -1,5 +1,6 @@
 {
   "title": "Stake",
+  "subtitle": "Earn a share of protocol revenue.",
   "mode": "Stake mode",
   "deposit": "Deposit",
   "withdraw": "Withdraw",
@@ -9,7 +10,7 @@
   "totalDeposit": "Total deposit",
   "apr": "APR",
   "tvl": "TVL",
-  "loading": "Loading\u2026",
+  "loading": "Loading…",
   "unavailable": "Data unavailable",
   "error": "Could not load data",
   "empty": "No data",
@@ -19,5 +20,50 @@
   "wrongChain": "Wrong network",
   "refresh": "Refresh",
   "availableBalance": "Available ORI balance",
-  "stakedBalance": "Staked ORI balance"
+  "stakedBalance": "Staked ORI balance",
+  "transaction": {
+    "phases": {
+      "idle": "Ready",
+      "preparing": "Preparing",
+      "awaiting-signature": "Confirm in wallet",
+      "submitted": "Submitted",
+      "confirming": "Confirming",
+      "confirmed": "Chain confirmed",
+      "refreshing": "Refreshing balances",
+      "success": "Success",
+      "rejected": "Cancelled",
+      "failed": "Not completed",
+      "refresh-failed": "Status refresh failed"
+    },
+    "errors": {
+      "invalid-amount": "Enter a decimal amount with at most 18 decimal places.",
+      "zero-amount": "Amount must be greater than zero.",
+      "insufficient-ori": "Insufficient ORI balance.",
+      "insufficient-staked": "Amount exceeds your staked ORI.",
+      "disconnected": "Connect your wallet to continue.",
+      "wrong-chain": "Switch to BSC Testnet (97).",
+      "account-changed": "Wallet account changed. The operation stopped.",
+      "insufficient-gas": "Insufficient BNB for gas.",
+      "insufficient-allowance": "Allowance is still insufficient. Deposit was not sent.",
+      "simulation-reverted": "Contract preflight reverted. Transaction was not sent.",
+      "rpc-error": "Network request failed. Check wallet/explorer before retrying.",
+      "user-rejected": "Wallet request cancelled.",
+      "receipt-reverted": "Transaction reverted on-chain.",
+      "confirmation-unknown": "Confirmation is unresolved. Check the existing transaction; do not resend.",
+      "replaced": "Transaction replaced or cancelled; Stake action not completed.",
+      "refresh-failed": "Transaction confirmed, status refresh failed."
+    },
+    "steps": {
+      "approve": "Approve",
+      "deposit": "Deposit",
+      "withdraw": "Withdraw"
+    },
+    "approveAndDeposit": "Approve & deposit",
+    "approvalReady": "Approval confirmed. Deposit is ready.",
+    "retryRefresh": "Retry refresh",
+    "checkTransaction": "Check transaction",
+    "viewTransaction": "View transaction",
+    "allowanceError": "Allowance unavailable. Refresh to retry.",
+    "enterAmount": "Enter an amount to continue."
+  }
 }

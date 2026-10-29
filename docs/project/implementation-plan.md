@@ -31,7 +31,7 @@
 
 Typography Foundation 已完成、审核并 push：Starter 单一 HarmonyOS Sans SC Variable WOFF2，完整 wght 40–900，许可文件保留。E1 Core UI 只交付正式 /explore 的展示结构，真实数据接入仍为 PARTIALLY BLOCKED（Q-27/Q-11）。
 
-S1 Core UI 已审核并 push。当前限定 Development 97 Read Integration 接入 ORI balanceOf、View stakedAmount / totalStaked，已通过最终人工验收；详见 web3.md 的 S1 read evidence。金额输入只读，percentage/action 禁用；无 API、signature 或 transaction。APR/TVL/reward semantics 与 Production 56 仍 gated，完整 S1 保持 PARTIALLY BLOCKED，S2/S3 未开始。
+Stake UI = COMPLETE。Development 97 Read = VERIFIED：ORI balanceOf、View stakedAmount / totalStaked 已通过最终人工验收；详见 web3.md 的 S1 read evidence。Stake Tx implementation = COMPLETE：97 的 exact Approve / Deposit / Withdraw、金额与百分比输入、Feature-local transaction owner、自动及受控浏览器 QA 已完成。Stake Real Tx QA = **DEFERRED — TEST ORI REQUIRED**：用户确认测试账户 ORI 为 0，批准 implementation checkpoint，不阻塞 Development 主线；不记作真实交易已验证。无 API；APR/TVL/reward semantics 保持未确认，Claim = BLOCKED / LATER，Production 56 = RELEASE GATE。详见 [Stake Transaction Slice 1](./stake-transaction-slice-1.md)。
 
 用户本轮 UI 修正：external Wallet 隐藏 Export / Receive；当前 UI 接入 en / zh-CN Header 切换，request-cookie / SSR / Client 使用同一 locale。embedded 钱包未启用，正式 About / 费率 / Production 默认语言仍需审定。
 

@@ -67,6 +67,13 @@ R0 逐项结论与来源见 [r0-evidence-audit.md](./r0-evidence-audit.md)。`PA
 | S-05 | Backend currently exposes internal stack traces for some error paths; backend owner should disable detailed exception output outside controlled debugging |
 | S-06 | 轮换曾在对话中暴露的 `BACKEND_APP_SECRET` 值（属于其他带登录能力的项目，由该项目 backend / admin owner 负责；ORI 不使用，仓库不存储任何值） |
 
+## Stake 97 Transaction Slice 1 人工签收（不关闭其他范围）
+
+- Q-10：Approve 与 Withdraw 正向 simulation、Deposit 的 `ERC20InsufficientAllowance(P,0,1)` runtime path 已由人工接受为当前 97 实现依据，不再要求额外寻找公开成功 Deposit。完整 implementation/artifact 一致性与 Production 56 仍未验证；Deposit 正向交易待用户实际验收。
+- Q-12：Stake 97 限定策略已确认：exact approval to Registry Protocol proxy；withdraw recipient=self；1 confirmation + receipt success + 相关个人 reads 重读成功。refresh failure 保留 chain confirmed，只 retry reads、不重发；其他交易与生产范围继续 OPEN。
+- Q-16：当前 Stake Figma 的 25% / 50% / 100% 按钮保留，100%=Max，bigint helper 同时支持 75%；不修改 Mine 金额规则。Claim / reward semantics 继续 BLOCKED。
+- Stake Tx implementation 已完成。用户确认测试账户 ORI 为 0，Real Tx QA = **DEFERRED — TEST ORI REQUIRED**；允许 implementation checkpoint，不阻塞当前 Development 主线。实现与人工真实交易验收边界见 [Stake Transaction Slice 1](./stake-transaction-slice-1.md)。以上签收不声称真实 Approve / Deposit / Withdraw 已通过，Production 56 / Claim Gate 不变。
+
 ## About + Points UI 本轮限定授权（不关闭生产问题）
 
 - Q-20 / Q-01 / Q-11：仍阻塞真实 Points 规则与接口。当前 /points 按用户批准的 Figma static demo 完整呈现；旧源码的 PointsRewards 是起源奖励，OriPointsTable 是游戏记录，不映射成新版积分。未调用 points wrappers。

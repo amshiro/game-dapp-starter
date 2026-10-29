@@ -30,8 +30,19 @@ describe("request-owned locale boundary", () => {
     [walletEn, walletZh],
     [modalEn, modalZh],
   ])("provides every owner key in both languages", (en, zh) => {
-    expect(Object.keys(zh).sort()).toEqual(Object.keys(en).sort());
-    for (const value of Object.values(zh)) expect(value.trim()).not.toBe("");
+    function compare(a: unknown, b: unknown) {
+      if (typeof a === "string") {
+        expect(typeof b).toBe("string");
+        if (typeof b === "string") expect(b.trim()).not.toBe("");
+        return;
+      }
+      if (!a || !b || typeof a !== "object" || typeof b !== "object")
+        throw new Error("Invalid translation resource");
+      expect(Object.keys(b).sort()).toEqual(Object.keys(a).sort());
+      for (const [key, value] of Object.entries(a))
+        compare(value, (b as Record<string, unknown>)[key]);
+    }
+    compare(en, zh);
   });
   it("localizes existing UI and accessible controls while preserving external-wallet restrictions", () => {
     const html = renderToStaticMarkup(
