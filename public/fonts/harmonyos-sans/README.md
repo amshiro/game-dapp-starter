@@ -38,11 +38,11 @@ The Node asset tests decode the WOFF2 Brotli stream and check source-table hashe
 
 The user supplied `LICENSE-update.txt`; preserve this file unchanged alongside the font. It contains the Huawei HarmonyOS Sans license/usage notice and is the local licensing evidence (SHA-256 `7d7acf8e3ac928ae7f34aaa9f8e348dd0476dbb52caaa058e402894d4f6efe73`). HarmonyOS Sans is used as this Starter's default UI font. Retain its copyright and license notice with redistribution; consult the supplied agreement for its conditions. This README does not grant rights or replace that agreement.
 
-The font name table itself has copyright but no full license URL/text; OS/2 `fsType=8` alone is not a license. Q-05 retains review of applicable Web/Starter template release conditions, including format conversion and redistribution; receipt of the license is confirmed, final release interpretation is not silently closed.
+The font name table itself has copyright but no full license URL/text; OS/2 `fsType=8` alone is not a license. On 2026-10-30, the user confirmed obtaining authorization for font subsetting and explicitly approved committing and publishing these subsets for this project. This records the user’s confirmation; it does not extend authorization to unrelated projects or general Starter template redistribution (Q-05).
 
-## Local subset experiment
+## On-demand font subsets
 
-User authorization is limited to local testing. The supplied license prohibits modifications; Q-05 remains unresolved for subset release. These generated files are not approved for deployment or redistribution. The original font and license remain unchanged.
+The earlier local-only restriction is superseded by the user’s 2026-10-30 confirmation of obtained authorization and approval to commit and publish font subsets for this project. The original font and supplied license remain unchanged; no separate authorization document has been added to the repository.
 
 - `scripts/fonts/build-subsets.py` generates real WOFF2 subsets, generated CSS and `src/styles/font-subsets.json`; it uses the isolated tool versions in `scripts/fonts/requirements.txt` (FontTools 4.60.2 / Brotli 1.2.1), not application dependencies.
 - Basic Latin/extended Latin and UI punctuation are separate from current UI Chinese characters. The UI corpus is collected from JSON string values under `app/**/_locales`, `app/**/locales`, and `src/**/locales` (including all languages). Remaining original codepoints are sorted into groups of up to 512. New dynamic characters trigger only their matching groups; source coverage is not discarded.
