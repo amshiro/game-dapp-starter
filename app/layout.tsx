@@ -22,15 +22,6 @@ export default async function RootLayout({
   const locale = await getRequestLocale();
   return (
     <html lang={locale}>
-      <head>
-        <link
-          rel="preload"
-          href="/fonts/harmonyos-sans/HarmonyOS_Sans_SC.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-      </head>
       <body>
         <LocaleProvider locale={locale}>
           <Providers>

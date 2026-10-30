@@ -1,0 +1,3 @@
+# Offline asset tooling only; never installed into the app or Worker runtime.
+fonttools==4.60.2
+Brotli==1.2.1

@@ -93,7 +93,7 @@ Safe area：设计以 34px Home Indicator 区表达底部安全区（User / Figm
 
 本轮 Figma MCP 读取 numeric fontWeight：Regular 400（`2003:1008/2291`）、Medium 500（`2003:2494/2292`）、Bold 700（`2003:2530/2247`）。保留 CSS 400/500/700，Medium 不映射为 semibold。
 
-用户提供的 Starter 字体为 HarmonyOS Sans SC 2.040 单文件 Variable Font，`wght` 40–900，包含 SC/CJK；Web 资产为完整转换的单文件 WOFF2（不裁字形/轴），原始 TTF 不入库；全局注册见 `src/styles/fonts.css`。文件的命名 Bold 实例是 706，与当前 Figma numeric 700 有差异；CSS 700 使用变量轴真实插值，不伪造 Bold，也不静默改 Figma 为 706。Regular/Medium 命名坐标分别为 400/500，与 Figma 一致。
+用户提供的 Starter 字体为 HarmonyOS Sans SC 2.040 单文件 Variable Font，`wght` 40–900，包含 SC/CJK；原始完整 WOFF2 保留作为校验源，原始 TTF 不入库。当前用户授权本地测试按字符分片的 Web 资产；集合保留原 Unicode 覆盖、字形与变量轴，分片通过 `unicode-range` 按需加载；不预加载整库。全局入口仍为 `src/styles/fonts.css`。分片不发布，许可边界仍为 Q-05。文件的命名 Bold 实例是 706，与当前 Figma numeric 700 有差异；CSS 700 使用变量轴真实插值，不伪造 Bold，也不静默改 Figma 为 706。Regular/Medium 命名坐标分别为 400/500，与 Figma 一致。
 
 字体与 fallback stack 的唯一 owner 为全局 `--font-family-sans`；`--ori-font-family` 仅保留兼容别名，不再持有独立 stack。字体不进入 Header/Wallet/About 局部定义。用户已授权本仓库接入；`LICENSE-update.txt` 已由用户提供并保留；Q-05 保留官方 Web/模板再分发条款审定问题，metadata 不替代授权。
 
